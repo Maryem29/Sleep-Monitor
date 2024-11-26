@@ -1,5 +1,4 @@
-# Web_Application-_Gilmore
-In Innovation and Complexity Management, we will learn about and work on real-time web applications and data visualisation. In Media Management, you will work on the hardware and the data analytics to acquire biomedical sensor data. In groups of 5 your challenge will be in building an end-to-end sensor-based real-time web application using medical grade sensors and Arduino, collecting this data, developing a well functioning app using frontend and backend.
+# Sleep Quality Monitor for Healthcare Providers on Nightshifts 
 
 Here are the dos:
 …focus on a very specific user group and their core job to get done. Understand or imagine every little detail.
