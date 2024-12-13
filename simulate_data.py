@@ -24,4 +24,3 @@ logging.basicConfig(level=logging.DEBUG)
 data = {"sensor_id": "123", "timestamp": "2023-12-13T16:00:00", "value": 42}
 response = requests.post(API_URL, json=data)
 logging.debug(f"Response status: {response.status_code}, body: {response.text}")
-
