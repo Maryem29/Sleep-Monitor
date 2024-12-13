@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Data Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .bar {
+            fill: steelblue;
+        }
+        .bar:hover {
+            fill: orange;
+        }
+        .axis-label {
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sleep Data Visualization</h1>
+    <svg id="chart" width="800" height="400"></svg>
+    <script>
+        // Fetch data from FastAPI
+        fetch("http://127.0.0.1:8000/api/sleep-data/")
+            .then(response => response.json())
+            .then(data => {
+                if (data.data) {
+                    renderBarChart(data.data);
+                } else {
+                    console.error("No data to visualize!");
+                }
+            })
+            .catch(error => console.error("Error fetching data:", error));
+
+        // Render Bar Chart using D3.js
+        function renderBarChart(data) {
+            // Parse and process data
+            const sleepStages = ["awake", "light", "deep", "REM"];
+            const stageCounts = sleepStages.map(stage => ({
+                stage,
+                count: data.filter(d => d.sleep_stage === stage).length
+            }));
+
+            // Set up SVG dimensions and scales
+            const svg = d3.select("#chart");
+            const width = +svg.attr("width");
+            const height = +svg.attr("height");
+            const margin = { top: 20, right: 30, bottom: 40, left: 40 };
+            const chartWidth = width - margin.left - margin.right;
+            const chartHeight = height - margin.top - margin.bottom;
+
+            const x = d3.scaleBand()
+                .domain(stageCounts.map(d => d.stage))
+                .range([0, chartWidth])
+                .padding(0.1);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(stageCounts, d => d.count)])
+                .nice()
+                .range([chartHeight, 0]);
+
+            const chart = svg.append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Add axes
+            chart.append("g")
+                .call(d3.axisLeft(y))
+                .selectAll(".tick text")
+                .attr("class", "axis-label");
+
+            chart.append("g")
+                .attr("transform", `translate(0,${chartHeight})`)
+                .call(d3.axisBottom(x))
+                .selectAll(".tick text")
+                .attr("class", "axis-label");
+
+            // Add bars
+            chart.selectAll(".bar")
+                .data(stageCounts)
+                .enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", d => x(d.stage))
+                .attr("y", d => y(d.count))
+                .attr("height", d => chartHeight - y(d.count))
+                .attr("width", x.bandwidth());
+        }
+    </script>
+</body>
+</html>
