@@ -1,9 +1,14 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
 from firebase import initialize_firebase, write_to_firebase
+import firebase_admin
+from firebase_admin import credentials, db
+
+# Initialize Firebase
 initialize_firebase()
+
 app = FastAPI()
 
 class DataFromSensor(BaseModel):
@@ -14,13 +19,18 @@ class DataFromSensor(BaseModel):
 
 @app.post("/api/sleep-data/")
 async def receive_data_from_sensor(data: DataFromSensor):
-    data_dict = data.dict()
-    write_to_firebase("data_from_the_sensor", data_dict)
-    return {"message": "Data has been successfully stored in Firebase", "data": data_dict}
+    try:
+        # Convert incoming data to dictionary and write to Firebase
+        data_dict = data.dict()
+        write_to_firebase("data_from_the_sensor", data_dict)  # This writes the data to Firebase
+        return {"message": "Data has been successfully stored in Firebase", "data": data_dict}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to store data: {str(e)}")
 
 @app.get("/test-firebase")
 def test_firebase():
     try:
+        # Simple test to ensure Firebase is working
         write_to_firebase("test-path", {"message": "Hello Firebase!"})
         return {"status": "success", "message": "Data written to Firebase"}
     except Exception as e:
@@ -60,16 +70,24 @@ async def process_sleep_data(data: List[DataFromSensor]):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred while processing: {str(e)}")
-    
+
 @app.get("/api/sleep-data/")
 async def fetch_sleep_data():
     try:
+        # Check Firebase initialization first
+        if not firebase_admin._apps:
+            raise HTTPException(status_code=500, detail="Firebase not initialized correctly.")
+        
+        # Fetch data from Firebase
         ref = db.reference("data_from_the_sensor")
-        data = ref.get()
+        data = ref.get()  # Retrieve all data under the "data_from_the_sensor" path
+
         if not data:
             return {"message": "No data found", "data": []}
-        # Convert Firebase dict to list
+
+        # Convert Firebase dict to a list
         formatted_data = [value for key, value in data.items()]
         return {"message": "Data fetched successfully", "data": formatted_data}
+    
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch data: {str(e)}")
