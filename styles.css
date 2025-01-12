@@ -3,8 +3,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-     font-family: Arial, sans-serif;
-    background-color: #626AB2; /* Outer background color */
+    background-color: #626AB2;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -13,31 +12,20 @@ body {
 
 /* Container for White and Blue Box */
 .container {
-    background-color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
     width: 100%;
     max-width: 400px;
-}
-
-/* White Rectangle Box Styling */
-.white-box {
+    padding: 20px;
     background: white;
     border-radius: 10px;
-    padding: 25px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 100%;
-    max-width: 400px;
 }
 
 /* Logo Styling */
 .logo {
     width: 250px; /* Adjust logo size */
     height: auto;
-    margin-bottom: px;
+    margin-bottom: 20px;
 }
 
 /* Blue Rectangle Box Styling */
@@ -73,7 +61,7 @@ body {
     font-size: 14px;
     background-color: white; /* White input fields */
     color: #333;
-    display:block;
+    display: block;
 }
 
 .input-group input::placeholder {
@@ -91,7 +79,7 @@ body {
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
-     display: block;
+    display: block;
 }
 
 .sign-in-btn:hover {
@@ -111,58 +99,87 @@ body {
     text-decoration: none;
     font-weight: bold;
 }
-/* Registration Page Specific Styles */
-.registration-container .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Two equal columns */
-    gap: 15px; /* Space between fields */
+
+/* Error Border */
+.error-border {
+    border: 1px solid #dc3545; /* Red border for invalid fields */
 }
 
-.registration-container .register-btn {
-    grid-column: span 2; /* Make the button span both columns */
-    width: auto;
-    margin: 20px auto 0; /* Center the button */
+/* Register Fields */
+.register-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns */
+    gap: 20px; /* Space between input fields */
+    margin-bottom: 20px;
+    margin-right:15px;
+}
+
+.register-fields label {
+    color: white;
+    font-size: 14px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.register-fields input {
+    width: 100%;
+    padding: 7px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    display: block;
+}
+
+.register-button {
     padding: 10px 20px;
-    background-color: white;
+    font-size: 16px;
+    background: white;
     color: #4C57A7;
     border: none;
     border-radius: 5px;
-    font-size: 16px;
     cursor: pointer;
 }
 
-.registration-container .register-btn:hover {
-    background-color: #E2E8F0;
-}
-
-.registration-container .blue-box {
-    background: #4C57A7;
-    padding: 30px;
-    border-radius: 10px;
-    margin-top: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.registration-container .title {
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-    text-align: center;
-    margin-bottom: 20px;
+.register-button:hover {
+    background: #E2E8F0;
 }
 
 .login-text {
-    margin-top: 10px;
+    margin-top: 15px;
+    font-size: 12px;
     color: white;
-    font-size: 14px;
+    text-align: center;
 }
 
 .login-text a {
-    color: #E2E8F0;
-    text-decoration: underline;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
 }
 
-.login-text a:hover {
-    color: #ffffff;
+.floating-message {
+    position: fixed;
+    top: 20px; /* Distance from the top */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Offset to truly center the message */
+    width: auto;
+    max-width: 80%; /* Limit the maximum width */
+    padding: 15px;
+    text-align: center;
+    font-size: 16px;
+    background-color: rgba(0, 0, 0, 0.8); /* Dark background for visibility */
+    color: white;
+    border-radius: 15px; /* Rounded corners */
+    z-index: 9999;
+    transition: opacity 0.5s ease-out;
+    visibility: hidden;
+    opacity: 0;
 }
 
+.floating-message.success {
+    background-color: #4CAF50; /* Green background for success */
+}
+
+.floating-message.error {
+    background-color: #f44336; /* Red background for error */
+}

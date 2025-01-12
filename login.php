@@ -1,6 +1,15 @@
 <?php
 session_start(); // Start the session
+
+if (isset($_SESSION['success_message'])) {
+    echo '<div class="floating-message success" id="message">' . $_SESSION['success_message'] . '</div>';
+    unset($_SESSION['success_message']); // Clear the message after it's displayed
+}
+
 include 'db.php'; // Include the database connection
+
+$message = '';
+$message_class = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
@@ -8,38 +17,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Validate input
     if (empty($username) || empty($password)) {
-        echo json_encode(["status" => "error", "message" => "Please fill in all fields."]);
-        exit;
-    }
-
-    // Query the database
-    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows === 1) {
-        $user = $result->fetch_assoc();
-
-        // Verify the password
-        if (password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
-            echo json_encode(["status" => "success", "message" => "Login successful."]);
-        } else {
-            echo json_encode(["status" => "error", "message" => "Invalid credentials."]);
-        }
+        $message = "Please fill in all fields.";
+        $message_class = "error";
     } else {
-        echo json_encode(["status" => "error", "message" => "User not found."]);
-    }
+        // Query the database
+        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    $stmt->close();
-    $conn->close();
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
+
+            // Verify the password
+            if (password_verify($password, $user['password'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $message = "Login successful.";
+                $message_class = "success";
+            } else {
+                $message = "Invalid credentials.";
+                $message_class = "error";
+            }
+        } else {
+            $message = "User not found.";
+            $message_class = "error";
+        }
+
+        $stmt->close();
+        $conn->close();
+    }
 }
 ?>
-
-
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -51,37 +59,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
     <div class="container">
-        <!-- White Rectangle Box -->
+        <!-- Display floating message if set -->
+        <?php if ($message): ?>
+            <div class="floating-message <?php echo $message_class; ?>" id="message">
+                <?php echo $message; ?>
+            </div>
+        <?php endif; ?>
+
         <div class="white-box">
-            <!-- Logo -->
-            <img src="images/sleep med.png" alt="Sleep Med Logo" class="logo">
-
-            <!-- Blue Rectangle Box -->
+            <img src="images/sleep med.png" alt="Logo" class="logo">
             <div class="blue-box">
-                <!-- Username -->
-                <div class="input-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" placeholder="Enter your username">
-                </div>
-
-                <!-- Password -->
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password">
-                </div>
-
-                <!-- Sign In Button -->
-                <button class="sign-in-btn">Sign In</button>
-
-                <!-- Register Option -->
-                <p class="register-text">
-                    Don't have an account? <a href="register.php">Register Now</a>
-                </p>
+                <form action="" method="post">
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="sign-in-btn">Sign In</button>
+                    <p class="register-text">
+                        Don't have an account? <a href="register.php">Register Now</a>
+                    </p>
+                </form>
             </div>
         </div>
     </div>
+
+    <script>
+        // Automatically hide the message after 3 seconds
+        window.onload = function() {
+            var message = document.getElementById('message');
+            if (message) {
+                message.style.visibility = 'visible';
+                message.style.opacity = 1;
+                setTimeout(function() {
+                    message.style.opacity = 0;
+                    message.style.visibility = 'hidden';
+                }, 3000); // Hide after 3 seconds
+            }
+        };
+    </script>
 </body>
 </html>
-
-
-
