@@ -110,8 +110,9 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Two columns */
     gap: 20px; /* Space between input fields */
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     margin-right:15px;
+    text-align: left;
 }
 
 .register-fields label {
@@ -120,6 +121,8 @@ body {
     margin-bottom: 5px;
     display: block;
 }
+
+
 
 .register-fields input {
     width: 100%;
@@ -182,4 +185,127 @@ body {
 
 .floating-message.error {
     background-color: #f44336; /* Red background for error */
+}
+
+
+
+
+
+
+
+/* Bookmark Navigation */
+.bookmark-nav {
+    position: fixed;
+    top: 0;
+    left: 82%; /* Center horizontally */
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bookmark {
+    background-color: white;
+    padding: 10px 0px;
+    border-radius: 10px 10px 100px 100px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 120px;
+    position: relative; /* Ensures text is positioned relative to the bookmark */
+}
+
+.bookmark-logo {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px; /* Add some space below the logo */
+    transform: translateY(-5px); /* Move the logo upward */
+}
+
+/* Center text inside the bookmark */
+.bookmark span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    color: #4C57A7;
+    font-weight: bold;
+    pointer-events: none; /* Prevent interactions with the text */
+}
+
+/* Navigation Options */
+.nav-options {
+    background-color: white;
+    color: #4C57A7;
+    text-align: center;
+    width: 100%;
+    padding: 20px 0;
+    border-radius: 0 0 100px 100px;
+    display: none; /* Initially hidden */
+    flex-direction: column;
+    position: fixed;
+    top: 60%; /* Start at the top of the page */
+    left: 0%;
+    transform: translateX(-50%);
+}
+
+.nav-options ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-options li {
+    margin: 10px 0;
+}
+
+.nav-options a {
+    text-decoration: none;
+    color: #4C57A7;
+    font-size: 18px;
+    transition: color 0.2s;
+}
+
+.nav-options a:hover {
+    color: #e0f7fa;
+}
+
+/* Slide-down animation */
+.nav-options.active {
+    display: flex; /* Show when active */
+    animation: slide-down 0.5s ease-out forwards;
+}
+
+@keyframes slide-down {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Slide-up animation */
+.nav-options.inactive {
+    animation: slide-up 0.5s ease-out forwards;
+}
+
+@keyframes slide-up {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+
+/* Ensure nav is hidden after slide-up */
+.nav-options:not(.active) {
+    display: none; /* Hide the nav when not active */
 }
