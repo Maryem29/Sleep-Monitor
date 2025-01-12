@@ -151,3 +151,18 @@ body {
     margin-bottom: 20px;
 }
 
+.login-text {
+    margin-top: 10px;
+    color: white;
+    font-size: 14px;
+}
+
+.login-text a {
+    color: #E2E8F0;
+    text-decoration: underline;
+}
+
+.login-text a:hover {
+    color: #ffffff;
+}
+
