@@ -150,4 +150,58 @@ body {
     text-align: center;
     margin-bottom: 20px;
 }
+/* General Styles */
+body {
+    background: #626AB2;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Three-Dot Menu */
+.menu {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    text-align: center;
+}
+
+#menu-icon {
+    cursor: pointer;
+    color: white;
+    font-size: 24px;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#dropdown {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+#dropdown a {
+    display: block;
+    padding: 10px;
+    color: #4C57A7;
+    text-decoration: none;
+    border-bottom: 1px solid #ddd;
+}
+
+#dropdown a:last-child {
+    border-bottom: none;
+}
+
+#dropdown a:hover {
+    background: #f4f4f4;
+}
+
 
