@@ -138,11 +138,11 @@ try {
 	    </div>
 	    <div class="nav-options" id="nav-options">
 		<ul>
-		    <li><a href="index.php">Home</a></li>
-		    <li><a href="register.php">Register</a></li>
-		    <li><a href="login.php">Login</a></li>
-		    <li><a href="about.php">About</a></li>
-		    <li><a href="contact.php">Contact</a></li>
+                <li><a href="index.php">Home</a></li>
+                <li><a href="register.php">Register</a></li>
+                <li><a href="login.php">Login</a></li>
+                <li><a href="report.php">Report</a></li>
+                <li><a href="statistics.php">Statistics</a></li>
 		</ul>
 	    </div>
 	</div>
