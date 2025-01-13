@@ -3,12 +3,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-<<<<<<< HEAD
-     font-family: Arial, sans-serif;
-    background-color: #626AB2; /* Outer background color */
-=======
     background-color: #626AB2;
->>>>>>> cd91fe1943558c0b4970460a8c54a759511e527a
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,26 +12,6 @@ body {
 
 /* Container for White and Blue Box */
 .container {
-<<<<<<< HEAD
-    background-color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    width: 100%;
-    max-width: 400px;
-}
-
-/* White Rectangle Box Styling */
-.white-box {
-    background: white;
-    border-radius: 10px;
-    padding: 25px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 100%;
-    max-width: 400px;
-=======
     width: 100%;
     max-width: 400px;
     padding: 20px;
@@ -44,18 +19,13 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
->>>>>>> cd91fe1943558c0b4970460a8c54a759511e527a
 }
 
 /* Logo Styling */
 .logo {
     width: 250px; /* Adjust logo size */
     height: auto;
-<<<<<<< HEAD
-    margin-bottom: px;
-=======
     margin-bottom: 20px;
->>>>>>> cd91fe1943558c0b4970460a8c54a759511e527a
 }
 
 /* Blue Rectangle Box Styling */
@@ -91,11 +61,7 @@ body {
     font-size: 14px;
     background-color: white; /* White input fields */
     color: #333;
-<<<<<<< HEAD
-    display:block;
-=======
     display: block;
->>>>>>> cd91fe1943558c0b4970460a8c54a759511e527a
 }
 
 .input-group input::placeholder {
@@ -113,11 +79,7 @@ body {
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
-<<<<<<< HEAD
-     display: block;
-=======
     display: block;
->>>>>>> cd91fe1943558c0b4970460a8c54a759511e527a
 }
 
 .sign-in-btn:hover {
@@ -137,102 +99,6 @@ body {
     text-decoration: none;
     font-weight: bold;
 }
-<<<<<<< HEAD
-/* Registration Page Specific Styles */
-.registration-container .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Two equal columns */
-    gap: 15px; /* Space between fields */
-}
-
-.registration-container .register-btn {
-    grid-column: span 2; /* Make the button span both columns */
-    width: auto;
-    margin: 20px auto 0; /* Center the button */
-    padding: 10px 20px;
-    background-color: white;
-    color: #4C57A7;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.registration-container .register-btn:hover {
-    background-color: #E2E8F0;
-}
-
-.registration-container .blue-box {
-    background: #4C57A7;
-    padding: 30px;
-    border-radius: 10px;
-    margin-top: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.registration-container .title {
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-    text-align: center;
-    margin-bottom: 20px;
-}
-/* General Styles */
-body {
-    background: #626AB2;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
-/* Three-Dot Menu */
-.menu {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    text-align: center;
-}
-
-#menu-icon {
-    cursor: pointer;
-    color: white;
-    font-size: 24px;
-    background: white;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-#dropdown {
-    display: none;
-    position: absolute;
-    top: 50px;
-    right: 0;
-    background: white;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: left;
-}
-
-#dropdown a {
-    display: block;
-    padding: 10px;
-    color: #4C57A7;
-    text-decoration: none;
-    border-bottom: 1px solid #ddd;
-}
-
-#dropdown a:last-child {
-    border-bottom: none;
-}
-
-#dropdown a:hover {
-    background: #f4f4f4;
-}
-
-
-=======
 
 /* Error Border */
 .error-border {
@@ -443,4 +309,3 @@ body {
 .nav-options:not(.active) {
     display: none; /* Hide the nav when not active */
 }
->>>>>>> cd91fe1943558c0b4970460a8c54a759511e527a

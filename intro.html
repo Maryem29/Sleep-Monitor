@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intro Page</title>
+    <style>
+        /* General Body Styling */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: url('path-to-your-image.jpg') no-repeat center center/cover;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .hero h1 {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+
+        .hero button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: #4C57A7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .hero button:hover {
+            background: #3A4698;
+        }
+
+        /* Section Styling */
+        .section {
+            padding: 100px 20px;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .section:nth-child(even) {
+            flex-direction: row-reverse;
+            background-color: #f4f4f4;
+        }
+
+        .section img {
+            width: 50%;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .section .text {
+            flex: 1;
+        }
+
+        .section .text h2 {
+            font-size: 28px;
+            color: #4C57A7;
+            margin-bottom: 10px;
+        }
+
+        .section .text p {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        /* Footer */
+        footer {
+            background: #4C57A7;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Welcome to Sleep Monitor</h1>
+        <p>Your guide to better sleep and health.</p>
+        <button>Learn More</button>
+    </div>
+
+    <!-- Scrolling Sections -->
+    <div class="section">
+        <img src="path-to-your-image.jpg" alt="Doctor Working">
+        <div class="text">
+            <h2>Track Your Sleep Patterns</h2>
+            <p>Understand your sleep cycles with our advanced technology. We provide detailed reports and insights to improve your sleep quality.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <img src="path-to-your-image.jpg" alt="Heartbeat Analysis">
+        <div class="text">
+            <h2>Monitor Heart Rate</h2>
+            <p>Get real-time monitoring of your heart rate while sleeping, ensuring a comprehensive health analysis.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <img src="path-to-your-image.jpg" alt="Wellness Tips">
+        <div class="text">
+            <h2>Personalized Wellness Tips</h2>
+            <p>Receive recommendations tailored to your needs to help you achieve a healthier and more balanced life.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2025 Sleep Monitor. All Rights Reserved.
+    </footer>
+
+</body>
+</html>

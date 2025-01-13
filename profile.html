@@ -1,10 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <style>
+        /* General Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #626AB2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* White Box Container */
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Profile Picture */
+        .profile-picture {
+            position: relative;
+
+            border: 5px solid white;
+            width: 200px; /* Increased size */
+            height: 200px; /* Increased size */
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #eaeaea;
+            margin-bottom: 20px;
+        }
+
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-picture input {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Input Fields */
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .input-item {
+            width: 48%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .input-item label {
+            font-size: 14px;
+            color: #4C57A7;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .input-item input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: #4C57A7;
+            color: white;
+        }
+
+        .input-item input::placeholder {
+            color: #d9d9d9;
+        }
+
+        /* Save Button */
+        .save-button {
+            background: #4C57A7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .save-button:hover {
+            background: #3a4799;
+        }
+    </style>
 </head>
 <body>
-$END$
+    <div class="container">
+        <!-- Profile Picture -->
+        <div class="profile-picture">
+            <img src="../../images/default.jpeg" alt="Default Profile Picture">
+            <input type="file" accept="image/*" onchange="changeProfilePicture(event)">
+        </div>
+
+        <!-- Input Fields -->
+        <div class="input-group">
+            <div class="input-item">
+                <label for="name">Name</label>
+                <input type="text" id="name" placeholder="Enter Name" value="Stella">
+            </div>
+            <div class="input-item">
+                <label for="surname">Surname</label>
+                <input type="text" id="surname" placeholder="Enter Surname" value="Shine">
+            </div>
+            <div class="input-item">
+                <label for="age">Age</label>
+                <input type="number" id="age" placeholder="Enter Age" value="32">
+            </div>
+            <div class="input-item">
+                <label for="gender">Gender</label>
+                <input type="text" id="gender" placeholder="Enter Gender" value="Female">
+            </div>
+            <div class="input-item">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Enter Email" value="stella.shine@gmail.com">
+            </div>
+            <div class="input-item">
+                <label for="proficiency">Proficiency</label>
+                <input type="text" id="proficiency" placeholder="Enter Proficiency" value="Surgeon">
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <button class="save-button">Save Changes</button>
+    </div>
+
+    <script>
+        function changeProfilePicture(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.querySelector('.profile-picture img').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 </body>
 </html>
