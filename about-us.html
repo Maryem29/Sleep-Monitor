@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Team</title>
+    <style>
+        /* Internal CSS for hover popup effect */
+        .team-member {
+            transition: transform 0.3s ease-in-out; /* Smooth popup effect */
+            text-decoration: none; /* Remove underline from links */
+            color: inherit; /* Preserve text color */
+        }
+
+        .team-member:hover {
+            transform: scale(1.05); /* Slight zoom effect on hover */
+        }
+    </style>
+</head>
+<body style="background: #626AB2; font-family: Arial, sans-serif; margin: 0; padding: 0; position: relative;">
+
+    <!-- Three-Dot Menu -->
+    <div style="position: fixed; top: 20px; right: 20px; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000;">
+        <div id="menu" style="cursor: pointer; color: #4C57A7; font-size: 24px; text-align: center; line-height: 1;">&#8942;</div>
+        <div id="dropdown" style="display: none; position: absolute; top: 40px; right: 0; background: white; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <a href="main.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none; border-bottom: 1px solid #ddd;">Home</a>
+            <a href="settings.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none; border-bottom: 1px solid #ddd;">Settings</a>
+            <a href="login.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none;">Logout</a>
+        </div>
+    </div>
+
+    <!-- Team Section -->
+    <div style="margin: 2% auto; max-width: 1200px; text-align: center;">
+        <h1 style="font-size: 52px; margin-bottom: 100px; color: white; font-family:'Yatra One', cursive;">Our Team</h1>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+
+            <!-- Team Member 1 -->
+            <a href="https://github.com/safrinfaizz" target="_blank" class="team-member" style="background: white; margin: 10px; width: 300px; padding: 20px; border-radius: 10px; position: relative; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); display: block;">
+                <div style="position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; border-radius: 50%; background: #4C57A7; overflow: hidden;">
+                    <img src="../../images/safreena.jpg" alt="Safreena" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
+                </div>
+                <h3 style="color: #4C57A7; font-size: 26px; margin-top: 60px;">Safreena</h3>
+                <p style="color: #ccc; font-size: 12px; text-transform: uppercase; margin: 12px 0;">Front-End Developer</p>
+
+                <p style="color: #4C57A7; font-size: 14px;">"As a health informatics student interested in building websites and working with data, I contributed to the Sleep Monitor project by developing the front-end.<br>
+                    For me, front-end development is where creativity and technology meet to solve problems and inspire users."</p>
+            </a>
+
+            <!-- Team Member 2 -->
+            <a href="https://github.com/SenaDok" target="_blank" class="team-member" style="background: white; margin: 10px; width: 300px; padding: 20px; border-radius: 10px; position: relative; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); display: block;">
+                <div style="position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; border-radius: 50%; background: #4C57A7;">
+                    <img src="../../images/sena.jpg" alt="Sena" style="width: 100px; height: 100px; border-radius: 50%;">
+                </div>
+                <h3 style="color: #4C57A7; font-size: 26px; margin-top: 60px;">Sena</h3>
+                <p style="color: #ccc; font-size: 12px; text-transform: uppercase; margin: 12px 0;">Front-End Developer</p>
+                <p style="color: #4C57A7; font-size: 14px;">“A healthy body holds a healthy mind and soul, and thats what we should strive to have and share”</p>
+            </a>
+
+            <!-- Team Member 3 -->
+            <a href="https://github.com/AngelinaNSS" target="_blank" class="team-member" style="background: white; margin: 10px; width: 300px; padding: 20px; border-radius: 10px; position: relative; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); display: block;">
+                <div style="position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; border-radius: 50%; background: #4C57A7;">
+                    <img src="../../images/angelina.jpg" alt="Angelina" style="width: 100px; height: 100px; border-radius: 50%;">
+                </div>
+                <h3 style="color: #4C57A7; font-size: 26px; margin-top: 60px;">Angelina</h3>
+                <p style="color: #ccc; font-size: 12px; text-transform: uppercase; margin: 12px 0;">Front-End Developer</p>
+                <p style="color: #4C57A7; font-size: 14px;">"I’m a health informatics student with a passion for using tech to improve healthcare. With this Sleep Monitor project, I aim to help people track and improve their sleep, especially for those working late shifts, so they can feel better and perform their best.”.</p>
+            </a>
+
+            <!-- Team Member 4 -->
+            <a href="https://github.com/kseniiavi" target="_blank" class="team-member" style="background: white; margin: 10px; width: 300px; padding: 20px; border-radius: 10px; position: relative; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); display: block;">
+                <div style="position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; border-radius: 50%; background: #4C57A7;">
+                    <img src="../../images/kseniia.jpg" alt="Kseniia" style="width: 100px; height: 100px; border-radius: 50%;">
+                </div>
+                <h3 style="color: #4C57A7; font-size: 26px; margin-top: 60px;">Kseniia</h3>
+                <p style="color: #ccc; font-size: 12px; text-transform: uppercase; margin: 12px 0;">Back-End Developer</p>
+                <p style="color: #4C57A7; font-size: 14px;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Est quaerat tempora.</p>
+            </a>
+
+            <!-- Team Member 5 -->
+            <a href="https://github.com/Maryem29" target="_blank" class="team-member" style="background: white; margin: 10px; width: 300px; padding: 20px; border-radius: 10px; position: relative; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); display: block;">
+                <div style="position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; border-radius: 50%; background: #4C57A7;">
+                    <img src="../../images/maryem.jpg" alt="Maryem" style="width: 100px; height: 100px; border-radius: 50%;">
+                </div>
+                <h3 style="color: #4C57A7; font-size: 26px; margin-top: 60px;">Maryem</h3>
+                <p style="color: #ccc; font-size: 12px; text-transform: uppercase; margin: 12px 0;">Back-End Developer</p>
+                <p style="color: #4C57A7; font-size: 14px;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Est quaerat tempora.</p>
+            </a>
+
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('menu').addEventListener('click', function () {
+            const dropdown = document.getElementById('dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('dropdown');
+            const menu = document.getElementById('menu');
+            if (!menu.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    </script>
+
+</body>
+</html>
+

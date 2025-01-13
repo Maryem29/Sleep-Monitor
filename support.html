@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #626AB2; /* Background color */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 1000px;
+            position: relative;
+        }
+        .logo {
+            width: 200px; /* Increased logo size */
+            height: auto;
+            margin: 0 auto px;
+        }
+        .faq {
+            text-align: left;
+            font-size: 18px;
+            color: #4C57A7;
+            margin-bottom: 20px;
+        }
+        .question {
+            background: #4C57A7; /* Blue box */
+            color: white;
+            padding: 10px;
+            margin: 20px 0; /* Added gap between questions */
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .answer {
+            background: white; /* White box */
+            color: #4C57A7; /* Blue text */
+            padding: 10px;
+            margin: 10px 0 20px; /* Added gap below the answer */
+            border-radius: 5px;
+            display: none; /* Initially hidden */
+        }
+        .github-button {
+            background: #4C57A7; /* Dark blue box */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+        .github-button:hover {
+            background: #3b4796;
+        }
+        .top-buttons {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            top: 20px;
+            width: calc(100% - 50px);
+        }
+        .top-buttons .btn {
+            background: #4C57A7; /* Blue box */
+            color: white; /* White text */
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .top-buttons .btn:hover {
+            background: #3b4796;
+        }
+        .questions-container {
+            margin-bottom: 60px; /* Creates space between the last question and the GitHub button */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-buttons">
+
+        </div>
+        <img src="images/sleep med.png" alt="Logo" class="logo">
+        <h2 class="faq">FAQ</h2>
+        <div class="questions-container">
+            <div style="position: fixed; top: 20px; right: 20px; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000;">
+                <div id="menu" style="cursor: pointer; color: #4C57A7; font-size: 24px; text-align: center; line-height: 1;">&#8942;</div>
+                <div id="dropdown" style="display: none; position: absolute; top: 40px; right: 0; background: white; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <a href="main.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none; border-bottom: 1px solid #ddd;">Home</a>
+                    <a href="settings.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none; border-bottom: 1px solid #ddd;">Settings</a>
+                    <a href="login.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none;">Logout</a>
+            </div>
+        </div>
+            <div class="question" onclick="toggleAnswer(1)">Q: How can I switch accounts?</div>
+            <div class="answer" id="answer1">A: You can switch accounts by going to the settings page and clicking on "Switch Account."</div>
+
+            <div class="question" onclick="toggleAnswer(2)">Q: How can I reset my password or update personal information?</div>
+            <div class="answer" id="answer2">A: Go to the profile page, where you can update your personal information or reset your password.</div>
+
+            <div class="question" onclick="toggleAnswer(3)">Q: How can I delete my account?</div>
+            <div class="answer" id="answer3">A: Navigate to the settings page and select "Delete Account."</div>
+
+            <div class="question" onclick="toggleAnswer(4)">Q: Where can I view real-time data?</div>
+            <div class="answer" id="answer4">A: Real-time data is available on the home page.</div>
+
+            <div class="question" onclick="toggleAnswer(5)">Q: Where can I find my weekly or monthly reports?</div>
+            <div class="answer" id="answer5">A: Reports are available in the "Reports" page.</div>
+
+            <div class="question" onclick="toggleAnswer(6)">Q: How can I learn to use the app effectively?</div>
+            <div class="answer" id="answer6">A: Refer to the "App Information" page for guidance on using the app effectively.</div>
+
+            <div class="question" onclick="toggleAnswer(7)">Q: How do I set alerts?</div>
+            <div class="answer" id="answer7">A: Alerts can be set from the "Alerts" page in the app.</div>
+        </div>
+        <button class="github-button" onclick="window.open('https://github.com/Maryem29/Sleep-Monitor')">GitHub</button>
+    </div>
+    <script>
+
+        document.getElementById('menu').addEventListener('click', function () {
+            const dropdown = document.getElementById('dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('dropdown');
+            const menu = document.getElementById('menu');
+            if (!menu.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        function toggleAnswer(answerId) {
+            // Hide all answers
+            const allAnswers = document.querySelectorAll('.answer');
+            allAnswers.forEach(answer => answer.style.display = 'none');
+
+            // Show selected answer
+            const selectedAnswer = document.getElementById('answer' + answerId);
+            selectedAnswer.style.display = 'block';
+        }
+
+        // Close any open answer when clicking anywhere on the screen
+        document.body.addEventListener('click', function (event) {
+            if (!event.target.classList.contains('question')) {
+                const allAnswers = document.querySelectorAll('.answer');
+                allAnswers.forEach(answer => answer.style.display = 'none');
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
