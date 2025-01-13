@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Statistics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #4C57A7, #1E3A8A); /* Blue and purple gradient */
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 900px;
+            background: white;
+            color: black;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4C57A7;
+            margin-bottom: 20px;
+        }
+
+        .date-time {
+            font-size: 16px;
+            font-weight: bold;
+            color: purple; /* Purple font for date and time */
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .statistics-box {
+            background: #E2E8F0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .chart-container {
+            margin: 20px 0;
+        }
+
+        .bar-chart {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 200px;
+            background: #E2E8F0;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .bar {
+            width: 40px;
+            background-color: #4C57A7;
+            border-radius: 5px;
+            text-align: center;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .bar span {
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+
+        .chart-labels span {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #4C57A7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .back-button:hover {
+            background: #37497A;
+        }
+
+        .creator-credit {
+            font-size: 14px;
+            text-align: center;
+            color: #4C57A7;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Date and Time -->
+        <div class="date-time" id="currentDateTime"></div>
+
+        <h1>Sleep Statistics</h1>
+
+        <!-- Sleep Overview Section -->
+        <div class="statistics-box">
+            <div><strong>Average Sleep Duration:</strong> 6 hours 30 minutes</div>
+            <div><strong>Sleep Efficiency:</strong> 78%</div>
+            <div><strong>Deep Sleep:</strong> 1 hour 45 minutes</div>
+        </div>
+
+        <!-- Sleep Trends Bar Graph -->
+        <div class="chart-container">
+            <h2 style="text-align: center; color: #4C57A7;">Sleep Trends Over Time</h2>
+            <div class="bar-chart">
+                <div class="bar" style="height: 40%;"><span>4 hrs</span></div>
+                <div class="bar" style="height: 60%;"><span>6 hrs</span></div>
+                <div class="bar" style="height: 80%;"><span>8 hrs</span></div>
+                <div class="bar" style="height: 50%;"><span>5 hrs</span></div>
+                <div class="bar" style="height: 70%;"><span>7 hrs</span></div>
+            </div>
+            <div class="chart-labels">
+                <span>Mon</span>
+                <span>Tue</span>
+                <span>Wed</span>
+                <span>Thu</span>
+                <span>Fri</span>
+            </div>
+        </div>
+
+        <!-- Recommendations Section -->
+        <div class="statistics-box">
+            <h3>Recommendations</h3>
+            <p>Try to improve your sleep duration to 7+ hours for better recovery.</p>
+            <p>Consider adjusting your sleep environment for better rest during shifts.</p>
+        </div>
+
+        <!-- Back Button -->
+        <a href="dashboard.html" class="back-button">Back to Dashboard</a>
+
+        <!-- Creator Credits -->
+        <div class="creator-credit">
+            Created by: Kseniia, Maryem, Saffree, Sena, Angelina
+- Sleep Med
+        </div>
+    </div>
+
+    <script>
+        // Update date and time dynamically
+        function updateDateTime() {
+            const date = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const formattedDateTime = date.toLocaleString('en-US', options);
+            document.getElementById('currentDateTime').textContent = formattedDateTime;
+        }
+
+        // Call every second
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+    </script>
+</body>
+</html>
