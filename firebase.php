@@ -9,7 +9,7 @@ function initialize_firebase_database() {
 
     try {
         $firebase = (new Factory)
-            ->withServiceAccount(__DIR__ . '/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-09c4e711a9.json')
+            ->withServiceAccount(__DIR__ . '/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-1619cac80a.json')
             ->withDatabaseUri('https://sleep-monitor-3e4c3-default-rtdb.europe-west1.firebasedatabase.app/'); // Ensure the URI is correct
         
         echo "Firebase initialized successfully!\n";

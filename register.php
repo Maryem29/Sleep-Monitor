@@ -32,7 +32,8 @@ try {
                 $error_fields[] = 'confirm-password';
             } else {
                 // Hash password
-                $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+                $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password before saving
+
 
                 // Prepare data
                 $user_data = [
@@ -132,51 +133,8 @@ try {
         </div>
     </div>
     
-	<div class="bookmark-nav">
-	    <div class="bookmark" onclick="toggleNav()">
-		<img src="images/sleep.png" alt="Logo" class="bookmark-logo">
-	    </div>
-	    <div class="nav-options" id="nav-options">
-		<ul>
-                <li><a href="index.php">Home</a></li>
-                <li><a href="register.php">Register</a></li>
-                <li><a href="login.php">Login</a></li>
-                <li><a href="report.php">Report</a></li>
-                <li><a href="statistics.php">Statistics</a></li>
-		</ul>
-	    </div>
-	</div>
-	
 	<script>
-	    function toggleNav() {
-		const navOptions = document.getElementById('nav-options');
-
-		if (navOptions.classList.contains('active')) {
-		    // Slide up
-		    navOptions.classList.remove('active');
-		    navOptions.classList.add('inactive');
-
-		    // Wait for the animation to finish, then hide the element
-		    setTimeout(() => {
-		        navOptions.style.display = 'none';
-		    }, 500); // Match the transition duration
-		} else {
-		    // Slide down
-		    navOptions.style.display = 'flex'; // Ensure it's visible
-		    navOptions.classList.remove('inactive');
-		    navOptions.classList.add('active');
-		}
-	    }
-
-	    // Attach event listener to the logo
-	    document.getElementById('bookmark-logo').addEventListener('click', toggleNav);
-	</script>
-
-
-    
-
-    <script>
-        // Automatically hide the message after 3 seconds
+        //Automatically hide the message after 3 seconds
         window.onload = function() {
             var message = document.getElementById('message');
             if (message) {

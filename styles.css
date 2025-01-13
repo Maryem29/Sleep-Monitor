@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* General Body Styling */
 body {
     font-family: Arial, sans-serif;
@@ -27,31 +28,84 @@ body {
     height: auto;
     margin-bottom: 20px;
 }
+=======
+	/* General Body Styling */
+	body {
+	    font-family: Arial, sans-serif;
+	    margin: 0;
+	    padding: 0;
+	    font-family: Arial, sans-serif;
+	    background-color: #626AB2; /* Outer background color */
+	    background-color: #626AB2;
+	    display: flex;
+	    justify-content: center;
+	    align-items: center;
+	    height: 100vh;
+	}
 
-/* Blue Rectangle Box Styling */
-.blue-box {
-    background: #4C57A7; /* Inner rectangle color */
-    padding: 20px;
-    padding-left: 20px; /* Adds consistent padding inside the blue box */
-    padding-right: 20px;
-    border-radius: 10px;
-    margin-top: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+	/* Container for White and Blue Box */
+	.container {
+	    background-color: white;
+	    display: flex;
+	    justify-content: center;
+	    align-items: center;
+	    flex-direction: column;
+	    width: 100%;
+	    max-width: 400px;
+	}
 
-/* Input Fields */
-.input-group {
-    margin-bottom: 15px;
-    text-align: left;
-}
+	/* White Rectangle Box Styling */
+	.white-box {
+	    background: white;
+	    border-radius: 10px;
+	    padding: 25px;
+	    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	    text-align: center;
+	    width: 100%;
+	    max-width: 400px;
+	    width: 100%;
+	    max-width: 400px;
+	    padding: 20px;
+	    background: white;
+	    border-radius: 10px;
+	    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	    text-align: center;
+	}
 
-.input-group label {
-    display: block;
-    font-size: 14px;
-    color: white; /* White label text */
-    margin-bottom: 5px;
-}
+	/* Logo Styling */
+	.logo {
+	    width: 250px; /* Adjust logo size */
+	    height: auto;
+	    margin-bottom: px;
+	    margin-bottom: 20px;
+	}
+>>>>>>> 3e0bfcdb21bd6e77c0d23488a85dfe24f152c86d
 
+	/* Blue Rectangle Box Styling */
+	.blue-box {
+	    background: #4C57A7; /* Inner rectangle color */
+	    padding: 20px;
+	    padding-left: 20px; /* Adds consistent padding inside the blue box */
+	    padding-right: 20px;
+	    border-radius: 10px;
+	    margin-top: 20px;
+	    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
+
+	/* Input Fields */
+	.input-group {
+	    margin-bottom: 15px;
+	    text-align: left;
+	}
+
+	.input-group label {
+	    display: block;
+	    font-size: 14px;
+	    color: white; /* White label text */
+	    margin-bottom: 5px;
+	}
+
+<<<<<<< HEAD
 .input-group input {
     width: calc(100% - 20px);
     padding: 10px;
@@ -63,11 +117,26 @@ body {
     color: #333;
     display: block;
 }
+=======
+	.input-group input {
+	    width: calc(100% - 20px);
+	    padding: 10px;
+	    margin: 0 auto;
+	    border: 1px solid #ddd;
+	    border-radius: 5px;
+	    font-size: 14px;
+	    background-color: white; /* White input fields */
+	    color: #333;
+	    display:block;
+	    display: block;
+	}
+>>>>>>> 3e0bfcdb21bd6e77c0d23488a85dfe24f152c86d
 
-.input-group input::placeholder {
-    color: #666;
-}
+	.input-group input::placeholder {
+	    color: #666;
+	}
 
+<<<<<<< HEAD
 /* Sign In Button */
 .sign-in-btn {
     width: auto;
@@ -81,19 +150,29 @@ body {
     cursor: pointer;
     display: block;
 }
+=======
+	/* Sign In Button */
+	.sign-in-btn {
+	    width: auto;
+	    padding: 10px 20px;
+	    margin: 20px auto;
+	    background-color: white;
+	    color: #4C57A7;
+	    border: none;
+	    border-radius: 5px;
+	    font-size: 16px;
+	    cursor: pointer;
+            display: block;
+	    display: block;
+>>>>>>> 3e0bfcdb21bd6e77c0d23488a85dfe24f152c86d
 
-.sign-in-btn:hover {
-    background-color: #E2E8F0;
-}
+	}
 
-/* Register Option */
-.register-text {
-    margin-top: 15px;
-    font-size: 12px;
-    color: white;
-    text-align: center;
-}
+	.sign-in-btn:hover {
+	    background-color: #E2E8F0;
+	}
 
+<<<<<<< HEAD
 .register-text a {
     color: white;
     text-decoration: none;
@@ -121,191 +200,332 @@ body {
     margin-bottom: 5px;
     display: block;
 }
+=======
+	/* Register Option */
+	.register-text {
+	    margin-top: 15px;
+	    font-size: 12px;
+	    color: white;
+	    text-align: center;
+	}
+
+	.register-text a {
+	    color: white;
+	    text-decoration: none;
+	    font-weight: bold;
+	}
+
+	/* Registration Page Specific Styles */
+	.registration-container .form-grid {
+	    display: grid;
+	    grid-template-columns: 1fr 1fr; /* Two equal columns */
+	    gap: 15px; /* Space between fields */
+	}
+
+	.registration-container .register-btn {
+	    grid-column: span 2; /* Make the button span both columns */
+	    width: auto;
+	    margin: 20px auto 0; /* Center the button */
+	    padding: 10px 20px;
+	    background-color: white;
+	    color: #4C57A7;
+	    border: none;
+	    border-radius: 5px;
+	    font-size: 16px;
+	    cursor: pointer;
+	}
+
+	.registration-container .register-btn:hover {
+	    background-color: #E2E8F0;
+	}
+
+	.registration-container .blue-box {
+	    background: #4C57A7;
+	    padding: 30px;
+	    border-radius: 10px;
+	    margin-top: 20px;
+	    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
+
+	.registration-container .title {
+	    font-size: 24px;
+	    font-weight: bold;
+	    color: white;
+	    text-align: center;
+	    margin-bottom: 20px;
+	}
+	/* General Styles */
+	body {
+	    background: #626AB2;
+	    font-family: Arial, sans-serif;
+	    margin: 0;
+	    padding: 0;
+	}
+
+	/* Three-Dot Menu */
+	.menu {
+	    position: fixed;
+	    top: 20px;
+	    right: 20px;
+	    z-index: 1000;
+	    text-align: center;
+	}
+
+	#menu-icon {
+	    cursor: pointer;
+	    color: white;
+	    font-size: 24px;
+	    background: white;
+	    padding: 10px;
+	    border-radius: 5px;
+	    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
+
+	#dropdown {
+	    display: none;
+	    position: absolute;
+	    top: 50px;
+	    right: 0;
+	    background: white;
+	    border-radius: 5px;
+	    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	    text-align: left;
+	}
+
+	#dropdown a {
+	    display: block;
+	    padding: 10px;
+	    color: #4C57A7;
+	    text-decoration: none;
+	    border-bottom: 1px solid #ddd;
+	}
+
+	#dropdown a:last-child {
+	    border-bottom: none;
+	}
+
+	#dropdown a:hover {
+	    background: #f4f4f4;
+	}
+>>>>>>> 3e0bfcdb21bd6e77c0d23488a85dfe24f152c86d
 
 
 
-.register-fields input {
-    width: 100%;
-    padding: 7px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 14px;
-    display: block;
-}
 
-.register-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background: white;
-    color: #4C57A7;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
+	/* Error Border */
+	.error-border {
+	    border: 1px solid #dc3545; /* Red border for invalid fields */
+	}
 
-.register-button:hover {
-    background: #E2E8F0;
-}
+	/* Register Fields */
+	.register-fields {
+	    display: grid;
+	    grid-template-columns: 1fr 1fr; /* Two columns */
+	    gap: 20px; /* Space between input fields */
+	    margin-bottom: 15px;
+	    margin-right:15px;
+	    text-align: left;
+	}
 
-.login-text {
-    margin-top: 15px;
-    font-size: 12px;
-    color: white;
-    text-align: center;
-}
-
-.login-text a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.floating-message {
-    position: fixed;
-    top: 20px; /* Distance from the top */
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Offset to truly center the message */
-    width: auto;
-    max-width: 80%; /* Limit the maximum width */
-    padding: 15px;
-    text-align: center;
-    font-size: 16px;
-    background-color: rgba(0, 0, 0, 0.8); /* Dark background for visibility */
-    color: white;
-    border-radius: 15px; /* Rounded corners */
-    z-index: 9999;
-    transition: opacity 0.5s ease-out;
-    visibility: hidden;
-    opacity: 0;
-}
-
-.floating-message.success {
-    background-color: #4CAF50; /* Green background for success */
-}
-
-.floating-message.error {
-    background-color: #f44336; /* Red background for error */
-}
+	.register-fields label {
+	    color: white;
+	    font-size: 14px;
+	    margin-bottom: 5px;
+	    display: block;
+	}
 
 
 
+	.register-fields input {
+	    width: 100%;
+	    padding: 7px;
+	    border: 1px solid #ddd;
+	    border-radius: 5px;
+	    font-size: 14px;
+	    display: block;
+	}
+
+	.register-button {
+	    padding: 10px 20px;
+	    font-size: 16px;
+	    background: white;
+	    color: #4C57A7;
+	    border: none;
+	    border-radius: 5px;
+	    cursor: pointer;
+	}
+
+	.register-button:hover {
+	    background: #E2E8F0;
+	}
+
+	.login-text {
+	    margin-top: 15px;
+	    font-size: 12px;
+	    color: white;
+	    text-align: center;
+	}
+
+	.login-text a {
+	    color: white;
+	    text-decoration: none;
+	    font-weight: bold;
+	}
+
+	.floating-message {
+	    position: fixed;
+	    top: 20px; /* Distance from the top */
+	    left: 50%; /* Center horizontally */
+	    transform: translateX(-50%); /* Offset to truly center the message */
+	    width: auto;
+	    max-width: 80%; /* Limit the maximum width */
+	    padding: 15px;
+	    text-align: center;
+	    font-size: 16px;
+	    background-color: rgba(0, 0, 0, 0.8); /* Dark background for visibility */
+	    color: white;
+	    border-radius: 15px; /* Rounded corners */
+	    z-index: 9999;
+	    transition: opacity 0.5s ease-out;
+	    visibility: hidden;
+	    opacity: 0;
+	}
+
+	.floating-message.success {
+	    background-color: #4CAF50; /* Green background for success */
+	}
+
+	.floating-message.error {
+	    background-color: #f44336; /* Red background for error */
+	}
 
 
 
 
-/* Bookmark Navigation */
-.bookmark-nav {
-    position: fixed;
-    top: 0;
-    left: 82%; /* Center horizontally */
-    transform: translateX(-50%);
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
 
-.bookmark {
-    background-color: white;
-    padding: 10px 0px;
-    border-radius: 10px 10px 100px 100px;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    width: 120px;
-    position: relative; /* Ensures text is positioned relative to the bookmark */
-}
 
-.bookmark-logo {
-    max-width: 100%;
-    height: auto;
-    margin-bottom: 20px; /* Add some space below the logo */
-    transform: translateY(-5px); /* Move the logo upward */
-}
 
-/* Center text inside the bookmark */
-.bookmark span {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 14px;
-    color: #4C57A7;
-    font-weight: bold;
-    pointer-events: none; /* Prevent interactions with the text */
-}
+	/* Bookmark Navigation */
+	.bookmark-nav {
+	    position: fixed;
+	    top: 0;
+	    left: 82%; /* Center horizontally */
+	    transform: translateX(-50%);
+	    z-index: 1000;
+	    display: flex;
+	    flex-direction: column;
+	    align-items: center;
+	}
 
-/* Navigation Options */
-.nav-options {
-    background-color: white;
-    color: #4C57A7;
-    text-align: center;
-    width: 100%;
-    padding: 20px 0;
-    border-radius: 0 0 100px 100px;
-    display: none; /* Initially hidden */
-    flex-direction: column;
-    position: fixed;
-    top: 60%; /* Start at the top of the page */
-    left: 0%;
-    transform: translateX(-50%);
-}
+	.bookmark {
+	    background-color: white;
+	    padding: 10px 0px;
+	    border-radius: 10px 10px 100px 100px;
+	    cursor: pointer;
+	    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	    text-align: center;
+	    width: 120px;
+	    position: relative; /* Ensures text is positioned relative to the bookmark */
+	}
 
-.nav-options ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
+	.bookmark-logo {
+	    max-width: 100%;
+	    height: auto;
+	    margin-bottom: 20px; /* Add some space below the logo */
+	    transform: translateY(-5px); /* Move the logo upward */
+	}
 
-.nav-options li {
-    margin: 10px 0;
-}
+	/* Center text inside the bookmark */
+	.bookmark span {
+	    position: absolute;
+	    top: 50%;
+	    left: 50%;
+	    transform: translate(-50%, -50%);
+	    font-size: 14px;
+	    color: #4C57A7;
+	    font-weight: bold;
+	    pointer-events: none; /* Prevent interactions with the text */
+	}
 
-.nav-options a {
-    text-decoration: none;
-    color: #4C57A7;
-    font-size: 18px;
-    transition: color 0.2s;
-}
+	/* Navigation Options */
+	.nav-options {
+	    background-color: white;
+	    color: #4C57A7;
+	    text-align: center;
+	    width: 100%;
+	    padding: 20px 0;
+	    border-radius: 0 0 100px 100px;
+	    display: none; /* Initially hidden */
+	    flex-direction: column;
+	    position: fixed;
+	    top: 60%; /* Start at the top of the page */
+	    left: 0%;
+	    transform: translateX(-50%);
+	}
 
-.nav-options a:hover {
-    color: #e0f7fa;
-}
+	.nav-options ul {
+	    list-style: none;
+	    padding: 0;
+	    margin: 0;
+	}
 
-/* Slide-down animation */
-.nav-options.active {
-    display: flex; /* Show when active */
-    animation: slide-down 0.5s ease-out forwards;
-}
+	.nav-options li {
+	    margin: 10px 0;
+	}
 
-@keyframes slide-down {
-    from {
-        transform: translateY(-100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
+	.nav-options a {
+	    text-decoration: none;
+	    color: #4C57A7;
+	    font-size: 18px;
+	    transition: color 0.2s;
+	}
 
-/* Slide-up animation */
-.nav-options.inactive {
-    animation: slide-up 0.5s ease-out forwards;
-}
+	.nav-options a:hover {
+	    color: #e0f7fa;
+	}
 
-@keyframes slide-up {
-    from {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateY(-100%);
-        opacity: 0;
-    }
-}
+	/* Slide-down animation */
+	.nav-options.active {
+	    display: flex; /* Show when active */
+	    animation: slide-down 0.5s ease-out forwards;
+	}
 
+	@keyframes slide-down {
+	    from {
+		transform: translateY(-100%);
+		opacity: 0;
+	    }
+	    to {
+		transform: translateY(0);
+		opacity: 1;
+	    }
+	}
+
+	/* Slide-up animation */
+	.nav-options.inactive {
+	    animation: slide-up 0.5s ease-out forwards;
+	}
+
+	@keyframes slide-up {
+	    from {
+		transform: translateY(0);
+		opacity: 1;
+	    }
+	    to {
+		transform: translateY(-100%);
+		opacity: 0;
+	    }
+	}
+
+<<<<<<< HEAD
 /* Ensure nav is hidden after slide-up */
 .nav-options:not(.active) {
     display: none; /* Hide the nav when not active */
 }
+=======
+	/* Ensure nav is hidden after slide-up */
+	.nav-options:not(.active) {
+	    display: none; /* Hide the nav when not active */
+	}
+	
+>>>>>>> 3e0bfcdb21bd6e77c0d23488a85dfe24f152c86d
