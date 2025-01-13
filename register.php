@@ -32,7 +32,8 @@ try {
                 $error_fields[] = 'confirm-password';
             } else {
                 // Hash password
-                $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+                $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password before saving
+
 
                 // Prepare data
                 $user_data = [
@@ -132,6 +133,19 @@ try {
         </div>
     </div>
     
-	
+	<script>
+        //Automatically hide the message after 3 seconds
+        window.onload = function() {
+            var message = document.getElementById('message');
+            if (message) {
+                message.style.visibility = 'visible';
+                message.style.opacity = 1;
+                setTimeout(function() {
+                    message.style.opacity = 0;
+                    message.style.visibility = 'hidden';
+                }, 3000); // Hide after 3 seconds
+            }
+        };
+    </script>
 </body>
 </html>
