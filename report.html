@@ -9,7 +9,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #626AB2;
+            background-color: #a3a6c5;
             color: white;
         }
 
@@ -18,7 +18,18 @@
             justify-content: space-between;
             align-items: center;
             padding: 20px;
-            background-color: #4C57A7;
+            background-color: #5e6bc8;
+        }
+
+        header .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        header .logo-container img {
+            width: 80px; /* Increased size of logo */
+            height: auto;
+            margin-right: 20px;
         }
 
         header h1 {
@@ -28,6 +39,23 @@
 
         header .datetime {
             font-size: 14px;
+            text-align: center; /* Center the date and time */
+            flex-grow: 1; /* Allow the datetime to take the remaining space */
+        }
+
+        header .logout-button {
+            background-color: #D9534F;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 20px;
+        }
+
+        header .logout-button:hover {
+            background-color: #c9302c;
         }
 
         .container {
@@ -74,7 +102,7 @@
         footer {
             text-align: center;
             padding: 10px;
-            background-color: #4C57A7;
+            background-color: #6e75aa;
             color: white;
             margin-top: 30px;
         }
@@ -84,13 +112,44 @@
             border-top: 1px solid white;
             margin-bottom: 10px;
         }
+
+        .report-section {
+            background-color: #E8F0FE;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .report-section h3 {
+            margin-top: 0;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .report-table th, .report-table td {
+            padding: 10px;
+            border: 1px solid #4C57A7;
+            text-align: center;
+        }
+
+        .report-table th {
+            background-color: #3745aa;
+            color: white;
+        }
     </style>
 </head>
 <body>
-    <!-- Header with Date and Time -->
+    <!-- Header with Logo, Date/Time, and Log Out Button -->
     <header>
-        <h1>Sleep Monitor App</h1>
+        <div class="logo-container">
+            <img src="images/sleep.png" alt="Sleep Med Logo">
+            <h1>Sleep Monitor App</h1>
+        </div>
         <div class="datetime" id="datetime"></div>
+        <button class="logout-button" onclick="logout()">Log Out</button>
     </header>
 
     <!-- Main Content -->
@@ -108,6 +167,47 @@
         <!-- Recommendation Section -->
         <div class="recommendation">
             <p><strong>Recommendation:</strong> As a healthcare worker, it’s crucial to prioritize sleep during non-shift hours to ensure optimal performance. Consider taking short naps during breaks if possible and avoid caffeine close to your next shift. Your current sleep duration is insufficient, and adequate rest is key to preventing burnout and maintaining alertness during your shifts.</p>
+        </div>
+
+        <!-- Weekly and Monthly Reports Section -->
+        <div class="report-section">
+            <h3>Weekly and Monthly Reports</h3>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Period</th>
+                        <th>Average Sleep Duration</th>
+                        <th>Overnight Shifts</th>
+                        <th>Sleep Quality</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Week 1</td>
+                        <td>5 hours, 15 minutes</td>
+                        <td>2 overnight shifts</td>
+                        <td>Fair</td>
+                    </tr>
+                    <tr>
+                        <td>Week 2</td>
+                        <td>4 hours, 45 minutes</td>
+                        <td>3 overnight shifts</td>
+                        <td>Poor</td>
+                    </tr>
+                    <tr>
+                        <td>Month 1</td>
+                        <td>5 hours, 10 minutes</td>
+                        <td>10 overnight shifts</td>
+                        <td>Fair</td>
+                    </tr>
+                    <tr>
+                        <td>Month 2</td>
+                        <td>5 hours, 0 minutes</td>
+                        <td>8 overnight shifts</td>
+                        <td>Good</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <!-- Chart Section -->
@@ -134,7 +234,7 @@
         }
         setInterval(updateDateTime, 1000);
 
-        // Generate Random Sleep Data (for healthcare worker who didn't sleep well)
+        // This is Random Sleep Data (an example for healthcare worker who didn't sleep well)
         function generateSleepData() {
             const deepSleep = Math.floor(Math.random() * 20) + 10; // 10-30%
             const remSleep = Math.floor(Math.random() * 15) + 5; // 5-20%
@@ -171,9 +271,18 @@
                 },
             }
         });
+
+        // Logout function 
+        function logout() {
+            alert("Logged out successfully!");
+            // logout function here
+        }
     </script>
 </body>
 </html>
+
+
+
 
 
 

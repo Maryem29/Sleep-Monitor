@@ -9,12 +9,45 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(to right, #4C57A7, #1E3A8A); /* Blue and purple gradient */
+            background: linear-gradient(to right, #616cbb, #748ac7); /* Blue and purple gradient */
             color: #fff;
             height: 100vh;
+        }
+
+        .header {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
+            padding: 10px 20px;
+            background-color: #37497A;
+            position: relative;
+            height: 80px;
+        }
+
+        .header img {
+            width: 100px;
+            height: auto;
+        }
+
+        .date-time {
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            margin-top: 5px; /* Added margin to move it down a bit */
+        }
+
+        .logout-button {
+            background-color: #FF6347; /* Tomato color */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .logout-button:hover {
+            background-color: #FF4500; /* Darker tomato color */
         }
 
         .container {
@@ -25,22 +58,34 @@
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin: 20px auto;
             position: relative;
         }
 
         h1 {
             text-align: center;
-            color: #4C57A7;
+            color: hsl(233, 38%, 69%);
             margin-bottom: 20px;
         }
 
-        .date-time {
-            font-size: 16px;
+        .navigation-box {
+            display: flex;
+            justify-content: space-around;
+            background-color: #4C57A7;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .navigation-box a {
+            color: white;
+            text-decoration: none;
             font-weight: bold;
-            color: purple; /* Purple font for date and time */
-            position: absolute;
-            top: 10px;
-            right: 20px;
+        }
+
+        .navigation-box a:hover {
+            text-decoration: underline;
         }
 
         .statistics-box {
@@ -97,7 +142,7 @@
             display: inline-block;
             padding: 10px 20px;
             font-size: 16px;
-            background: #4C57A7;
+            background: #626aa2;
             color: white;
             border: none;
             border-radius: 5px;
@@ -117,16 +162,33 @@
             color: #4C57A7;
             margin-top: 20px;
         }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Date and Time -->
+    <!-- Header with Logo and Date/Time -->
+    <div class="header">
+        <img src="images/sleep.png" alt="Sleep Med Logo">
         <div class="date-time" id="currentDateTime"></div>
+        <!-- Log Out Button -->
+        <button class="logout-button" onclick="logout()">Log Out</button>
+    </div>
 
+    <!-- Main -->
+    <div class="container">
+        <!-- Navigation Box -->
+        <div class="navigation-box">
+            <a href="statistics.html">Statistics</a>
+            <a href="report.html">Report</a>
+            <a href="sleep.html">Sleep</a>
+            <a href="alert.html">Alert</a>
+            <a href="patient_profile.html">Patient Profile</a>
+        </div>
+
+        <!-- Our Title -->
         <h1>Sleep Statistics</h1>
 
-        <!-- Sleep Overview Section -->
+        <!-- The Sleep Overview Section -->
         <div class="statistics-box">
             <div><strong>Average Sleep Duration:</strong> 6 hours 30 minutes</div>
             <div><strong>Sleep Efficiency:</strong> 78%</div>
@@ -162,15 +224,14 @@
         <!-- Back Button -->
         <a href="dashboard.html" class="back-button">Back to Dashboard</a>
 
-        <!-- Creator Credits -->
+        <!-- The Creators -->
         <div class="creator-credit">
-            Created by: Kseniia, Maryem, Saffree, Sena, Angelina
-- Sleep Med
+            Created by: Kseniia, Maryem, Saffree, Sena, Angelina - Sleep Med
         </div>
     </div>
 
     <script>
-        // Update date and time dynamically
+        // Update the date and time dynamically
         function updateDateTime() {
             const date = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -178,9 +239,16 @@
             document.getElementById('currentDateTime').textContent = formattedDateTime;
         }
 
-        // Call every second
         setInterval(updateDateTime, 1000);
         updateDateTime();
+
+        // Log out function 
+        function logout() {
+            alert("You have logged out.");
+            window.location.href = 'login.html'; // Redirect to our login page 
+        }
     </script>
 </body>
 </html>
+
+
