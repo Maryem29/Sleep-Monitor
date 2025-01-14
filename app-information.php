@@ -75,7 +75,33 @@ $current_page = basename($_SERVER['PHP_SELF']);
         .logout-button:hover {
             background-color: #E2E8F0;
         }
+	
+	
+	
+	/* Button Styling */
+	.settings-button {
+	    background: none;
+	    border: none;
+	    cursor: pointer;
+	    display: flex;
+	    flex-direction: column;
+	    justify-content: space-between;
+	    align-items: center;
+	    width: 50px; /* Increased width */
+	    height: 50px; /* Increased height */
+	    padding: 12px; /* Adjusted padding for better proportions */
+	    border-radius: 50%;
+	    transition: background-color 0.3s ease;
+	    background-color: white;
 
+	}
+
+
+
+	/* Hover Effect for the Button */
+	.settings-button:hover {
+	    background-color: rgba(0, 0, 0, 0.1);
+	}
 
 
         /* Fullscreen overlay */
@@ -220,20 +246,20 @@ $current_page = basename($_SERVER['PHP_SELF']);
 	
 	
 	/* Go Back Button Styles */
-	.go-back-button {
-	    padding: 10px 20px;
-	    background-color: #4C57A7;
-	    color: white;
-	    border: none;
-	    border-radius: 5px;
-	    cursor: pointer;
-	    font-size: 16px;
-	    margin-top: 20px;
-	}
+.go-back-button {
+    padding: 10px 20px;
+    background-color: #4C57A7;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+}
 
-	.go-back-button:hover {
-	    background-color: #3B4A8A;
-	}
+.go-back-button:hover {
+    background-color: #3B4A8A;
+}
 
 	
 	
