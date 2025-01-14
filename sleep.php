@@ -258,7 +258,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         document.getElementById("logout-btn").addEventListener("click", function () {
             const userConfirmed = confirm("Are you sure you want to log out?");
             if (userConfirmed) {
-                window.location.href = "logout.php";
+                window.location.href = "login.php";
             }
         });
     </script>

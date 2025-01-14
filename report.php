@@ -1,3 +1,16 @@
+<?php
+session_start(); // Start the session
+
+// Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php"); // Redirect to login page if not logged in
+    exit();
+}
+
+// Get the current page name
+$current_page = basename($_SERVER['PHP_SELF']);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,51 +18,225 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sleep Statistics</title>
     <style>
+/* General Styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #626AB2;
-            color: white;
-        }
+            background: linear-gradient(to right, #616cbb, #748ac7);
+            color: #fff;
 
-        header {
             display: flex;
-            flex-direction:column;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            width: 100%;
+            max-width: 1200px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: flex-start;
-            padding: 20px;
             background-color: #4C57A7;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: white;
+            border-radius: 10px;
         }
 
-        header h1 {
+        .header img {
+            max-width: 100px;
+        }
+        
+        .date-time {
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            margin-top: 5px; /* Added margin to move it down a bit */
+        }
+
+        .logout-settings-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-button {
+            padding: 10px 20px;
+            background-color: white;
+            color: #4C57A7;
+            border: 1px solid #4C57A7;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background-color: #E2E8F0;
+        }
+
+
+
+        /* Fullscreen overlay */
+    .settings-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: none;
+        justify-content: space-between; /* Divides left and right sections */
+        padding: 20px;
+        z-index: 1000;
+        color: white;
+    }
+
+    /* Settings Menu (Left Section) */
+	.settings-menu {
+	    flex: 1; /* Left section takes 30% */
+	    max-width: 30%; /* Optional: Restrict max width */
+	    /*background: linear-gradient(to left, #748ac7, #4C57A7);*/
+	    background: linear-gradient(to right, #616cbb, #748ac7);
+	    padding: 20px;
+	    border-radius: 10px;
+	    box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
+	}
+
+	.settings-menu h2 {
+	    color: #D1D9F1;
+	    margin-top: 0;
+	    font-weight: bold;
+	    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+	}
+
+	.settings-menu ul {
+	    list-style: none;
+	    padding: 0;
+	    margin: 0;
+	}
+
+	.settings-menu li {
+	    margin-bottom: 15px;
+	}
+
+	.settings-menu a {
+	    text-decoration: none;
+	    color: #E2E8F0;
+	    font-size: 16px;
+	    padding: 5px;
+	    transition: color 0.3s, background-color 0.3s;
+	    border-radius: 5px;
+	}
+
+	.settings-menu a:hover {
+	    color: #2C3E99;
+	    background-color: #D1D9F1;
+	}
+
+	/* About Us Section (Right Section) */
+	.about-us {
+	    flex: 2; /* Right section takes 70% */
+
+            background: linear-gradient(to right, #616cbb, #748ac7);
+	    padding: 20px;
+	    border-radius: 10px;
+	    box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
+	    color: #ffffff;
+	}
+
+	.about-us h2 {
+	    margin-top: 0;
+	    color: #E2E8F0;
+	    font-weight: bold;
+	    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+	}
+
+	.about-us p {
+	    font-size: 16px;
+	    line-height: 1.6;
+	    color: #f1f4fa;
+	}
+
+	/* Close Button */
+	.close-settings {
+	    background: none;
+	    border: none;
+	    font-size: 18px;
+	    color: #E2E8F0;
+	    cursor: pointer;
+	    margin-bottom: 20px;
+	    border-radius: 5px;
+	    transition: color 0.3s, background-color 0.3s;
+	}
+
+	.close-settings:hover {
+
+	    color: #2C3E99;
+	    background-color: #D1D9F1;
+	}
+
+
+
+
+
+        /* Navigation Bar Styles */
+        .nav-container {
+            margin: 20px 0;
+            padding: 10px 0;
+        }
+	
+	
+        .nav-menu {
+            list-style: none;
+            padding: 0;
             margin: 0;
-            font-size: 24px;
+            display: flex;
+            gap: 15px;
+	    flex-wrap: wrap; /* Allows wrapping on smaller screens */
+	    justify-content: center;
         }
 
-        header .datetime {
-            font-size: 14px;
-            margin-top: 10px;
+        .nav-link {
+            text-decoration: none;
+            color: #fff;
+            font-size: 18px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+	
+
+
+        .nav-link:hover, .nav-link.active {
+            background-color: #D1D9F1;
+            color: #2C3E99;
         }
 
+        
+        
+        
+        
+        
         .container {
             padding: 20px;
             max-width: 1000px;
             margin: auto;
-            background: white;
+	    width: 90%; /* Adjusts to the screen size */
             color: #4C57A7;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
         }
 
         .container h2 {
             text-align: center;
             margin-bottom: 20px;
-            color: #4C57A7;
+            color: white;
         }
 
         .patient-info {
-            background-color: #E8F0FE;
+            background-color: #E2E8F0;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 30px;
@@ -61,7 +248,7 @@
         }
 
         .recommendation {
-            background-color: #E8F0FE;
+            background-color: #E2E8F0;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 30px;
@@ -71,14 +258,14 @@
         .chart-container {
             margin-top: 30px;
             text-align: center;
+            color: white;
         }
 
-        footer {
+       /* Footer Styles */
+        .footer {
+            font-size: 14px;
             text-align: center;
-            padding: 10px;
-            background-color: #4C57A7;
-            color: white;
-            margin-top: 30px;
+            margin-top: auto;
         }
 
         footer hr {
@@ -86,197 +273,164 @@
             border-top: 1px solid white;
             margin-bottom: 10px;
         }
+
+        .report-section {
+            background-color: #E2E8F0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .report-section h3 {
+            margin-top: 0;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .report-table th, .report-table td {
+            padding: 10px;
+            border: 1px solid #4C57A7;
+            text-align: center;
+        }
+
+        .report-table th {
+            background-color: #3745aa;
+            color: white;
+        }
         
-		
-		/* Bookmark Navigation */
-	.bookmark-nav {
-	    position: fixed;
-	    top: 0;
-	    left: 82%; /* Center horizontally */
-	    transform: translateX(-50%);
-	    z-index: 1000;
-	    display: flex;
-	    flex-direction: column;
-	    align-items: center;
-	}
-
-	.bookmark {
-	    background-color: white;
-	    padding: 10px 0px;
-	    border-radius: 10px 10px 100px 100px;
-	    cursor: pointer;
-	    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-	    text-align: center;
-	    width: 120px;
-	    position: relative; /* Ensures text is positioned relative to the bookmark */
-	}
-
-	.bookmark-logo {
-	    max-width: 100%;
-	    height: auto;
-	    margin-bottom: 20px; /* Add some space below the logo */
-	    transform: translateY(-5px); /* Move the logo upward */
-	}
-
-	/* Center text inside the bookmark */
-	.bookmark span {
-	    position: absolute;
-	    top: 50%;
-	    left: 50%;
-	    transform: translate(-50%, -50%);
-	    font-size: 14px;
-	    color: #4C57A7;
-	    font-weight: bold;
-	    pointer-events: none; /* Prevent interactions with the text */
-	}
-
-	/* Navigation Options */
-	.nav-options {
-	    background-color: white;
-	    color: #4C57A7;
-	    text-align: center;
-	    width: 100%;
-	    padding: 20px 0;
-	    border-radius: 0 0 100px 100px;
-	    display: none; /* Initially hidden */
-	    flex-direction: column;
-	    position: fixed;
-	    top: 60%; /* Start at the top of the page */
-	    left: 0%;
-	    transform: translateX(-50%);
-	}
-
-	.nav-options ul {
-	    list-style: none;
-	    padding: 0;
-	    margin: 0;
-	}
-
-	.nav-options li {
-	    margin: 10px 0;
-	}
-
-	.nav-options a {
-	    text-decoration: none;
-	    color: #4C57A7;
-	    font-size: 18px;
-	    transition: color 0.2s;
-	}
-
-	.nav-options a:hover {
-	    color: #e0f7fa;
-	}
-
-	/* Slide-down animation */
-	.nav-options.active {
-	    display: flex; /* Show when active */
-	    animation: slide-down 0.5s ease-out forwards;
-	}
-
-	@keyframes slide-down {
-	    from {
-		transform: translateY(-100%);
-		opacity: 0;
+        
+        
+		/* Media Queries */
+	@media (max-width: 768px) {
+	    .header {
+		flex-direction: column;
+		align-items: flex-start;
 	    }
-	    to {
-		transform: translateY(0);
-		opacity: 1;
+
+	    .header img {
+		max-width: 80px;
+	    }
+
+	    .settings-overlay {
+		flex-direction: column; /* Stack the settings and about sections */
+		gap: 20px;
+	    }
+
+	    .settings-menu, .about-us {
+		max-width: 100%; /* Use full width for smaller screens */
+		flex: none;
+	    }
+
+	    .bar-chart {
+		height: 150px; /* Adjust chart height */
+	    }
+
+	    .nav-link {
+		font-size: 16px;
+		padding: 8px 10px;
 	    }
 	}
-
-	/* Slide-up animation */
-	.nav-options.inactive {
-	    animation: slide-up 0.5s ease-out forwards;
-	}
-
-	@keyframes slide-up {
-	    from {
-		transform: translateY(0);
-		opacity: 1;
-	    }
-	    to {
-		transform: translateY(-100%);
-		opacity: 0;
-	    }
-	}
-
-	/* Ensure nav is hidden after slide-up */
-	.nav-options:not(.active) {
-	    display: none; /* Hide the nav when not active */
-	}
-
 
         
+        
+        
+                /* Active overlay display */
+    .settings-overlay.active {
+        display: flex; /* Flex layout is only applied when active */
+    }
     </style>
 </head>
 <body>
-    <!-- Header with Date and Time -->
-    <header>
-        <h1>Sleep Monitor App</h1>
-        <div class="datetime" id="datetime"></div>
-    </header>
 
+	<!-- Header -->
+    <div class="header">
+        <img src="images/sleep.png" alt="Sleep Med Logo">
+        <div class="date-time" id="currentDateTime"></div>
+        <div class="logout-settings-container">
+            <button id="logout-btn" class="logout-button">Logout</button>
+            <button id="settings-btn" class="settings-button">⋮</button>
+        </div>
+    </div>
 
-
-
- <div class="bookmark-nav">
-	    <div class="bookmark" onclick="toggleNav()">
-		<img src="images/sleep.png" alt="Logo" class="bookmark-logo">
-	    </div>
-	    <div class="nav-options" id="nav-options">
-		<ul>
-                <li><a href="index.php">Home</a></li>
-                <li><a href="register.php">Register</a></li>
-                <li><a href="login.php">Login</a></li>
-                <li><a href="report.php">Report</a></li>
-                <li><a href="statistics.php">Statistics</a></li>
-		</ul>
-	    </div>
-	</div>
-	
-	<script>
-	    function toggleNav() {
-		const navOptions = document.getElementById('nav-options');
-
-		if (navOptions.classList.contains('active')) {
-		    // Slide up
-		    navOptions.classList.remove('active');
-		    navOptions.classList.add('inactive');
-
-		    // Wait for the animation to finish, then hide the element
-		    setTimeout(() => {
-		        navOptions.style.display = 'none';
-		    }, 500); // Match the transition duration
-		} else {
-		    // Slide down
-		    navOptions.style.display = 'flex'; // Ensure it's visible
-		    navOptions.classList.remove('inactive');
-		    navOptions.classList.add('active');
-		}
-	    }
-
-	    // Attach event listener to the logo
-	    document.getElementById('bookmark-logo').addEventListener('click', toggleNav);
-	</script>
-
-
-    
 
     <script>
-        // Automatically hide the message after 3 seconds
-        window.onload = function() {
-            var message = document.getElementById('message');
-            if (message) {
-                message.style.visibility = 'visible';
-                message.style.opacity = 1;
-                setTimeout(function() {
-                    message.style.opacity = 0;
-                    message.style.visibility = 'hidden';
-                }, 3000); // Hide after 3 seconds
-            }
-        };
+        // Update the date and time dynamically
+        function updateDateTime() {
+            const date = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const formattedDateTime = date.toLocaleString('en-US', options);
+            document.getElementById('currentDateTime').textContent = formattedDateTime;
+        }
+
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
     </script>
 
+
+
+<div class="settings-overlay" id="settings-overlay">
+    <!-- Settings Menu -->
+    <div class="settings-menu">
+        <button class="close-settings" id="close-settings">Close ✕</button>
+        <h2>Settings</h2>
+        <ul>
+            <li><a href="#">Switch Account</a></li>
+            <li><a href="#">Delete Account</a></li>
+            <li><a href="#">Language</a></li>
+            <li><a href="#">Support</a></li>
+            <li><a href="#">App Information</a></li>
+        </ul>
+    </div>
+
+    <!-- About Us Section -->
+    <div class="about-us">
+        <h2>About Us</h2>
+        <p>We are dedicated to improving sleep quality through data-driven insights. Our mission is to provide accurate, user-friendly tools to help you sleep better.</p>
+    </div>
+</div>
+
+<script>
+    const settingsBtn = document.getElementById("settings-btn");
+    const settingsOverlay = document.getElementById("settings-overlay");
+    const closeSettings = document.getElementById("close-settings");
+
+    // Open settings overlay
+    settingsBtn.addEventListener("click", () => {
+        settingsOverlay.classList.add("active");
+    });
+
+    // Close settings overlay
+    closeSettings.addEventListener("click", () => {
+        settingsOverlay.classList.remove("active");
+    });
+
+    // Optional: Close overlay when clicking outside the settings panel
+    settingsOverlay.addEventListener("click", (e) => {
+        if (e.target === settingsOverlay) {
+            settingsOverlay.classList.remove("active");
+        }
+    });
+</script>
+
+
+
+    <!-- Navigation -->
+    <div class="nav-container">
+        <ul class="nav-menu">
+            <li><a href="statistics.php" class="nav-link <?= $current_page === 'statistics.php' ? 'active' : ''; ?>">Statistics</a></li>
+            <li><a href="report.php" class="nav-link <?= $current_page === 'report.php' ? 'active' : ''; ?>">Report</a></li>
+            <li><a href="sleep.php" class="nav-link <?= $current_page === 'sleep.php' ? 'active' : ''; ?>">Sleep</a></li>
+            <li><a href="alerts.php" class="nav-link <?= $current_page === 'alerts.php' ? 'active' : ''; ?>">Alerts</a></li>
+            <li><a href="profile.php" class="nav-link <?= $current_page === 'profile.php' ? 'active' : ''; ?>">Profile</a></li>
+        </ul>
+    </div>
+    
+    
+    
+    
     <!-- Main Content -->
     <div class="container">
         <h2>Sleep Statistics</h2>
@@ -294,6 +448,47 @@
             <p><strong>Recommendation:</strong> As a healthcare worker, it’s crucial to prioritize sleep during non-shift hours to ensure optimal performance. Consider taking short naps during breaks if possible and avoid caffeine close to your next shift. Your current sleep duration is insufficient, and adequate rest is key to preventing burnout and maintaining alertness during your shifts.</p>
         </div>
 
+        <!-- Weekly and Monthly Reports Section -->
+        <div class="report-section">
+            <h3>Weekly and Monthly Reports</h3>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Period</th>
+                        <th>Average Sleep Duration</th>
+                        <th>Overnight Shifts</th>
+                        <th>Sleep Quality</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Week 1</td>
+                        <td>5 hours, 15 minutes</td>
+                        <td>2 overnight shifts</td>
+                        <td>Fair</td>
+                    </tr>
+                    <tr>
+                        <td>Week 2</td>
+                        <td>4 hours, 45 minutes</td>
+                        <td>3 overnight shifts</td>
+                        <td>Poor</td>
+                    </tr>
+                    <tr>
+                        <td>Month 1</td>
+                        <td>5 hours, 10 minutes</td>
+                        <td>10 overnight shifts</td>
+                        <td>Fair</td>
+                    </tr>
+                    <tr>
+                        <td>Month 2</td>
+                        <td>5 hours, 0 minutes</td>
+                        <td>8 overnight shifts</td>
+                        <td>Good</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <!-- Chart Section -->
         <div class="chart-container">
             <h3>Sleep Data Breakdown</h3>
@@ -306,19 +501,22 @@
         <hr>
         <p>Created by: Kseniia, Maryem, Sena, Saffree, Angelina - Sleep Med </p>
     </footer>
-
-    <!-- JavaScript -->
+    
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Display Current Date and Time
-        function updateDateTime() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-            document.getElementById('datetime').innerText = now.toLocaleDateString('en-US', options);
-        }
-        setInterval(updateDateTime, 1000);
-
-        // Generate Random Sleep Data (for healthcare worker who didn't sleep well)
+        // Handle logout
+        document.getElementById("logout-btn").addEventListener("click", function () {
+            if (confirm("Are you sure you want to log out?")) {
+                window.location.href = "login.php";
+            }
+        });
+        
+        
+        
+        
+        
+                // This is Random Sleep Data (an example for healthcare worker who didn't sleep well)
         function generateSleepData() {
             const deepSleep = Math.floor(Math.random() * 20) + 10; // 10-30%
             const remSleep = Math.floor(Math.random() * 15) + 5; // 5-20%
@@ -356,7 +554,20 @@
             }
         });
 
-       
-    </script>
+
+
+
+	window.addEventListener('resize', () => {
+    const bars = document.querySelectorAll('.bar');
+    bars.forEach(bar => {
+        bar.style.height = `${Math.random() * 80 + 20}%`;
+    });
+});
+
+
+
+
+     </script>
+     
 </body>
 </html>
