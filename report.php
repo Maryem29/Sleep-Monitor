@@ -96,11 +96,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
     /* Settings Menu (Left Section) */
 	.settings-menu {
 	    flex: 1; /* Left section takes 30% */
-	    max-width: 30%; /* Optional: Restrict max width */
+	    max-width: 20%; /* Optional: Restrict max width */
 	    /*background: linear-gradient(to left, #748ac7, #4C57A7);*/
 	    background: linear-gradient(to right, #616cbb, #748ac7);
-	    padding: 20px;
+	    padding: 30px;
 	    border-radius: 10px;
+	    font-size: 24px;
 	    box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
 	}
 
@@ -124,7 +125,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 	.settings-menu a {
 	    text-decoration: none;
 	    color: #E2E8F0;
-	    font-size: 16px;
+	    font-size: 20px;
 	    padding: 5px;
 	    transition: color 0.3s, background-color 0.3s;
 	    border-radius: 5px;
@@ -135,29 +136,64 @@ $current_page = basename($_SERVER['PHP_SELF']);
 	    background-color: #D1D9F1;
 	}
 
-	/* About Us Section (Right Section) */
-	.about-us {
-	    flex: 2; /* Right section takes 70% */
-
-            background: linear-gradient(to right, #616cbb, #748ac7);
+	/* Team Section */
+	.team-section {
+	    flex: 2;
+	    background: linear-gradient(to right, #616cbb, #748ac7);
 	    padding: 20px;
 	    border-radius: 10px;
 	    box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
 	    color: #ffffff;
+	    overflow-y: auto;
+	    display: grid; /* Use grid to align team members */
+	    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Create responsive grid */
+	    gap: 20px; /* Space between the team members */
 	}
 
-	.about-us h2 {
-	    margin-top: 0;
-	    color: #E2E8F0;
-	    font-weight: bold;
-	    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        .team-section h1 {
+            font-size: 52px;
+            margin-bottom: 100px;
+            color: white;
+            font-family: 'Yatra One', cursive;
+        }
+
+	.team-member {
+	    transition: transform 0.3s ease-in-out;
+	    text-decoration: none;
+	    color: inherit;
+	    background: white;
+	    padding: 20px;
+	    border-radius: 10px;
+	    position: relative;
+	    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	    display: flex;
+	    flex-direction: column;
+	    justify-content: center;
+	    align-items: center;
 	}
 
-	.about-us p {
-	    font-size: 16px;
-	    line-height: 1.6;
-	    color: #f1f4fa;
-	}
+        .team-member:hover {
+            transform: scale(1.05);
+        }
+
+        .team-member img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .team-member h3 {
+            color: #4C57A7;
+            font-size: 26px;
+            margin-top: 20px;
+        }
+
+        .team-member p {
+            color: #4C57A7;
+            font-size: 14px;
+        }
+        
 
 	/* Close Button */
 	.close-settings {
@@ -318,6 +354,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
 		flex-direction: column; /* Stack the settings and about sections */
 		gap: 20px;
 	    }
+	    
+	    .team-section {
+		grid-template-columns: repeat(2, 1fr); /* Two items per row on larger screens */
+	    }
 
 	    .settings-menu, .about-us {
 		max-width: 100%; /* Use full width for smaller screens */
@@ -385,10 +425,60 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </ul>
     </div>
 
-    <!-- About Us Section -->
-    <div class="about-us">
-        <h2>About Us</h2>
-        <p>We are dedicated to improving sleep quality through data-driven insights. Our mission is to provide accurate, user-friendly tools to help you sleep better.</p>
+   
+    <!-- Team Section -->
+    <div class="team-section">
+        <h1>Our Team</h1>
+
+        <!-- Team Member 1 -->
+        <a href="https://github.com/safrinfaizz" target="_blank" class="team-member">
+            <div>
+                <img src="../../images/safreena.jpg" alt="Safreena">
+            </div>
+            <h3>Safreena</h3>
+            <p>Front-End Developer</p>
+            <p>"As a health informatics student interested in building websites and working with data, I contributed to the Sleep Monitor project by developing the front-end. For me, front-end development is where creativity and technology meet to solve problems and inspire users."</p>
+        </a>
+
+        <!-- Team Member 2 -->
+        <a href="https://github.com/SenaDok" target="_blank" class="team-member">
+            <div>
+                <img src="../../images/sena.jpg" alt="Sena">
+            </div>
+            <h3>Sena</h3>
+            <p>Front-End Developer</p>
+            <p>“A healthy body holds a healthy mind and soul, and that's what we should strive to have and share”</p>
+        </a>
+
+        <!-- Team Member 3 -->
+        <a href="https://github.com/AngelinaNSS" target="_blank" class="team-member">
+            <div>
+                <img src="../../images/angelina.jpg" alt="Angelina">
+            </div>
+            <h3>Angelina</h3>
+            <p>Front-End Developer</p>
+            <p>"I’m a health informatics student with a passion for using tech to improve healthcare. With this Sleep Monitor project, I aim to help people track and improve their sleep, especially for those working late shifts, so they can feel better and perform their best."</p>
+        </a>
+
+        <!-- Team Member 4 -->
+        <a href="https://github.com/kseniiavi" target="_blank" class="team-member">
+            <div>
+                <img src="../../images/kseniia.jpg" alt="Kseniia">
+            </div>
+            <h3>Kseniia</h3>
+            <p>Back-End Developer</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Est quaerat tempora.</p>
+        </a>
+
+        <!-- Team Member 5 -->
+        <a href="https://github.com/Maryem29" target="_blank" class="team-member">
+            <div>
+                <img src="../../images/maryem.jpg" alt="Maryem">
+            </div>
+            <h3>Maryem</h3>
+            <p>Back-End Developer</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Est quaerat tempora.</p>
+        </a>
     </div>
 </div>
 
