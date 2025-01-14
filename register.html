@@ -39,7 +39,6 @@
         }
 
         .register-fields {
-
             display: grid;
             grid-template-columns: 1fr 1fr; /* Two columns */
             gap: 20px; /* Space between input fields */
@@ -59,7 +58,7 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 14px;
-            display:block;
+            display: block;
         }
 
         .register-button {
@@ -75,9 +74,69 @@
         .register-button:hover {
             background: #E2E8F0;
         }
+
+        /* Three-Dot Dropdown */
+        .three-dot {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: #4C57A7;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+        }
+
+        #menu {
+            cursor: pointer;
+            color: #4C57A7;
+            font-size: 24px;
+            text-align: center;
+            line-height: 1;
+        }
+
+        #dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #dropdown a {
+            display: block;
+            color: #4C57A7;
+            padding: 10px;
+            text-decoration: none;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #dropdown a:last-child {
+            border-bottom: none;
+        }
+
+        #dropdown a:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 <body>
+    <!-- Three Dot Dropdown -->
+    <div class="three-dot">
+        <div id="menu">&#8942;</div>
+        <div id="dropdown">
+            <a href="main.html">Home</a>
+            <a href="login.html">Login</a>
+            <a href="settings.html">Settings</a>
+            <a href="app-information.html">App Info</a>
+            <a href="about-us">About us</a>
+            <a href="login.html">Log out</a>
+        </div>
+    </div>
+
     <div class="container">
         <div class="white-box">
             <img src="images/sleep med.png" alt="Logo" class="logo">
@@ -106,12 +165,22 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Toggle dropdown visibility
+        document.getElementById('menu').addEventListener('click', function () {
+            const dropdown = document.getElementById('dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const menu = document.getElementById('menu');
+            const dropdown = document.getElementById('dropdown');
+            if (!menu.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-

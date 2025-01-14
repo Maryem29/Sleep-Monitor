@@ -10,7 +10,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #4C57A7; /* Purple Background */
+            background-color: #626AB2; /* Purple Background */
         }
 
         /* Container */
@@ -40,6 +40,7 @@
             transform: scale(1.05); /* Slightly increase size on hover */
             box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
         }
+
         .combined-box:hover {
             transform: scale(1.05); /* Slightly increase size on hover */
             box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
@@ -90,15 +91,11 @@
             line-height: 1.9;
             overflow: hidden; /* Ensure smooth expansion */
             word-wrap: break-word; /* Allow long words to break */
-
         }
+
         .blue-box h2 {
             font-size: 24px;
             margin-bottom: 15px;
-
-        .blue-box h3 {
-            font-size: 24px;
-            margin-bottom: 10px;
         }
 
         .blue-box ul {
@@ -121,9 +118,9 @@
         }
 
         .connection-graphic {
-            display:flex;
-            justify-content:center
-            align-items:center
+            display: flex;
+            justify-content: center;
+            align-items: center;
             text-align: center;
             margin: 0px auto;
         }
@@ -131,11 +128,24 @@
         .connection-graphic img {
             max-width: 100%;
             height: auto;
-            display:block;
+            display: block;
         }
     </style>
 </head>
 <body>
+    <!-- Three Dot Dropdown -->
+    <div style="position: fixed; top: 20px; right: 20px; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000;">
+        <div id="menu" style="cursor: pointer; color: #4C57A7; font-size: 24px; text-align: center; line-height: 1;">&#8942;</div>
+        <div id="dropdown" style="display: none; position: absolute; top: 40px; right: 0; background: white; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <a href="main.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none; border-bottom: 1px solid #ddd;">Home</a>
+            <a href="settings.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none; border-bottom: 1px solid #ddd;">Settings</a>
+
+            <a href="app-information.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none; border-bottom: 1px solid #ddd;">app info</a>
+            <a href="about-us.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none;border-bottom: 1px solid #ddd;">about us </a>
+            <a href="login.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration:none;">Logout</a>
+        </div>
+    </div>
+
     <div class="container">
         <!-- Section 1 -->
         <div class="info-section">
@@ -152,7 +162,7 @@
         <div class="info-section reverse">
             <div class="text-box">
                 <h2>Night Shift Workers</h2>
-                 <p> Tailored specifically for night shift healthcare workers to monitor and improve sleep quality and health.</p>
+                <p> Tailored specifically for night shift healthcare workers to monitor and improve sleep quality and health.</p>
             </div>
             <div class="image-box">
                 <img src="../../images/pic3.jpg" alt="Key features">
@@ -192,7 +202,7 @@
 
             <!-- Blue Box -->
             <div class="blue-box">
-                Healthcare  providers  on  night  shifts  face  significant  challenges,  including disrupted circadian rhythms, high stress levels,
+                Healthcare providers on night shifts face significant challenges, including disrupted circadian rhythms, high stress levels,
                 and demanding workloads, leading to poor sleep quality, burnout, and compromised patient care.
                 To address these issues, the app utilizes the **BITalino sensor**, which attaches to the healthcare worker's
                 chest to capture real-time **ECG (Electrocardiogram)** data.
@@ -212,5 +222,22 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Toggle dropdown visibility
+        document.getElementById('menu').addEventListener('click', function () {
+            const dropdown = document.getElementById('dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const menu = document.getElementById('menu');
+            const dropdown = document.getElementById('dropdown');
+            if (!menu.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>

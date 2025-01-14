@@ -4,9 +4,148 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* General Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #626AB2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .logo {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .blue-box {
+            background: #4C57A7;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .sign-in-btn {
+            background: white;
+            color: #4C57A7;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .sign-in-btn:hover {
+            background: #3b4796;
+            color: white;
+        }
+
+        .register-text {
+            margin-top: 20px;
+            color: white;
+        }
+
+        .register-text a {
+            color: #ffdd57;
+            text-decoration: none;
+        }
+
+        /* Three-Dot Dropdown */
+        .three-dot {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: #4C57A7;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+        }
+
+        #menu {
+            cursor: pointer;
+            color: #4C57A7;
+            font-size: 24px;
+            text-align: center;
+            line-height: 1;
+        }
+
+        #dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #dropdown a {
+            display: block;
+            color: #4C57A7;
+            padding: 10px;
+            text-decoration: none;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #dropdown a:last-child {
+            border-bottom: none;
+        }
+
+        #dropdown a:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
 </head>
 <body>
+    <!-- Three Dot Dropdown -->
+    <div class="three-dot">
+        <div id="menu">&#8942;</div>
+        <div id="dropdown">
+            <a href="main.html">Home</a>
+            <a href="settings.html">Settings</a>
+            <a href="appinfo.html">App Info</a>
+            <a href="aboutus.html">About Us</a>
+            <a href="login.html">Logout</a>
+        </div>
+    </div>
+
     <div class="container">
         <!-- White Rectangle Box -->
         <div class="white-box">
@@ -37,13 +176,22 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Toggle dropdown visibility
+        document.getElementById('menu').addEventListener('click', function () {
+            const dropdown = document.getElementById('dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const menu = document.getElementById('menu');
+            const dropdown = document.getElementById('dropdown');
+            if (!menu.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-
-

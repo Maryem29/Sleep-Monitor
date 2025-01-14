@@ -17,6 +17,86 @@
             height: 100vh;
         }
 
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 80px;
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 0 0 14px 14px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-button {
+            width: 150px;
+            height: 50px;
+            background-color: #2A3794;
+            border: none;
+            border-radius: 15px;
+            color: #ffffff;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background-color: #1c2d6f;
+        }
+
+        /* Three-Dot Dropdown */
+        .three-dot {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: #4C57A7;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+        }
+
+        #menu {
+            cursor: pointer;
+            color: #4C57A7;
+            font-size: 24px;
+            text-align: center;
+            line-height: 1;
+        }
+
+        #dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #dropdown a {
+            display: block;
+            color: #4C57A7;
+            padding: 10px;
+            text-decoration: none;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #dropdown a:last-child {
+            border-bottom: none;
+        }
+
+        #dropdown a:hover {
+            background-color: #f0f0f0;
+        }
+
         /* White Box Container */
         .container {
             width: 95%;
@@ -29,15 +109,15 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin-top: 100px; /* Adjusted for navbar */
         }
 
         /* Profile Picture */
         .profile-picture {
             position: relative;
-
             border: 5px solid white;
-            width: 200px; /* Increased size */
-            height: 200px; /* Increased size */
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             overflow: hidden;
             background-color: #eaeaea;
@@ -116,6 +196,29 @@
     </style>
 </head>
 <body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <button class="nav-button nav-button-stats">Stats</button>
+        <button class="nav-button nav-button-report">Report</button>
+        <button class="nav-button nav-button-sleep">Sleep</button>
+        <button class="nav-button nav-button-alerts">Alerts</button>
+        <button class="nav-button nav-button-profile">Profile</button>
+    </div>
+
+    <!-- Three Dot Dropdown -->
+    <!-- Three Dot Dropdown -->
+    <div class="three-dot" style="background: #4C57A7;"> <!-- Changed background to blue -->
+        <div id="menu" style="cursor: pointer; color: white; font-size: 24px; text-align: center; line-height: 1;">&#8942;</div> <!-- Changed color to white -->
+        <div id="dropdown" style="display: none; position: absolute; top: 40px; right: 0; background: white; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <a href="main.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none; border-bottom: 1px solid #ddd;">Home</a>
+            <a href="settings.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none; border-bottom: 1px solid #ddd;">Settings</a>
+            <a href="app-information" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none; border-bottom: 1px solid #ddd;">App info</a>
+            <a href="about-us.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none; border-bottom: 1px solid #ddd;">About us</a>
+            <a href="login.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none;">Logout</a>
+        </div>
+    </div>
+
+
     <div class="container">
         <!-- Profile Picture -->
         <div class="profile-picture">
@@ -166,6 +269,22 @@
                 reader.readAsDataURL(file);
             }
         }
+
+        // Toggle dropdown visibility
+        document.getElementById('menu').addEventListener('click', function () {
+            const dropdown = document.getElementById('dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const menu = document.getElementById('menu');
+            const dropdown = document.getElementById('dropdown');
+            if (!menu.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>
+
