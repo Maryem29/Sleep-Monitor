@@ -216,100 +216,151 @@ $current_page = basename($_SERVER['PHP_SELF']);
 	    color: #2C3E99;
 	    background-color: #D1D9F1;
 	}
-
-
-
-
-
-        /* Navigation Bar Styles */
-        .nav-container {
-            margin: 20px 0;
-            padding: 10px 0;
-        }
 	
 	
-        .nav-menu {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            gap: 15px;
-	    flex-wrap: wrap; /* Allows wrapping on smaller screens */
-	    justify-content: center;
-        }
-
-        .nav-link {
-            text-decoration: none;
-            color: #fff;
-            font-size: 18px;
-            padding: 10px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s, color 0.3s;
-        }
 	
-        .nav-link:hover, .nav-link.active {
-            background-color: #D1D9F1;
-            color: #2C3E99;
-        }
-
-
-
-
-
-
-        /* Content Styles */
-	.statistics-box, .chart-container {
-	    width: 90%; /* Adjusts to the screen size */
-	    max-width: 1200px;
-	    margin: 20px 0;
-	    padding: 20px;
-	    border-radius: 10px;
-	    background: #E2E8F0;
-	    color: #4C57A7;
+	/* Go Back Button Styles */
+	.go-back-button {
+	    padding: 10px 20px;
+	    background-color: #4C57A7;
+	    color: white;
+	    border: none;
+	    border-radius: 5px;
+	    cursor: pointer;
+	    font-size: 16px;
+	    margin-top: 20px;
 	}
 
-	.bar-chart {
-	    justify-content: space-around;
-	    align-items: flex-end;
-	    height: 200px;
-	    display: flex;
+	.go-back-button:hover {
+	    background-color: #3B4A8A;
 	}
-            
 
-
-        .bar {
-            width: 40px;
-            background-color: #4C57A7;
-            border-radius: 5px;
-            text-align: center;
-            color: white;
+	
+	
+        /* Container */
+        .container {
+            margin: 100px auto;
+            padding: 20px;
+            max-width: 1200px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
+            gap: 40px;
         }
 
-        .bar span {
-            margin-top: 5px;
-            font-size: 12px;
-        }
-
-        .chart-labels {
+        /* Info Section */
+        .info-section {
             display: flex;
-            justify-content: space-around;
-            margin-top: 10px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add transition */
         }
 
-        .chart-labels span {
-            font-size: 14px;
-            font-weight: bold;
+        .info-section:hover {
+            transform: scale(1.05); /* Slightly increase size on hover */
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+        }
+        .combined-box:hover {
+            transform: scale(1.05); /* Slightly increase size on hover */
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add smooth transition */
         }
 
-        .recommendations {
+        .info-section.reverse {
+            flex-direction: row-reverse;
+        }
+
+        /* Text Box */
+        .text-box {
+            flex: 1;
+            color: #4C57A7;
+            font-size: 18px;
+        }
+
+        .text-box h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #4C57A7;
+        }
+
+        .text-box p, .text-box ul {
+            line-height: 1.8;
+        }
+
+        /* Combined White Box */
+        .combined-box {
+            background-color: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Blue Box Inside the Combined White Box */
+        .blue-box {
+            background-color: #2E4A7D; /* Darker Blue */
+            color: white;
+            border-radius: 10px;
+            padding: 80px;
+            padding-bottom: px;
+            margin: 40px 0px; /* Space around the blue box */
+
+             /* Box width */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+            line-height: 1.9;
+            overflow: hidden; /* Ensure smooth expansion */
+            word-wrap: break-word; /* Allow long words to break */
+
+        }
+        .blue-box h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            }
+
+        .blue-box h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .blue-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .blue-box ul li {
+            margin: 10px 0;
+        }
+
+        /* Connections Section */
+        .connections-section {
+            margin-top: 60px;
+             /* Larger gap before Connections heading */
+        }
+
+        .connections-section h2 {
+            margin-bottom: 20px;
+        }
+
+        .connection-graphic {
+            display:flex;
+            justify-content:center
+            align-items:center
             text-align: center;
-            margin-top: 20px;
+            margin: 0px auto;
         }
 
-       /* Footer Styles */
+        .connection-graphic img {
+            max-width: 100%;
+            height: auto;
+            display:block;
+        }
+        
+        
+        /* Footer Styles */
         .footer {
             font-size: 14px;
             text-align: center;
@@ -325,38 +376,38 @@ $current_page = basename($_SERVER['PHP_SELF']);
         
         
         @media (max-width: 768px) {
-    .header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+	    .header {
+		flex-direction: column;
+		align-items: flex-start;
+	    }
 
-    .header img {
-        max-width: 80px;
-    }
+	    .header img {
+		max-width: 80px;
+	    }
 
-    .settings-overlay {
-        flex-direction: column; /* Stack the settings and about sections */
-        gap: 20px;
-    }
-    
-    .team-section {
-        grid-template-columns: repeat(2, 1fr); /* Two items per row on larger screens */
-    }
+	    .settings-overlay {
+		flex-direction: column; /* Stack the settings and about sections */
+		gap: 20px;
+	    }
+	    
+	    .team-section {
+		grid-template-columns: repeat(2, 1fr); /* Two items per row on larger screens */
+	    }
 
-    .settings-menu, .about-us {
-        max-width: 100%; /* Use full width for smaller screens */
-        flex: none;
-    }
+	    .settings-menu, .about-us {
+		max-width: 100%; /* Use full width for smaller screens */
+		flex: none;
+	    }
 
-    .bar-chart {
-        height: 150px; /* Adjust chart height */
-    }
+	    .bar-chart {
+		height: 150px; /* Adjust chart height */
+	    }
 
-    .nav-link {
-        font-size: 16px;
-        padding: 8px 10px;
-    }
-}
+	    .nav-link {
+		font-size: 16px;
+		padding: 8px 10px;
+	    }
+	}
 
         
         
@@ -365,9 +416,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
         display: flex; /* Flex layout is only applied when active */
     }
         
+        
     </style>
 </head>
 <body>
+
+
+
     <!-- Header -->
     <div class="header">
         <img src="images/sleep.png" alt="Sleep Med Logo">
@@ -466,11 +521,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </a>
     </div>
     
-    
-
 </div>
 
+
+
+
+
+
 <script>
+    // Open settings overlay
     const settingsBtn = document.getElementById("settings-btn");
     const settingsOverlay = document.getElementById("settings-overlay");
     const closeSettings = document.getElementById("close-settings");
@@ -491,54 +550,104 @@ $current_page = basename($_SERVER['PHP_SELF']);
             settingsOverlay.classList.remove("active");
         }
     });
+
+</script>
+
+
+<!-- Go Back Button -->
+<button onclick="goBack()" class="go-back-button">Go Back</button>
+
+<script>
+    // Function to go back to the previous page
+    function goBack() {
+        window.history.back();
+    }
 </script>
 
 
 
-    <!-- Navigation -->
-    <div class="nav-container">
-        <ul class="nav-menu">
-            <li><a href="statistics.php" class="nav-link <?= $current_page === 'statistics.php' ? 'active' : ''; ?>">Statistics</a></li>
-            <li><a href="report.php" class="nav-link <?= $current_page === 'report.php' ? 'active' : ''; ?>">Report</a></li>
-            <li><a href="sleep.php" class="nav-link <?= $current_page === 'sleep.php' ? 'active' : ''; ?>">Sleep</a></li>
-            <li><a href="alerts.php" class="nav-link <?= $current_page === 'alerts.php' ? 'active' : ''; ?>">Alerts</a></li>
-            <li><a href="profile.php" class="nav-link <?= $current_page === 'profile.php' ? 'active' : ''; ?>">Profile</a></li>
-        </ul>
-    </div>
 
-    <!-- Main Content -->
-    <h1>Sleep Statistics</h1>
-    <div class="statistics-box">
-        <p><strong>Average Sleep Duration:</strong> <span id="avg-sleep">6 hours 30 minutes</span></p>
-        <p><strong>Sleep Efficiency:</strong> <span id="sleep-efficiency">78%</span></p>
-        <p><strong>Deep Sleep:</strong> <span id="deep-sleep">1 hour 45 minutes</span></p>
-    </div>
 
-    <div class="chart-container">
-            <h2 style="text-align: center; color: #4C57A7;">Sleep Trends Over Time</h2>
-            <div class="bar-chart">
-                <div class="bar" style="height: 40%;"><span>4 hrs</span></div>
-                <div class="bar" style="height: 60%;"><span>6 hrs</span></div>
-                <div class="bar" style="height: 80%;"><span>8 hrs</span></div>
-                <div class="bar" style="height: 50%;"><span>5 hrs</span></div>
-                <div class="bar" style="height: 70%;"><span>7 hrs</span></div>
+
+    <div class="container">
+        <!-- Section 1 -->
+        <div class="info-section">
+            <div class="text-box">
+                <h2>Sleep Med</h2>
+                <p> A real-time monitoring app powered by a chest sensor for accurate health and sleep insights.</p>
             </div>
-            <div class="chart-labels">
-                <span>Mon</span>
-                <span>Tue</span>
-                <span>Wed</span>
-                <span>Thu</span>
-                <span>Fri</span>
+            <div class="image-box">
+                <img src="../../images/pic2.jpg" alt="Doctors resting">
             </div>
         </div>
 
-        <!-- Recommendations Section -->
-        <div class="statistics-box">
-            <h3>Recommendations</h3>
-            <p>Try to improve your sleep duration to 7+ hours for better recovery.</p>
-            <p>Consider adjusting your sleep environment for better rest during shifts.</p>
+        <!-- Section 2 -->
+        <div class="info-section reverse">
+            <div class="text-box">
+                <h2>Night Shift Workers</h2>
+                 <p> Tailored specifically for night shift healthcare workers to monitor and improve sleep quality and health.</p>
+            </div>
+            <div class="image-box">
+                <img src="../../images/pic3.jpg" alt="Key features">
+            </div>
         </div>
-        
+
+        <!-- Section 3 -->
+        <div class="info-section">
+            <div class="text-box">
+                <h2> Better Care for Patients</h2>
+                <p>Enhancing healthcare providers' performance for improved patient outcomes</p>
+            </div>
+            <div class="image-box">
+                <img src="../../images/pic4.jpg" alt="Getting started">
+            </div>
+        </div>
+
+        <!-- Combined Section -->
+        <div class="combined-box">
+            <h2 style="color: #4C57A7;">Sleep Med</h2>
+            <div class="features-section">
+                <ul class="feature-list" style="list-style: none; padding: 0; margin: 20px 0;">
+                    <li style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="width: 10px; height: 10px; background-color: #4C57A7; border-radius: 50%; margin-right: 10px;"></div>
+                        <span style="color: #4C57A7;">Real-Time Health Monitoring</span>
+                    </li>
+                    <li style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="width: 10px; height: 10px; background-color: #4C57A7; border-radius: 50%; margin-right: 10px;"></div>
+                        <span style="color: #4C57A7;">Weekly and Monthly Reports</span>
+                    </li>
+                    <li style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="width: 10px; height: 10px; background-color: #4C57A7; border-radius: 50%; margin-right: 10px;"></div>
+                        <span style="color: #4C57A7;">Personalized Sleep Insights</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Blue Box -->
+            <div class="blue-box">
+                Healthcare  providers  on  night  shifts  face  significant  challenges,  including disrupted circadian rhythms, high stress levels,
+                and demanding workloads, leading to poor sleep quality, burnout, and compromised patient care.
+                To address these issues, the app utilizes the **BITalino sensor**, which attaches to the healthcare worker's
+                chest to capture real-time **ECG (Electrocardiogram)** data.
+                this data offers insights into heart rate variability, stress levels, and sleep patterns.
+                Through the app, users can monitor real-time metrics and access detailed weekly and monthly reports,
+                enabling them to optimize recovery, improve sleep quality, and enhance their performance during night shifts,
+                ultimately benefiting both healthcare providers and their patients.
+            </div>
+
+            <!-- Connections Section -->
+            <div class="connections-section">
+                <h2 style="color: #4C57A7; text-align: center;">Connections</h2>
+                <p style="color: #4C57A7; text-align: center;">MedSleep is connected through sensors to doctors, and then the data can be accessed on phones</p>
+                <div class="connection-graphic" style="display: flex; justify-content: center; align-items: center; margin: 20px auto;">
+                    <img src="../../images/graphic.png" alt="Connections Graphic" style="max-width: 100%; height: auto; display: block;">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    
     <!-- Footer -->
     <footer>
         <hr>
@@ -552,28 +661,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 window.location.href = "login.php";
             }
         });
-
-        // Update recommendations dynamically
-        document.getElementById("submit-data").addEventListener("click", function () {
-            // Generate random sleep stats and update the DOM
-            const avgSleepHours = Math.floor(Math.random() * 4) + 4;
-            const avgSleepMinutes = Math.floor(Math.random() * 60);
-            document.getElementById('avg-sleep').textContent = `${avgSleepHours} hours ${avgSleepMinutes} minutes`;
-        });
-        
-        
-        
-        
-	window.addEventListener('resize', () => {
-	    const bars = document.querySelectorAll('.bar');
-	    bars.forEach(bar => {
-		bar.style.height = `${Math.random() * 80 + 20}%`;
-	    });
-	});
-
-		
-		
-        
-    </script>
+     </script>
 </body>
 </html>

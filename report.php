@@ -421,7 +421,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <li><a href="#">Delete Account</a></li>
             <li><a href="#">Language</a></li>
             <li><a href="#">Support</a></li>
-            <li><a href="#">App Information</a></li>
+            <li><a href="app-information.php">App Information</a></li>
         </ul>
     </div>
 
