@@ -36,12 +36,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $message_class = "success";
                     
                     // Redirect to sleep.php after successful login
-                    header("Location: sleep.php");
+                    header("Location: report.php");
+                    
                     exit(); // Make sure to stop the script after the redirect
                 } else {
                     $message = "Invalid credentials.";
                     $message_class = "error";
                 }
+                
             }
         }
 

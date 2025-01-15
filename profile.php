@@ -1,11 +1,33 @@
 <?php
-session_start(); // Start the session
+// Start the session
+session_start();
 
-// Check if the user is logged in
+// Include the Firebase helper functions (firebase.php)
+require_once 'firebase.php';  // Make sure the path to firebase.php is correct
+
+// Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // Redirect to login page if not logged in
+    header("Location: login.php");
     exit();
 }
+
+// Fetch user data from session (this assumes user_id is stored in the session)
+$user_id = $_SESSION['user_id'];
+
+// Fetch user data from Firebase using the user_id
+try {
+    // Get user data from Firebase
+    $user_data = get_data_from_firebase("users/$user_id");  // Adjust the path if necessary
+
+    if (!$user_data) {
+        die("No data found for user ID: $user_id.");
+    }
+} catch (Exception $e) {
+    die("Error fetching user data: " . $e->getMessage());
+}
+
+$username = isset($user_data['username']) ? $user_data['username'] : 'Guest';
+$email = isset($user_data['email']) ? $user_data['email'] : 'No email';
 
 // Get the current page name
 $current_page = basename($_SERVER['PHP_SELF']);
@@ -276,79 +298,85 @@ $current_page = basename($_SERVER['PHP_SELF']);
             color: #2C3E99;
         }
 
+
+
+
+
+
+
+
+
+
+
+
         
         
         
         
         
-               /* White Box Container */
-        .container {
+        /* Profile Container */
+    .container {
             width: 95%;
             max-width: 1000px;
             background: white;
             border-radius: 10px;
             padding: 40px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            text-align: ;
             display: flex;
             flex-direction: column;
             align-items: center;
-        }
+            margin-top: 10px; /* Adjusted for navbar */
+    }
 
-        /* Profile Picture */
-        .profile-picture {
-            position: relative;
+    /* Profile Picture */
+    .profile-picture {
+	    display: flex;  /* Make the container a flexbox */
+	    justify-content: center;  /* Center horizontally */
+	    align-items: center;  /* Center vertically */
+	    border: 5px solid white;
+	    width: 200px;
+	    height: 200px;
+	    border-radius: 50%;
+	    overflow: hidden;
+	    background-color: #eaeaea;
+	    margin-bottom: 20px;
+	    }
 
-            border: 5px solid white;
-            width: 200px; /* Increased size */
-            height: 200px; /* Increased size */
-            border-radius: 50%;
-            overflow: hidden;
-            background-color: #eaeaea;
-            margin-bottom: 20px;
-        }
-
-        .profile-picture img {
+    .profile-picture img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
+    }
 
-        .profile-picture input {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        /* Input Fields */
-        .input-group {
+    /* Info Group */
+    .info-group {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             width: 100%;
             margin-top: 20px;
-        }
 
-        .input-item {
-            width: 48%;
+    }
+
+    /* Info Item */
+    .info-item {
+           width: 48%;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            margin-bottom: 20px;
-        }
+            margin-bottom: 5px;
+            margin-top:0px;
+    }
 
-        .input-item label {
+    .info-item label {
             font-size: 14px;
             color: #4C57A7;
-            margin-bottom: 5px;
+            margin-bottom: -10px;
             font-weight: bold;
-        }
+    }
 
-        .input-item input {
+    .info-item .info-text {
             width: 100%;
             padding: 10px;
             border: none;
@@ -356,34 +384,22 @@ $current_page = basename($_SERVER['PHP_SELF']);
             font-size: 14px;
             background-color: #4C57A7;
             color: white;
-        }
+    }
 
-        .input-item input::placeholder {
-            color: #d9d9d9;
-        }
-
-        /* Save Button */
-        .save-button {
-            background: #4C57A7;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-            font-size: 16px;
-        }
-
-        .save-button:hover {
-            background: #3a4799;
-        }
+    /* Add some margin and padding */
+    .info-text {
+        padding: 12px 15px;
+        font-size: 16px;
+    }
         
         
         
         
         
         
-        /* Footer Styles */
+        
+        
+         /* Footer Styles */
         .footer {
             font-size: 14px;
             text-align: center;
@@ -430,6 +446,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
 		font-size: 16px;
 		padding: 8px 10px;
 	    }
+	            .container {
+            padding: 20px;
+        }
+
+        .info-item {
+            align-items: center;
+        }
+
+        .info-item label {
+            text-align: center;
+       
 	}
 
         
@@ -439,11 +466,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
     .settings-overlay.active {
         display: flex; /* Flex layout is only applied when active */
     }
+        
     </style>
 </head>
-
-
-
 <body>
 
 	<!-- Header -->
@@ -581,59 +606,52 @@ $current_page = basename($_SERVER['PHP_SELF']);
     
 
 
-    <div class="container">
-        <!-- Profile Picture -->
-        <div class="profile-picture">
-            <img src="../../images/default.jpeg" alt="Default Profile Picture">
-            <input type="file" accept="image/*" onchange="changeProfilePicture(event)">
-        </div>
 
-        <!-- Input Fields -->
-        <div class="input-group">
-            <div class="input-item">
-                <label for="name">Name</label>
-                <input type="text" id="name" placeholder="Enter Name" value="Stella">
-            </div>
-            <div class="input-item">
-                <label for="surname">Surname</label>
-                <input type="text" id="surname" placeholder="Enter Surname" value="Shine">
-            </div>
-            <div class="input-item">
-                <label for="age">Age</label>
-                <input type="number" id="age" placeholder="Enter Age" value="32">
-            </div>
-            <div class="input-item">
-                <label for="gender">Gender</label>
-                <input type="text" id="gender" placeholder="Enter Gender" value="Female">
-            </div>
-            <div class="input-item">
-                <label for="email">Email</label>
-                <input type="email" id="email" placeholder="Enter Email" value="stella.shine@gmail.com">
-            </div>
-            <div class="input-item">
-                <label for="proficiency">Proficiency</label>
-                <input type="text" id="proficiency" placeholder="Enter Proficiency" value="Surgeon">
-            </div>
-        </div>
 
-        <!-- Save Button -->
-        <button class="save-button">Save Changes</button>
+<div class="container">
+    <!-- Profile Picture -->
+    <div class="profile-picture">
+        <img src="../../images/default.jpeg" alt="Default Profile Picture">
     </div>
 
-    <script>
-        function changeProfilePicture(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.querySelector('.profile-picture img').src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-    </script>
+    <!-- Input Fields -->
+    <div class="info-group">
+        <div class="info-item">
+            <label for="name">Name</label>
+            <p class="info-text"><?php echo htmlspecialchars($username); ?></p>
+        </div>
+        <div class="info-item">
+            <label for="name">Surname</label>
+            <p class="info-text"><?php echo htmlspecialchars($user_data['surname'] ?? 'N/A'); ?></p>
+        </div>
+        <div class="info-item">
+            <label for="email">Email</label>
+            <p class="info-text"><?php echo htmlspecialchars($email); ?></p>
+        </div>
+        <div class="info-item">
+            <label for="age">Age</label>
+            <p class="info-text"><?php echo htmlspecialchars($user_data['age'] ?? 'N/A'); ?></p>
+        </div>
+        <div class="info-item">
+            <label for="gender">Gender</label>
+            <p class="info-text"><?php echo htmlspecialchars($user_data['gender'] ?? 'N/A'); ?></p>
+        </div>
+        <div class="info-item">
+            <label for="proficiency">Proficiency</label>
+            <p class="info-text"><?php echo htmlspecialchars($user_data['proficiency'] ?? 'N/A'); ?></p>
+        </div>
+    </div>
+</div>
+
+
+
+
+ 
+
     
     
+    
+       
      <!-- Footer -->
     <footer>
         <hr>
@@ -650,6 +668,5 @@ $current_page = basename($_SERVER['PHP_SELF']);
             }
         });
     </script>
-    
 </body>
 </html>

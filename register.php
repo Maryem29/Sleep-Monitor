@@ -32,7 +32,7 @@ try {
                 $error_fields[] = 'confirm-password';
             } else {
                 // Hash password
-                $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password before saving
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT); // Hash the password before saving
 
 
                 // Prepare data
