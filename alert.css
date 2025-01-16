@@ -1,0 +1,151 @@
+/* General Styles */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #4C57A7;
+  font-family: Arial, sans-serif;
+  color: white;
+}
+
+.container {
+  position: relative;
+  width: 1440px;
+  height: 1024px;
+  margin: 0 auto;
+}
+
+/* Log Out Button */
+.logout {
+  position: absolute;
+  top: 17px;
+  right: 15px;
+  width: 152px;
+  height: 56px;
+  background-color: #8A91C6;
+  border: none;
+  border-radius: 14px;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+/* Navigation Bar */
+.navbar {
+  position: absolute;
+  top: 145px;
+  left: 13px;
+  width: 1414px;
+  height: 92px;
+  background-color: rgba(138, 145, 198, 0.85);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.nav-button {
+  width: 246px;
+  height: 72px;
+  background-color: #9BCEF7;
+  border-radius: 15px;
+  color: #2A3794;
+  font-size: 28px;
+  text-align: center;
+  line-height: 72px;
+  cursor: pointer;
+}
+
+.nav-button.active {
+  background-color: #7c85c8;
+}
+
+/* Bell Icon */
+.bell {
+  position: absolute;
+  top: 256px;
+  left: 602px;
+  width: 236px;
+  height: 236px;
+}
+
+.bell img {
+  width: 100%;
+  height: 100%;
+}
+
+/* Reminder Group */
+.reminder-group {
+  position: absolute;
+}
+
+.reminder-group .reminder-title {
+  font-size: 36px;
+}
+
+.reminder-group .reminder-info {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.reminder-group .info-icon {
+  font-size: 16px;
+  margin-right: 5px;
+}
+
+/* Switch */
+.switch {
+  position: relative;
+  width: 280px;
+  height: 76px;
+  background-color: rgba(217, 217, 217, 0.8);
+  border-radius: 84px;
+  margin-top: 20px;
+}
+
+.switch-slider {
+  position: absolute;
+  top: 9px;
+  left: 10px;
+  width: 58px;
+  height: 58px;
+  background-color: #4C57A7;
+  border-radius: 27px;
+  text-align: center;
+  line-height: 58px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.switch-circle.on {
+  left: 10px;
+}
+
+.switch-circle.off {
+  left: 212px;
+}
+
+/* Hydration Reminder */
+.reminder-group:nth-child(3) {
+  top: 269px;
+  left: 145px;
+}
+
+/* Nap Reminder */
+.reminder-group:nth-child(4) {
+  top: 269px;
+  left: 972px;
+}
+
+/* Calm Reminder */
+.reminder-group:nth-child(5) {
+  top: 539px;
+  left: 145px;
+}
+
+/* Sleep Reminder */
+.reminder-group:nth-child(6) {
+  top: 540px;
+  left: 969px;
+}
