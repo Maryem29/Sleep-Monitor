@@ -1,18 +1,7 @@
 <?php
-die("Script is running.");
 
 // Start the session
 session_start();
-var_dump(session_status() === PHP_SESSION_ACTIVE); // Should be `true`
-
-
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-ini_set('log_errors', 1);
-ini_set('error_log', __DIR__ . '/error.log');
-
 
 
 
@@ -29,13 +18,11 @@ if (!isset($_SESSION['user_id'])) {
 
 // Fetch user data from session (this assumes user_id is stored in the session)
 $user_id = $_SESSION['user_id'];
-var_dump($_SESSION);
 
 // Fetch user data from Firebase using the user_id
 try {
     // Get user data from Firebase
     $user_data = get_data_from_firebase("users/$user_id");  // Adjust the path if necessary
-    var_dump($user_data);
 
     if (!$user_data) {
         die("No data found for user ID: $user_id.");
@@ -47,32 +34,7 @@ try {
 $username = isset($user_data['username']) ? $user_data['username'] : 'Guest';
 $email = isset($user_data['email']) ? $user_data['email'] : 'No email';
 
-if (!isset($user_data)) {
-    echo "User data is not available!";
-    exit();
-}
-if (!$user_data) {
-    die("Failed to fetch user data for user_id: $user_id");
-}
 
-
-// Handle form submission for editing profile
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
-    // Collect data from the form
-    $updatedData = [
-        'username' => $_POST['username'] ?? $user_data['username'],
-        'surname' => $_POST['surname'] ?? $user_data['surname'],
-        'email' => $_POST['email'] ?? $user_data['email'],
-        'age' => $_POST['age'] ?? $user_data['age'],
-        'gender' => $_POST['gender'] ?? $user_data['gender'],
-        'proficiency' => $_POST['proficiency'] ?? $user_data['proficiency'],
-    ];
-
-    // Update the data in Firebase
-    write_to_firebase($user_id, $updatedData);
-
-    // Refresh the profile data
-    $user_data = $updatedData;
 
 
 // Get the current page name
@@ -474,31 +436,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         
         
 	
-	
-	 /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            width: 300px;
-        }
-        .modal-content input, .modal-content button {
-            width: 100%;
-            margin: 10px 0;
-        }
-        
-        
+	        
         
         
         
@@ -759,44 +697,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 
 
-
-  <!-- Modal for editing profile -->
-    <div class="modal" id="editProfileModal">
-        <div class="modal-content">
-            <h2>Edit Profile</h2>
-            <form method="POST">
-                <input type="text" name="username" placeholder="Name" value="<?php echo htmlspecialchars($user_data['username'] ?? ''); ?>" required>
-                <input type="text" name="surname" placeholder="Surname" value="<?php echo htmlspecialchars($user_data['surname'] ?? ''); ?>" required>
-                <input type="email" name="email" placeholder="Email" value="<?php echo htmlspecialchars($user_data['email'] ?? ''); ?>" required>
-                <input type="number" name="age" placeholder="Age" value="<?php echo htmlspecialchars($user_data['age'] ?? ''); ?>" required>
-                <input type="text" name="gender" placeholder="Gender" value="<?php echo htmlspecialchars($user_data['Gender'] ?? ''); ?>" required>
-                <input type="text" name="proficiency" placeholder="Proficiency" value="<?php echo htmlspecialchars($user_data['proficiency'] ?? ''); ?>" required>
-                <button type="submit" name="update_profile">Save Changes</button>
-                <button type="button" id="closeModal">Cancel</button>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        // Open modal on button click
-        $('#editProfileBtn').on('click', function() {
-            $('#editProfileModal').css('display', 'flex');
-        });
-
-        // Close modal
-        $('#closeModal').on('click', function() {
-            $('#editProfileModal').css('display', 'none');
-        });
-
-        // Close modal on outside click
-        $(window).on('click', function(event) {
-            if ($(event.target).is('#editProfileModal')) {
-                $('#editProfileModal').css('display', 'none');
-            }
-        });
-    </script>
-
-    
     
     
        
