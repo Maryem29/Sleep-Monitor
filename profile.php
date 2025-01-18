@@ -308,7 +308,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 
 
-
         
         
         
@@ -327,54 +326,85 @@ $current_page = basename($_SERVER['PHP_SELF']);
             flex-direction: column;
             align-items: center;
             margin-top: 10px; /* Adjusted for navbar */
+            position:relative;
+
     }
 
-    /* Profile Picture */
-    .profile-picture {
-	    display: flex;  /* Make the container a flexbox */
-	    justify-content: center;  /* Center horizontally */
-	    align-items: center;  /* Center vertically */
-	    border: 5px solid white;
-	    width: 200px;
-	    height: 200px;
-	    border-radius: 50%;
-	    overflow: hidden;
-	    background-color: #eaeaea;
-	    margin-bottom: 20px;
-	    }
 
-    .profile-picture img {
+
+
+	/* Top-Right Button */
+	.top-right-button {
+	    position: absolute;
+	    top: 40px;
+	    right: 40px;
+	    background: #4C57A7;
+	    color: white;
+	    border: none;
+	    padding: 10px 20px;
+	    border-radius: 5px;
+	    cursor: pointer;
+	    font-size: 14px;
+	}
+
+	.top-right-button:hover {
+	    background: #3a4799;
+	}
+
+
+      /* Profile Picture */
+        .profile-picture {
+            position: relative;
+
+            border: 5px solid white;
+            width: 200px; /* Increased size */
+            height: 200px; /* Increased size */
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #eaeaea;
+            margin-bottom: 20px;
+            margin-top:20px;
+        }
+
+        .profile-picture img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-    }
+        }
 
     /* Info Group */
     .info-group {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
-            width: 100%;
-            margin-top: 20px;
-
-    }
+            width: 95%;
+            margin-top: 40px;
+            margin-right:20px;
+        }
 
     /* Info Item */
     .info-item {
-           width: 48%;
+            width: 48%;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            margin-bottom: 5px;
-            margin-top:0px;
-    }
+            margin-bottom: 10px;
+        }
 
     .info-item label {
             font-size: 14px;
             color: #4C57A7;
             margin-bottom: -10px;
             font-weight: bold;
+            width:48%;
+            text-align: left;
+
+
     }
+
+
+
+
 
     .info-item .info-text {
             width: 100%;
@@ -384,6 +414,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
             font-size: 14px;
             background-color: #4C57A7;
             color: white;
+
+
+
     }
 
     /* Add some margin and padding */
@@ -394,12 +427,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
         
         
         
+
         
         
         
         
         
-         /* Footer Styles */
+        
+        
+     
+        /* Footer Styles */
         .footer {
             font-size: 14px;
             text-align: center;
@@ -446,19 +483,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
 		font-size: 16px;
 		padding: 8px 10px;
 	    }
-	            .container {
-            padding: 20px;
-        }
-
-        .info-item {
-            align-items: center;
-        }
-
-        .info-item label {
-            text-align: center;
-       
 	}
+	    .container {
+            	padding: 20px;
+        }
 
+		.info-item {
+		    align-items: flex;
+		}
+
+		.info-item label {
+		    text-align: flex;
+	       
+		}
         
         
         
@@ -466,10 +503,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
     .settings-overlay.active {
         display: flex; /* Flex layout is only applied when active */
     }
-        
     </style>
 </head>
+
 <body>
+
 
 	<!-- Header -->
     <div class="header">
@@ -606,6 +644,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
     
 
 
+ 
+
+
 
 
 <div class="container">
@@ -614,31 +655,35 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <img src="../../images/default.jpeg" alt="Default Profile Picture">
     </div>
 
+	<a href="edit-profile.php">
+        <button class="top-right-button">Edit Profile</button>
+   	 </a>
+
     <!-- Input Fields -->
     <div class="info-group">
         <div class="info-item">
-            <label for="name">Name</label>
-            <p class="info-text"><?php echo htmlspecialchars($username); ?></p>
+            <label class="text-item" for="name">Name</label>
+            <p class="info-text"><?php echo htmlspecialchars($user_data['username'] ?? ''); ?></p>
         </div>
         <div class="info-item">
             <label for="name">Surname</label>
-            <p class="info-text"><?php echo htmlspecialchars($user_data['surname'] ?? 'N/A'); ?></p>
+            <p class="info-text"><?php echo htmlspecialchars($user_data['surname'] ?? 'Surname'); ?></p>
         </div>
         <div class="info-item">
             <label for="email">Email</label>
-            <p class="info-text"><?php echo htmlspecialchars($email); ?></p>
+            <p class="info-text"><?php echo htmlspecialchars($user_data['email'] ?? 'Email'); ?></p>
         </div>
         <div class="info-item">
             <label for="age">Age</label>
-            <p class="info-text"><?php echo htmlspecialchars($user_data['age'] ?? 'N/A'); ?></p>
+            <p class="info-text"><?php echo htmlspecialchars($user_data['age'] ?? 'Age'); ?></p>
         </div>
         <div class="info-item">
             <label for="gender">Gender</label>
-            <p class="info-text"><?php echo htmlspecialchars($user_data['gender'] ?? 'N/A'); ?></p>
+            <p class="info-text"><?php echo htmlspecialchars($user_data['gender'] ?? 'Gender'); ?></p>
         </div>
         <div class="info-item">
             <label for="proficiency">Proficiency</label>
-            <p class="info-text"><?php echo htmlspecialchars($user_data['proficiency'] ?? 'N/A'); ?></p>
+            <p class="info-text"><?php echo htmlspecialchars($user_data['proficiency'] ?? 'Proficiency'); ?></p>
         </div>
     </div>
 </div>

@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $message_class = "success";
                     
                     // Redirect to sleep.php after successful login
-                    header("Location: report.php");
+                    header("Location: sleep.php");
                     
                     exit(); // Make sure to stop the script after the redirect
                 } else {

@@ -8,12 +8,24 @@ function initialize_firebase_database() {
     echo "Initializing Firebase...\n";
 
     try {
-        $firebase = (new Factory)
-            ->withServiceAccount(__DIR__ . '/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-1619cac80a.json')
+        // Get the Firebase service account key from the environment variable
+        $firebaseKey = getenv('FIREBASE_SERVICE_ACCOUNT_KEY'); // Correct environment variable name
+
+        // Check if the environment variable is not set
+        if (!$firebaseKey) {
+            throw new Exception("Firebase service account key not found in environment variables.");
+        }
+
+        // Decode the JSON string from the environment variable
+        $serviceAccount = json_decode($firebaseKey, true);
+
+        // Initialize the Firebase factory with the decoded service account credentials
+        $factory = (new Factory)
+            ->withServiceAccount($serviceAccount)  // Use the decoded JSON array
             ->withDatabaseUri('https://sleep-monitor-3e4c3-default-rtdb.europe-west1.firebasedatabase.app/'); // Ensure the URI is correct
-        
+
         echo "Firebase initialized successfully!\n";
-        return $firebase->createDatabase();
+        return $factory->createDatabase();
     } catch (Exception $e) {
         // Print detailed error message
         echo "Error initializing Firebase: " . $e->getMessage();
@@ -46,4 +58,3 @@ function get_data_from_firebase($path) {
     }
 }
 ?>
-

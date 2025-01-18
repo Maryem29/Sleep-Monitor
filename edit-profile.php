@@ -1,10 +1,60 @@
 <?php
-session_start(); // Start the session
+// Start the session
+session_start();
 
-// Check if the user is logged in
+// Include the Firebase helper functions (firebase.php)
+include 'firebase.php';  // Make sure the path to firebase.php is correct
+
+// Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // Redirect to login page if not logged in
+    header("Location: login.php");
     exit();
+}
+
+// Fetch user data from session (this assumes user_id is stored in the session)
+$user_id = $_SESSION['user_id'];
+
+// Fetch user data from Firebase using the user_id
+try {
+    // Get user data from Firebase
+    $user_data = get_data_from_firebase("users/$user_id");  // Adjust the path if necessary
+
+    if (!$user_data) {
+        die("No data found for user ID: $user_id.");
+    }
+} catch (Exception $e) {
+    die("Error fetching user data: " . $e->getMessage());
+}
+// Handle form submission to update user data
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $updated_name = $_POST['username'];
+    $updated_surname = $_POST['surname'];
+    $updated_email = $_POST['email'];
+    $updated_age = $_POST['age'];
+    $updated_gender = $_POST['gender'];
+    $updated_proficiency = $_POST['proficiency'];
+
+    // Prepare data for Firebase update
+    $updated_data = [
+        'username' => $updated_name,
+        'surname' => $updated_surname,
+        'email' => $updated_email,
+        'age' => $updated_age,
+        'gender' => $updated_gender,
+        'proficiency' => $updated_proficiency
+    ];
+
+    // Update the user data in Firebase
+   try {
+        write_to_firebase("users/$user_id", $updated_data); // Update data in Firebase
+        $message = "Profile updated successfully!";
+        
+        // Redirect to profile page after successful update
+        header("Location: profile.php");
+        exit(); // Make sure to stop further code execution after redirect
+    } catch (Exception $e) {
+        $error_message = "Error updating profile: " . $e->getMessage();
+    }
 }
 
 // Get the current page name
@@ -592,32 +642,46 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <div class="input-group">
             <div class="input-item">
                 <label for="name">Name</label>
-                <input type="text" id="name" placeholder="Enter Name" value="Stella">
+                <input type="text" name="name" id="username" value="<?php echo htmlspecialchars($user_data['username'] ?? ''); ?>" required>
             </div>
             <div class="input-item">
                 <label for="surname">Surname</label>
-                <input type="text" id="surname" placeholder="Enter Surname" value="Shine">
+                <input type="text" name="surname" id="surname" value="<?php echo htmlspecialchars($user_data['surname'] ?? ''); ?>" required>
             </div>
             <div class="input-item">
                 <label for="age">Age</label>
-                <input type="number" id="age" placeholder="Enter Age" value="32">
+                <input type="number" name="age" id="age" value="<?php echo htmlspecialchars($user_data['age'] ?? ''); ?>" required>
             </div>
             <div class="input-item">
                 <label for="gender">Gender</label>
-                <input type="text" id="gender" placeholder="Enter Gender" value="Female">
+                <select name="gender" id="gender" required>
+                        <option value="Male" <?php echo $user_data['gender'] === 'Male' ? 'selected' : ''; ?>>Male</option>
+                        <option value="Female" <?php echo $user_data['gender'] === 'Female' ? 'selected' : ''; ?>>Female</option>
+                        <option value="Other" <?php echo $user_data['gender'] === 'Other' ? 'selected' : ''; ?>>Other</option>
+                    </select>
             </div>
             <div class="input-item">
                 <label for="email">Email</label>
-                <input type="email" id="email" placeholder="Enter Email" value="stella.shine@gmail.com">
+                <input type="email" name="email" id="email" value="<?php echo htmlspecialchars($user_data['email'] ?? ''); ?>" required>
             </div>
             <div class="input-item">
                 <label for="proficiency">Proficiency</label>
-                <input type="text" id="proficiency" placeholder="Enter Proficiency" value="Surgeon">
+                <input type="text" name="proficiency" id="proficiency" value="<?php echo htmlspecialchars($user_data['proficiency'] ?? ''); ?>" required>
             </div>
         </div>
 
         <!-- Save Button -->
-        <button class="save-button">Save Changes</button>
+        <a href="profile.php">
+        <button type="submit name="edit" class="save-button">Save Changes</button>
+   	 </a>
+   	 
+   	 
+   	 <?php if (isset($message)) { ?>
+            <div class="success-message"><?php echo $message; ?></div>
+        <?php } elseif (isset($error_message)) { ?>
+            <div class="error-message"><?php echo $error_message; ?></div>
+        <?php } ?>
+      
     </div>
 
     <script>
