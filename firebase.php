@@ -26,7 +26,7 @@ function initialize_firebase() {
 // Function to register a new user and save their profile in Realtime Database
 function register_user($userId, $userData) {
     $firebase = initialize_firebase();
-    $database = $firebase->getDatabase();  // Corrected method to get the database reference
+    $database = $firebase->getDatabase();  // Use getDatabase() here
 
     try {
         // Save user data to Realtime Database under 'users' node
@@ -41,7 +41,7 @@ function register_user($userId, $userData) {
 // Function to update the user's profile data
 function update_user_profile($userId, $profileData) {
     $firebase = initialize_firebase();
-    $database = $firebase->getDatabase();  // Corrected method to get the database reference
+    $database = $firebase->getDatabase();  // Use getDatabase() here
 
     try {
         // Update user's profile data in the Realtime Database
@@ -56,7 +56,7 @@ function update_user_profile($userId, $profileData) {
 // Function to upload sleep data for the user
 function upload_sleep_data($userId, $sleepData) {
     $firebase = initialize_firebase();
-    $database = $firebase->getDatabase();  // Corrected method to get the database reference
+    $database = $firebase->getDatabase();  // Use getDatabase() here
 
     try {
         // Add sleep data to a subcollection under the user's node
@@ -71,7 +71,7 @@ function upload_sleep_data($userId, $sleepData) {
 // Function to retrieve all user data from Realtime Database
 function get_all_users_data() {
     $firebase = initialize_firebase();
-    $database = $firebase->getDatabase();  // Corrected method to get the database reference
+    $database = $firebase->getDatabase();  // Use getDatabase() here
 
     try {
         // Retrieve all users from the 'users' node
@@ -88,7 +88,7 @@ function get_all_users_data() {
 // Function to retrieve all user data (including username, surname, email, age, gender, proficiency)
 function get_user_data($userId) {
     $firebase = initialize_firebase();
-    $database = $firebase->getDatabase();  // Corrected method to get the database reference
+    $database = $firebase->getDatabase();  // Use getDatabase() here
 
     try {
         // Retrieve user data from Firebase
@@ -106,7 +106,7 @@ function get_user_data($userId) {
 // Function to retrieve sleep data for the user
 function get_sleep_data($userId) {
     $firebase = initialize_firebase();
-    $database = $firebase->getDatabase();  // Corrected method to get the database reference
+    $database = $firebase->getDatabase();  // Use getDatabase() here
 
     try {
         // Retrieve sleep data for the user
