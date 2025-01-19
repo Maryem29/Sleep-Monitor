@@ -16,3 +16,7 @@ main.html
 main.py
 profile.html
 register.html
+.idea
+node_modules
+.angular
+dist
