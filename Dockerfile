@@ -1,9 +1,7 @@
 # Use the official PHP image with Apache
 FROM php:8.2-apache
 
-# Copy all project files into the container
-# Copy Firebase service account file to the container
-COPY sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json /var/www/html/
+COPY sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json /var/www/html/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json
 # Install Composer for dependency management (if needed)
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
