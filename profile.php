@@ -554,7 +554,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Team Member 1 -->
         <a href="https://github.com/safrinfaizz" target="_blank" class="team-member">
             <div>
-                <img src="../../images/safreena.jpg" alt="Safreena">
+                <img src="images/safreena.jpg" alt="Safreena">
             </div>
             <h3>Safreena</h3>
             <p>Front-End Developer</p>
@@ -564,7 +564,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Team Member 2 -->
         <a href="https://github.com/SenaDok" target="_blank" class="team-member">
             <div>
-                <img src="../../images/sena.jpg" alt="Sena">
+                <img src="images/sena.jpg" alt="Sena">
             </div>
             <h3>Sena</h3>
             <p>Front-End Developer</p>
@@ -574,7 +574,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Team Member 3 -->
         <a href="https://github.com/AngelinaNSS" target="_blank" class="team-member">
             <div>
-                <img src="../../images/angelina.jpg" alt="Angelina">
+                <img src="images/angelina.jpg" alt="Angelina">
             </div>
             <h3>Angelina</h3>
             <p>Front-End Developer</p>
@@ -584,7 +584,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Team Member 4 -->
         <a href="https://github.com/kseniiavi" target="_blank" class="team-member">
             <div>
-                <img src="../../images/kseniia.jpg" alt="Kseniia">
+                <img src="images/kseniia.jpg" alt="Kseniia">
             </div>
             <h3>Kseniia</h3>
             <p>Back-End Developer</p>
@@ -594,7 +594,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Team Member 5 -->
         <a href="https://github.com/Maryem29" target="_blank" class="team-member">
             <div>
-                <img src="../../images/maryem.jpg" alt="Maryem">
+                <img src="images/maryem.jpg" alt="Maryem">
             </div>
             <h3>Maryem</h3>
             <p>Back-End Developer</p>
@@ -649,7 +649,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <div class="container">
     <!-- Profile Picture -->
     <div class="profile-picture">
-        <img src="../../images/default.jpeg" alt="Default Profile Picture">
+        <img src="images/default.jpeg" alt="Default Profile Picture">
     </div>
 
 	<a href="edit-profile.php">

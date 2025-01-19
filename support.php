@@ -1,22 +1,9 @@
-<?php
-session_start(); // Start the session
-
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // Redirect to login page if not logged in
-    exit();
-}
-
-// Get the current page name
-$current_page = basename($_SERVER['PHP_SELF']);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sleep Statistics</title>
+    <title>Support</title>
     <style>
         /* General Styles */
         body {
@@ -87,9 +74,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
 	    flex-direction: column;
 	    justify-content: space-between;
 	    align-items: center;
-	    width: 50px; /* Increased width */
-	    height: 50px; /* Increased height */
-	    padding: 12px; /* Adjusted padding for better proportions */
+	    width: 50px;
+	    height: 50px; 
+	    padding: 12px;
 	    border-radius: 50%;
 	    transition: background-color 0.3s ease;
 	    background-color: white;
@@ -412,21 +399,21 @@ $current_page = basename($_SERVER['PHP_SELF']);
 	    }
 
 	    .settings-overlay {
-		flex-direction: column; 
+		flex-direction: column; /* Stack the settings and about sections */
 		gap: 20px;
 	    }
 	    
 	    .team-section {
-		grid-template-columns: repeat(2, 1fr); 
+		grid-template-columns: repeat(2, 1fr); /* Two items per row on larger screens */
 	    }
 
 	    .settings-menu, .about-us {
-		max-width: 100%; 
+		max-width: 100%; /* Use full width for smaller screens */
 		flex: none;
 	    }
 
 	    .bar-chart {
-		height: 150px;
+		height: 150px; /* Adjust chart height */
 	    }
 
 	    .nav-link {
@@ -441,15 +428,64 @@ $current_page = basename($_SERVER['PHP_SELF']);
     .settings-overlay.active {
         display: flex; /* Flex layout is only applied when active */
     }
-        
-        
+        /* FAQ Section */
+    .faq-section {
+        background-color: white;
+        color: #4C57A7;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-top: 40px;
+        text-align: left;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .faq-section h2 {
+        font-size: 28px;
+        margin-bottom: 20px;
+        color: #4C57A7;
+    }
+
+    .question {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 15px 0;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .question:hover {
+        color: #2C3E99;
+    }
+
+    .answer {
+        display: none;
+        font-size: 16px;
+        margin: 5px 0 20px 0;
+        padding-left: 20px;
+        color: #333;
+        line-height: 1.5;
+    }
+
+    .github-button {
+        background-color: #4C57A7;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 20px;
+        align-self: center;
+    }
+
+    .github-button:hover {
+        background-color: #3B4A8A;
+    }     
     </style>
 </head>
 <body>
-
-
-
-    <!-- Header -->
     <div class="header">
         <img src="images/sleep.png" alt="Sleep Med Logo">
         <div class="date-time" id="currentDateTime"></div>
@@ -458,7 +494,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <button id="settings-btn" class="settings-button">⋮</button>
         </div>
     </div>
-
 
     <script>
         // Update the date and time dynamically
@@ -473,220 +508,179 @@ $current_page = basename($_SERVER['PHP_SELF']);
         updateDateTime();
     </script>
 
-
-
-<div class="settings-overlay" id="settings-overlay">
-    <!-- Settings Menu -->
-    <div class="settings-menu">
-        <button class="close-settings" id="close-settings">Close ✕</button>
-        <h2>Settings</h2>
-        <ul>
+    <!-- Settings Overlay -->
+    <div class="settings-overlay" id="settings-overlay">
+        <div class="settings-menu">
+            <button class="close-settings" id="close-settings">Close ✕</button>
+            <h2>Settings</h2>
+            <ul>
             <li><a href="#">Switch Account</a></li>
             <li><a href="#">Delete Account</a></li>
             <li><a href="#">Language</a></li>
-            <li><a href="support.php">Support</a></li>
+            <li><a href="support.html">Support</a></li>
             <li><a href="app-information.php">App Information</a></li>
-        </ul>
-    </div>
-    
-    
-    
-    
-    <!-- Team Section -->
-    <div class="team-section">
-        <h1>Our Team</h1>
-
-        <!-- Team Member 1 -->
-        <a href="https://github.com/safrinfaizz" target="_blank" class="team-member">
-            <div>
-                <img src="images/safreena.jpg" alt="Safreena">
-            </div>
-            <h3>Safreena</h3>
-            <p>Front-End Developer</p>
-            <p>"As a health informatics student interested in building websites and working with data, I contributed to the Sleep Monitor project by developing the front-end. For me, front-end development is where creativity and technology meet to solve problems and inspire users."</p>
-        </a>
-
-        <!-- Team Member 2 -->
-        <a href="https://github.com/SenaDok" target="_blank" class="team-member">
-            <div>
-                <img src="images/sena.jpg" alt="Sena">
-            </div>
-            <h3>Sena</h3>
-            <p>Front-End Developer</p>
-            <p>“A healthy body holds a healthy mind and soul, and that's what we should strive to have and share”</p>
-        </a>
-
-        <!-- Team Member 3 -->
-        <a href="https://github.com/AngelinaNSS" target="_blank" class="team-member">
-            <div>
-                <img src="images/angelina.jpg" alt="Angelina">
-            </div>
-            <h3>Angelina</h3>
-            <p>Front-End Developer</p>
-            <p>"I’m a health informatics student with a passion for using tech to improve healthcare. With this Sleep Monitor project, I aim to help people track and improve their sleep, especially for those working late shifts, so they can feel better and perform their best."</p>
-        </a>
-
-        <!-- Team Member 4 -->
-        <a href="https://github.com/kseniiavi" target="_blank" class="team-member">
-            <div>
-                <img src="images/kseniia.jpg" alt="Kseniia">
-            </div>
-            <h3>Kseniia</h3>
-            <p>Back-End Developer</p>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Est quaerat tempora.</p>
-        </a>
-
-        <!-- Team Member 5 -->
-        <a href="https://github.com/Maryem29" target="_blank" class="team-member">
-            <div>
-                <img src="images/maryem.jpg" alt="Maryem">
-            </div>
-            <h3>Maryem</h3>
-            <p>Back-End Developer</p>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Est quaerat tempora.</p>
-        </a>
-    </div>
-    
-</div>
-
-
-
-
-
-
-<script>
-    // Open settings overlay
-    const settingsBtn = document.getElementById("settings-btn");
-    const settingsOverlay = document.getElementById("settings-overlay");
-    const closeSettings = document.getElementById("close-settings");
-
-    // Open settings overlay
-    settingsBtn.addEventListener("click", () => {
-        settingsOverlay.classList.add("active");
-    });
-
-    // Close settings overlay
-    closeSettings.addEventListener("click", () => {
-        settingsOverlay.classList.remove("active");
-    });
-
-    // Optional: Close overlay when clicking outside the settings panel
-    settingsOverlay.addEventListener("click", (e) => {
-        if (e.target === settingsOverlay) {
-            settingsOverlay.classList.remove("active");
-        }
-    });
-
-</script>
-
-
-<!-- Go Back Button -->
-<button onclick="goBack()" class="go-back-button">Go Back</button>
-
-<script>
-    // Function to go back to the previous page
-    function goBack() {
-        window.history.back();
-    }
-</script>
-
-
-
-
-
-
-    <div class="container">
-        <!-- Section 1 -->
-        <div class="info-section">
-            <div class="text-box">
-                <h2>Sleep Med</h2>
-                <p> A real-time monitoring app powered by a chest sensor for accurate health and sleep insights.</p>
-            </div>
-            <div class="image-box">
-                <img src="images/pic2.jpg" alt="Doctors resting">
-            </div>
+            </ul>
         </div>
 
-        <!-- Section 2 -->
-        <div class="info-section reverse">
-            <div class="text-box">
-                <h2>Night Shift Workers</h2>
-                 <p> Tailored specifically for night shift healthcare workers to monitor and improve sleep quality and health.</p>
-            </div>
-            <div class="image-box">
-                <img src="images/pic3.jpg" alt="Key features">
-            </div>
-        </div>
+        <div class="team-section">
+            <h1>Our Team</h1>
+                <!-- Team Member 1 -->
+                <a href="https://github.com/safrinfaizz" target="_blank" class="team-member">
+                    <img src="images/safreena.jpg" alt="Safreena">
+                    <h3>Safreena</h3>
+                    <p>Front-End Developer</p>
+                    <p>"As a health informatics student interested in building websites and working with data, I contributed to the Sleep Monitor project by developing the front-end. For me, front-end development is where creativity and technology meet to solve problems and inspire users."</p>
+                </a>
 
-        <!-- Section 3 -->
-        <div class="info-section">
-            <div class="text-box">
-                <h2> Better Care for Patients</h2>
-                <p>Enhancing healthcare providers' performance for improved patient outcomes</p>
-            </div>
-            <div class="image-box">
-                <img src="images/pic4.jpg" alt="Getting started">
-            </div>
-        </div>
+                <!-- Team Member 2 -->
+                <a href="https://github.com/SenaDok" target="_blank" class="team-member">
+                    <img src="images/sena.jpg" alt="Sena">
+                    <h3>Sena</h3>
+                    <p>Front-End Developer</p>
+                    <p>“A healthy body holds a healthy mind and soul, and that's what we should strive to have and share”</p>
+                </a>
 
-        <!-- Combined Section -->
-        <div class="combined-box">
-            <h2 style="color: #4C57A7;">Sleep Med</h2>
-            <div class="features-section">
-                <ul class="feature-list" style="list-style: none; padding: 0; margin: 20px 0;">
-                    <li style="display: flex; align-items: center; margin-bottom: 15px;">
-                        <div style="width: 10px; height: 10px; background-color: #4C57A7; border-radius: 50%; margin-right: 10px;"></div>
-                        <span style="color: #4C57A7;">Real-Time Health Monitoring</span>
-                    </li>
-                    <li style="display: flex; align-items: center; margin-bottom: 15px;">
-                        <div style="width: 10px; height: 10px; background-color: #4C57A7; border-radius: 50%; margin-right: 10px;"></div>
-                        <span style="color: #4C57A7;">Weekly and Monthly Reports</span>
-                    </li>
-                    <li style="display: flex; align-items: center; margin-bottom: 15px;">
-                        <div style="width: 10px; height: 10px; background-color: #4C57A7; border-radius: 50%; margin-right: 10px;"></div>
-                        <span style="color: #4C57A7;">Personalized Sleep Insights</span>
-                    </li>
-                </ul>
-            </div>
+                <!-- Team Member 3 -->
+                <a href="https://github.com/AngelinaNSS" target="_blank" class="team-member">
+                    <img src="images/angelina.jpg" alt="Angelina">
+                    <h3>Angelina</h3>
+                    <p>Front-End Developer</p>
+                    <p>"I’m a health informatics student with a passion for using tech to improve healthcare. With this Sleep Monitor project, I aim to help people track and improve their sleep, especially for those working late shifts, so they can feel better and perform their best."</p>
+                </a>
 
-            <!-- Blue Box -->
-            <div class="blue-box">
-                Healthcare  providers  on  night  shifts  face  significant  challenges,  including disrupted circadian rhythms, high stress levels,
-                and demanding workloads, leading to poor sleep quality, burnout, and compromised patient care.
-                To address these issues, the app utilizes the **BITalino sensor**, which attaches to the healthcare worker's
-                chest to capture real-time **ECG (Electrocardiogram)** data.
-                this data offers insights into heart rate variability, stress levels, and sleep patterns.
-                Through the app, users can monitor real-time metrics and access detailed weekly and monthly reports,
-                enabling them to optimize recovery, improve sleep quality, and enhance their performance during night shifts,
-                ultimately benefiting both healthcare providers and their patients.
-            </div>
+                <!-- Team Member 4 -->
+                <a href="https://github.com/kseniiavi" target="_blank" class="team-member">
+                    <img src="images/kseniia.jpg" alt="Kseniia">
+                    <h3>Kseniia</h3>
+                    <p>Back-End Developer</p>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Est quaerat tempora.</p>
+                </a>
 
-            <!-- Connections Section -->
-            <div class="connections-section">
-                <h2 style="color: #4C57A7; text-align: center;">Connections</h2>
-                <p style="color: #4C57A7; text-align: center;">MedSleep is connected through sensors to doctors, and then the data can be accessed on phones</p>
-                <div class="connection-graphic" style="display: flex; justify-content: center; align-items: center; margin: 20px auto;">
-                    <img src="images/graphic.png" alt="Connections Graphic" style="max-width: 100%; height: auto; display: block;">
-                </div>
+                <!-- Team Member 5 -->
+                <a href="https://github.com/Maryem29" target="_blank" class="team-member">
+                    <img src="images/maryem.jpg" alt="Maryem">
+                    <h3>Maryem</h3>
+                    <p>Back-End Developer</p>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Est quaerat tempora.</p>
+                </a>
             </div>
         </div>
     </div>
-    
-    
-    
-    <!-- Footer -->
-    <footer>
-        <hr>
-        <p>Created by: Kseniia, Maryem, Sena, Saffree, Angelina - Sleep Med </p>
-    </footer>
 
     <script>
-        // Handle logout
-        document.getElementById("logout-btn").addEventListener("click", function () {
-            if (confirm("Are you sure you want to log out?")) {
+        // Open settings overlay
+        const settingsBtn = document.getElementById("settings-btn");
+        const settingsOverlay = document.getElementById("settings-overlay");
+        const closeSettings = document.getElementById("close-settings");
+
+        settingsBtn.addEventListener("click", () => {
+            settingsOverlay.classList.add("active");
+        });
+
+        closeSettings.addEventListener("click", () => {
+            settingsOverlay.classList.remove("active");
+        });
+    </script>
+
+    <!-- Main Content for Support -->
+     <div>
+        <button onclick="goBack()" class="go-back-button">Go Back</button>
+    </div>
+    <div class="container">
+        <div class="info-section">
+            <div class="text-box">
+                <h2>Support</h2>
+                <p>Welcome to the support section! Here, you'll find helpful information about the app and how to make the most of it.</p>
+                <p>If you have any issues, feel free to reach out to our team for assistance.</p>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+        
+            <div class="question" onclick="toggleAnswer(1)">
+                Q: How can I switch accounts?
+            </div>
+            <div class="answer" id="answer1">
+                A: You can switch accounts by going to the settings page and clicking on "Switch Account."
+            </div>
+        
+            <div class="question" onclick="toggleAnswer(2)">
+                Q: How can I reset my password or update personal information?
+            </div>
+            <div class="answer" id="answer2">
+                A: Go to the profile page, where you can update your personal information or reset your password.
+            </div>
+        
+            <div class="question" onclick="toggleAnswer(3)">
+                Q: How can I delete my account?
+            </div>
+            <div class="answer" id="answer3">
+                A: Navigate to the settings page and select "Delete Account."
+            </div>
+        
+            <div class="question" onclick="toggleAnswer(4)">
+                Q: Where can I view real-time data?
+            </div>
+            <div class="answer" id="answer4">
+                A: Real-time data is available on the home page.
+            </div>
+        
+            <div class="question" onclick="toggleAnswer(5)">
+                Q: Where can I find my weekly or monthly reports?
+            </div>
+            <div class="answer" id="answer5">
+                A: Reports are available in the "Reports" page.
+            </div>
+        
+            <div class="question" onclick="toggleAnswer(6)">
+                Q: How can I learn to use the app effectively?
+            </div>
+            <div class="answer" id="answer6">
+                A: Refer to the "App Information" page for guidance on using the app effectively.
+            </div>
+        
+            <div class="question" onclick="toggleAnswer(7)">
+                Q: How do I set alerts?
+            </div>
+            <div class="answer" id="answer7">
+                A: Alerts can be set from the "Alerts" page in the app.
+            </div>
+        
+            <button class="github-button" onclick="window.open('https://github.com/kseniiavi/Sleep-Monitor')">
+                GitHub
+            </button>
+        </div>
+
+        <div class="blue-box">
+            <h2>Contact Support</h2>
+            <p>If you need assistance, please contact our support team at <strong>support@sleepmed.com</strong></p>
+        </div>
+
+    <script>
+        // Function to go back to the previous page
+        function goBack() {
+            if (document.referrer) {
+                window.history.back();
+            } else {
                 window.location.href = "login.php";
             }
-        });
-     </script>
+        }
+        function toggleAnswer(answerId) {
+            // Hide all answers
+            const allAnswers = document.querySelectorAll('.answer');
+            allAnswers.forEach(answer => answer.style.display = 'none');
+
+            // Show selected answer
+            const selectedAnswer = document.getElementById('answer' + answerId);
+            selectedAnswer.style.display = 'block';
+        }
+
+    </script>
+    <footer>
+        <hr>
+        <p>Sleep Med - All Rights Reserved</p>
+    </footer>
+
 </body>
 </html>

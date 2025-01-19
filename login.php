@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php endif; ?>
 
         <div class="white-box">
-            <img src="images/sleep med.png" alt="Logo" class="logo">
+            <img src="images/sleep.png" alt="Logo" class="logo">
             <div class="blue-box">
                 <form action="" method="post">
                     <div class="input-group">
