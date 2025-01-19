@@ -10,15 +10,17 @@ RUN apt-get update && apt-get install -y \
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Copy the Firebase configuration file
+# Copy the Firebase configuration file (update this path if needed)
 COPY sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json /var/www/html/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json
 
-# Install Composer (for dependency management, if needed)
+# Install Composer (for dependency management)
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy the web application files into the container
+# Copy your PHP application files into the container
 COPY . /var/www/html/
-RUN composer install --no-dev --optimize-autoloader
+
+# Install Composer dependencies
+RUN cd /var/www/html && composer install --no-dev --optimize-autoloader
 
 # Set proper permissions for Apache to read the files
 RUN chown -R www-data:www-data /var/www/html
