@@ -22,8 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $message_class = "error";
     } else {
         // Retrieve all users from Firebase Realtime Database
-        $users = get_all_users_data(); // Use the new function to get all users
-        
+        $users = get_all_users_data();
+        if (empty($users)) {
+            die("Error fetching users from Firebase.");
+        }
+
         // Loop through users and check if the username or email exists
         $user_found = false;
         foreach ($users as $userId => $user) {
