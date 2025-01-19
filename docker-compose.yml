@@ -1,11 +1,12 @@
-version: '3.8'
+version: "3.8"
 services:
   web:
     build:
       context: .
     ports:
-      - "8080:80"  # Перенаправление порта 80 контейнера на порт 8080 хоста
+      - "8080:80"  # Map port 80 in the container to port 8080 on your host
     volumes:
-      - .:/var/www/html
+      - .:/var/www/html  # Mount your project directory to /var/www/html in the container
     environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/var/www/html/firebase-key.json
+      - GOOGLE_APPLICATION_CREDENTIALS=/var/www/html/firebase-key.json  # Ensure this points to the correct location for Firebase credentials
+    command: ["apache2-foreground"]
