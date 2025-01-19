@@ -30,3 +30,5 @@ WORKDIR /var/www/html
 
 # Run Apache in the foreground
 CMD ["apache2-foreground"]
+
+ENV GOOGLE_APPLICATION_CREDENTIALS=/var/www/html/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json
