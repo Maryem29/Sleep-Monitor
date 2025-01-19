@@ -18,6 +18,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Copy the web application files into the container
 COPY . /var/www/html/
+RUN composer install --no-dev --optimize-autoloader
 
 # Set proper permissions for Apache to read the files
 RUN chown -R www-data:www-data /var/www/html
