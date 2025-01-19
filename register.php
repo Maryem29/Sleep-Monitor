@@ -2,6 +2,10 @@
 include 'firebase.php';
 session_start(); // Start session to store the success message
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+
 // Initialize message variable
 $message = '';
 $message_class = '';
@@ -34,7 +38,6 @@ try {
                 // Hash password
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT); // Hash the password before saving
 
-
                 // Prepare data
                 $user_data = [
                     'username' => $username,
@@ -42,11 +45,11 @@ try {
                     'password' => $hashed_password
                 ];
 
-                // Check for existing users
-                $existing_users = get_data_from_firebase("/users");
+                // Check for existing users in Firebase
+                $existing_users = get_user_data("/users");
 
                 if (is_array($existing_users) || is_object($existing_users)) {
-                    foreach ($existing_users as $user) {
+                    foreach ($existing_users as $userId => $user) {
                         if ($user['username'] === $username || $user['email'] === $email) {
                             $message = "Username or email already exists.";
                             $message_class = "error";
@@ -58,8 +61,10 @@ try {
                 }
 
                 if (empty($message)) {
-                    // Write new user data
-                    write_to_firebase("/users", $user_data);
+                    // Write new user data to Firebase
+                    $userId = uniqid(); // Create a unique user ID
+                    register_user($userId, $user_data); // Store user in Firebase
+
                     $_SESSION['success_message'] = "Registration successful! Now please log in.";
                     // Redirect to login page
                     header('Location: login.php');
@@ -73,8 +78,6 @@ try {
     $message_class = "error";
 }
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">

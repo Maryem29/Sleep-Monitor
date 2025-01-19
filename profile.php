@@ -1,39 +1,29 @@
 <?php
-
-// Start the session
 session_start();
 
+// Include Firebase PHP configuration
+require 'firebase.php';
 
-
-
-
-// Include the Firebase helper functions (firebase.php)
-require_once 'firebase.php';  // Make sure the path to firebase.php is correct
-
-// Redirect if not logged in
+// Ensure the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
+    header('Location: login.php');
+    exit;
 }
+$userId = $_SESSION['user_id']; // Or another method to get the current user's ID
 
-// Fetch user data from session (this assumes user_id is stored in the session)
-$user_id = $_SESSION['user_id'];
+// Retrieve user data from Firebase
+$user_data = get_user_data($userId);
 
-// Fetch user data from Firebase using the user_id
-try {
-    // Get user data from Firebase
-    $user_data = get_data_from_firebase("users/$user_id");  // Adjust the path if necessary
+// Set default values for placeholders
+$defaultText = 'Not available';
 
-    if (!$user_data) {
-        die("No data found for user ID: $user_id.");
-    }
-} catch (Exception $e) {
-    die("Error fetching user data: " . $e->getMessage());
-}
-
-$username = isset($user_data['username']) ? $user_data['username'] : 'Guest';
-$email = isset($user_data['email']) ? $user_data['email'] : 'No email';
-
+// Use the data if available, or fall back to placeholders
+$userName = !empty($user_data['username']) ? $user_data['username'] : $defaultText;
+$userSurname = !empty($user_data['surname']) ? $user_data['surname'] : $defaultText;
+$userEmail = !empty($user_data['email']) ? $user_data['email'] : $defaultText;
+$userAge = !empty($user_data['age']) ? $user_data['age'] : $defaultText;
+$userGender = !empty($user_data['gender']) ? $user_data['gender'] : $defaultText;
+$userProficiency = !empty($user_data['proficiency']) ? $user_data['proficiency'] : $defaultText;
 
 
 
@@ -669,28 +659,28 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <!-- Input Fields -->
     <div class="info-group">
         <div class="info-item">
-            <label class="text-item" for="name">Name</label>
-            <p class="info-text"><?php echo htmlspecialchars($user_data['username'] ?? ''); ?></p>
+            <label for="name">Name</label>
+            <p class="info-text"><?php echo htmlspecialchars($userName); ?></p>
         </div>
         <div class="info-item">
-            <label for="name">Surname</label>
-            <p class="info-text"><?php echo htmlspecialchars($user_data['surname'] ?? 'Surname'); ?></p>
+            <label for="surname">Surname</label>
+            <p class="info-text"><?php echo htmlspecialchars($userSurname); ?></p>
         </div>
         <div class="info-item">
             <label for="email">Email</label>
-            <p class="info-text"><?php echo htmlspecialchars($user_data['email'] ?? 'Email'); ?></p>
+            <p class="info-text"><?php echo htmlspecialchars($userEmail); ?></p>
         </div>
         <div class="info-item">
             <label for="age">Age</label>
-            <p class="info-text"><?php echo htmlspecialchars($user_data['age'] ?? 'Age'); ?></p>
+            <p class="info-text"><?php echo htmlspecialchars($userAge); ?></p>
         </div>
         <div class="info-item">
             <label for="gender">Gender</label>
-            <p class="info-text"><?php echo htmlspecialchars($user_data['gender'] ?? 'Gender'); ?></p>
+            <p class="info-text"><?php echo htmlspecialchars($userGender); ?></p>
         </div>
         <div class="info-item">
             <label for="proficiency">Proficiency</label>
-            <p class="info-text"><?php echo htmlspecialchars($user_data['proficiency'] ?? 'Proficiency'); ?></p>
+            <p class="info-text"><?php echo htmlspecialchars($userProficiency); ?></p>
         </div>
     </div>
 </div>

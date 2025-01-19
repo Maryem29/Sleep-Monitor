@@ -2,6 +2,9 @@
 // Start the session
 session_start();
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 // Include the Firebase helper functions (firebase.php)
 include 'firebase.php';  // Make sure the path to firebase.php is correct
 
@@ -12,12 +15,15 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Fetch user data from session (this assumes user_id is stored in the session)
-$user_id = $_SESSION['user_id'];
+$userId = $_SESSION['user_id']; // Or another method to get the current user's ID
+
+// Retrieve user data from Firebase
+$user_data = get_user_data($userId);
 
 // Fetch user data from Firebase using the user_id
 try {
     // Get user data from Firebase
-    $user_data = get_data_from_firebase("users/$user_id");  // Adjust the path if necessary
+    $user_data = get_user_data($userId);  // Adjust the path if necessary
 
     if (!$user_data) {
         die("No data found for user ID: $user_id.");
@@ -25,6 +31,7 @@ try {
 } catch (Exception $e) {
     die("Error fetching user data: " . $e->getMessage());
 }
+
 // Handle form submission to update user data
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $updated_name = $_POST['username'];
@@ -44,14 +51,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'proficiency' => $updated_proficiency
     ];
 
-    // Update the user data in Firebase
-   try {
-        write_to_firebase("users/$user_id", $updated_data); // Update data in Firebase
+    try {
+        // Update data in Firebase
+        update_user_profile($userId, $updated_data);
         $message = "Profile updated successfully!";
         
-        // Redirect to profile page after successful update
+        // Redirect after successful update
         header("Location: profile.php");
-        exit(); // Make sure to stop further code execution after redirect
+        exit();
     } catch (Exception $e) {
         $error_message = "Error updating profile: " . $e->getMessage();
     }
@@ -544,7 +551,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Team Member 1 -->
         <a href="https://github.com/safrinfaizz" target="_blank" class="team-member">
             <div>
-                <img src="../../images/safreena.jpg" alt="Safreena">
+                <img src="./images/safreena.jpg" alt="Safreena">
             </div>
             <h3>Safreena</h3>
             <p>Front-End Developer</p>
@@ -554,7 +561,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Team Member 2 -->
         <a href="https://github.com/SenaDok" target="_blank" class="team-member">
             <div>
-                <img src="../../images/sena.jpg" alt="Sena">
+                <img src="./images/sena.jpg" alt="Sena">
             </div>
             <h3>Sena</h3>
             <p>Front-End Developer</p>
@@ -564,7 +571,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Team Member 3 -->
         <a href="https://github.com/AngelinaNSS" target="_blank" class="team-member">
             <div>
-                <img src="../../images/angelina.jpg" alt="Angelina">
+                <img src="./images/angelina.jpg" alt="Angelina">
             </div>
             <h3>Angelina</h3>
             <p>Front-End Developer</p>
@@ -574,7 +581,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Team Member 4 -->
         <a href="https://github.com/kseniiavi" target="_blank" class="team-member">
             <div>
-                <img src="../../images/kseniia.jpg" alt="Kseniia">
+                <img src="./images/kseniia.jpg" alt="Kseniia">
             </div>
             <h3>Kseniia</h3>
             <p>Back-End Developer</p>
@@ -584,7 +591,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Team Member 5 -->
         <a href="https://github.com/Maryem29" target="_blank" class="team-member">
             <div>
-                <img src="../../images/maryem.jpg" alt="Maryem">
+                <img src="./images/maryem.jpg" alt="Maryem">
             </div>
             <h3>Maryem</h3>
             <p>Back-End Developer</p>
@@ -631,77 +638,66 @@ $current_page = basename($_SERVER['PHP_SELF']);
     
 
 
+    <!-- Profile Form -->
     <div class="container">
+        <h2>Edit Profile</h2>
+
+        <?php if (isset($message)) : ?>
+            <p style="color: green;"><?php echo $message; ?></p>
+        <?php elseif (isset($error_message)) : ?>
+            <p style="color: red;"><?php echo $error_message; ?></p>
+        <?php endif; ?>
+
         <!-- Profile Picture -->
         <div class="profile-picture">
-            <img src="../../images/default.jpeg" alt="Default Profile Picture">
+            <img src="/images/default.jpeg" alt="Default Profile Picture">
             <input type="file" accept="image/*" onchange="changeProfilePicture(event)">
         </div>
 
-        <!-- Input Fields -->
-        <div class="input-group">
-            <div class="input-item">
-                <label for="name">Name</label>
-                <input type="text" name="name" id="username" value="<?php echo htmlspecialchars($user_data['username'] ?? ''); ?>" required>
-            </div>
-            <div class="input-item">
-                <label for="surname">Surname</label>
-                <input type="text" name="surname" id="surname" value="<?php echo htmlspecialchars($user_data['surname'] ?? ''); ?>" required>
-            </div>
-            <div class="input-item">
-                <label for="age">Age</label>
-                <input type="number" name="age" id="age" value="<?php echo htmlspecialchars($user_data['age'] ?? ''); ?>" required>
-            </div>
-            <div class="input-item">
-                <label for="gender">Gender</label>
-                <select name="gender" id="gender" required>
-                        <option value="Male" <?php echo $user_data['gender'] === 'Male' ? 'selected' : ''; ?>>Male</option>
-                        <option value="Female" <?php echo $user_data['gender'] === 'Female' ? 'selected' : ''; ?>>Female</option>
-                        <option value="Other" <?php echo $user_data['gender'] === 'Other' ? 'selected' : ''; ?>>Other</option>
-                    </select>
-            </div>
-            <div class="input-item">
-                <label for="email">Email</label>
-                <input type="email" name="email" id="email" value="<?php echo htmlspecialchars($user_data['email'] ?? ''); ?>" required>
-            </div>
-            <div class="input-item">
-                <label for="proficiency">Proficiency</label>
-                <input type="text" name="proficiency" id="proficiency" value="<?php echo htmlspecialchars($user_data['proficiency'] ?? ''); ?>" required>
-            </div>
-        </div>
+        <form method="POST" action="edit-profile.php" enctype="multipart/form-data">
+            <div class="input-group">
+                <div class="input-item">
+                    <label for="name">Name</label>
+                    <input type="text" name="username" id="username" value="<?php echo htmlspecialchars($user_data['username'] ?? ''); ?>" required>
+                </div>
+                <div class="input-item">
+                    <label for="surname">Surname</label>
+                    <input type="text" name="surname" id="surname" value="<?php echo htmlspecialchars($user_data['surname'] ?? ''); ?>" required>
+                </div>
+                <div class="input-item">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" value="<?php echo htmlspecialchars($user_data['email'] ?? ''); ?>" required>
+                </div>
+                <div class="input-item">
+                    <label for="age">Age</label>
+                    <input type="number" name="age" id="age" value="<?php echo htmlspecialchars($user_data['age'] ?? ''); ?>" required>
+                </div>
+	<div class="input-item">
+	    <label for="gender">Gender</label>
+	    <select name="gender" id="gender" required>
+		<option value="Male" <?php echo isset($user_data['gender']) && $user_data['gender'] === 'Male' ? 'selected' : ''; ?>>Male</option>
+		<option value="Female" <?php echo isset($user_data['gender']) && $user_data['gender'] === 'Female' ? 'selected' : ''; ?>>Female</option>
+		<option value="Other" <?php echo isset($user_data['gender']) && $user_data['gender'] === 'Other' ? 'selected' : ''; ?>>Other</option>
+	    </select>
+	</div>
 
-        <!-- Save Button -->
-        <a href="profile.php">
-        <button type="submit name="edit" class="save-button">Save Changes</button>
-   	 </a>
-   	 
-   	 
-   	 <?php if (isset($message)) { ?>
-            <div class="success-message"><?php echo $message; ?></div>
-        <?php } elseif (isset($error_message)) { ?>
-            <div class="error-message"><?php echo $error_message; ?></div>
-        <?php } ?>
-      
+                <div class="input-item">
+                    <label for="proficiency">Proficiency</label>
+                    <input type="text" name="proficiency" id="proficiency" value="<?php echo htmlspecialchars($user_data['proficiency'] ?? ''); ?>" required>
+                </div>
+            </div>
+
+            <button type="submit" class="save-button">Save Changes</button>
+        </form>
     </div>
 
-    <script>
-        function changeProfilePicture(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.querySelector('.profile-picture img').src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-    </script>
-    
     
      <!-- Footer -->
     <footer>
         <hr>
         <p>Created by: Kseniia, Maryem, Sena, Saffree, Angelina - Sleep Med </p>
+        <hr>
+        <p>&copy; 2025 Sleep Med. All rights reserved.</p>
     </footer>
     
     
