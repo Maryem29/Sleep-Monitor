@@ -1,13 +1,130 @@
 <?php
 session_start(); // Start the session
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+include 'firebase.php';  // Ensure your Firebase PHP SDK is included
+
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php"); // Redirect to login page if not logged in
     exit();
 }
 
-// Get the current page name
+$userId = $_SESSION['user_id']; // Or another method to get the current user's ID
+
+// Retrieve user data from Firebase
+$user_data = get_user_data($userId);
+
+// Set default values for placeholders
+$defaultText = 'Not available';
+
+// Use the data if available, or fall back to placeholders
+$userName = !empty($user_data['username']) ? $user_data['username'] : $defaultText;
+$userSurname = !empty($user_data['surname']) ? $user_data['surname'] : $defaultText;
+$userAge = !empty($user_data['age']) ? $user_data['age'] : $defaultText;
+
+// Fetch sleep data for today from Firebase
+$sleepData = get_sleep_data($userId);
+
+// Get today's date in 'YYYY-MM-DD' format
+$todayDate = date("Y-m-d");
+$todaySleepData = isset($sleepData[$todayDate]) ? $sleepData[$todayDate] : null;
+
+// Function to format today's sleep data
+function formatTodaySleepData($sleepData) {
+    return !empty($sleepData) ? $sleepData['sleepDuration'] : 0; // Return the sleep duration for today
+}
+
+$todaySleepDuration = formatTodaySleepData($todaySleepData);
+
+// Aggregate the sleep data by week
+$weeklyData = aggregateSleepDataByWeek($sleepData);
+
+// Function to aggregate sleep data by week
+function aggregateSleepDataByWeek($sleepData) {
+    $weeklyData = [];
+    foreach ($sleepData as $date => $data) {
+        $weekNumber = getWeekNumber(new DateTime($date)); // Assuming sleep data has timestamp as key
+        if (!isset($weeklyData[$weekNumber])) {
+            $weeklyData[$weekNumber] = [
+                'sleepDuration' => 0,
+                'overnightShifts' => 0,
+                'sleepQuality' => 0,
+                'count' => 0
+            ];
+        }
+        $weeklyData[$weekNumber]['sleepDuration'] += $data['sleepDuration'];
+        $weeklyData[$weekNumber]['overnightShifts'] += $data['overnightShifts'];
+        $weeklyData[$weekNumber]['sleepQuality'] += $data['sleepQuality'];
+        $weeklyData[$weekNumber]['count'] += 1;
+    }
+
+    // Calculate averages
+    foreach ($weeklyData as $week => $data) {
+        $weeklyData[$week]['sleepDuration'] /= $data['count'];
+        $weeklyData[$week]['sleepQuality'] /= $data['count'];
+    }
+
+    return $weeklyData;
+}
+
+// Function to get week number from date
+function getWeekNumber($date) {
+    $startDate = new DateTime($date->format('Y-01-01'));
+    $diff = $date->diff($startDate);
+    $dayOfYear = $diff->days;
+    return intdiv($dayOfYear, 7) + 1;
+    
+ 
+}
+
+
+include 'firebase_sleep_data.php'; // Include the renamed function file
+
+// Fetch sleep data for the user
+$sleep_data = get_user_sleep_data($userId);
+
+// Check if sleep data exists
+if ($sleep_data === null) {
+    // Handle the case where no data is available
+} else {
+    // Process the data as needed
+}
+
+
+// Check if sleep data exists
+if ($sleep_data === null) {
+    $sleep_data_message = "No sleep data available for today.";
+    $total_sleep_time = 0;
+    $awake_time = 24;
+    $sleep_stages = ['Light' => 0, 'Deep' => 0, 'REM' => 0]; // Default empty values
+} else {
+    // Process the sleep data
+    $processed_data = process_sleep_data($sleep_data);
+    $total_sleep_time = $processed_data['total_sleep_time'];
+    $awake_time = $processed_data['awake_time'];
+    $sleep_stages = $processed_data['sleep_stages'];
+}
+
+// Prepare data for the pie chart (sleep stages + awake)
+$chart_data = [
+    'labels' => ['Light Sleep', 'Deep Sleep', 'REM Sleep', 'Awake'],
+    'data' => [
+        $sleep_stages['Light'],  // Light Sleep
+        $sleep_stages['Deep'],   // Deep Sleep
+        $sleep_stages['REM'],    // REM Sleep
+        $awake_time              // Awake Time
+    ]
+];
+
+// Render Pie Chart
+echo "<div class='pie-chart'>";
+echo "<canvas id='pieChart'></canvas>";
+echo "</div>";
+
+
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 
@@ -17,22 +134,20 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sleep Statistics</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
-/* General Styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background: linear-gradient(to right, #616cbb, #748ac7);
             color: #fff;
-
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
         }
 
-        /* Header Styles */
         .header {
             width: 100%;
             max-width: 1200px;
@@ -49,12 +164,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
         .header img {
             max-width: 100px;
         }
-        
+
         .date-time {
             font-size: 16px;
             font-weight: bold;
             color: white;
-            margin-top: 5px; /* Added margin to move it down a bit */
+            margin-top: 5px;
         }
 
         .logout-settings-container {
@@ -76,245 +191,36 @@ $current_page = basename($_SERVER['PHP_SELF']);
             background-color: #E2E8F0;
         }
 
-	/* Button Styling */
-	.settings-button {
-	    background: none;
-	    border: none;
-	    cursor: pointer;
-	    display: flex;
-	    flex-direction: column;
-	    justify-content: space-between;
-	    align-items: center;
-	    width: 50px; /* Increased width */
-	    height: 50px; /* Increased height */
-	    padding: 12px; /* Adjusted padding for better proportions */
-	    border-radius: 50%;
-	    transition: background-color 0.3s ease;
-	    background-color: white;
-
-	}
-
-
-
-	/* Hover Effect for the Button */
-	.settings-button:hover {
-	    background-color: rgba(0, 0, 0, 0.1);
-	}
-	
-	
-	
-
-        /* Fullscreen overlay */
-    .settings-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
-        display: none;
-        justify-content: space-between; /* Divides left and right sections */
-        padding: 20px;
-        z-index: 1000;
-        color: white;
-    }
-
-    /* Settings Menu (Left Section) */
-	.settings-menu {
-	    flex: 1; /* Left section takes 30% */
-	    max-width: 20%; /* Optional: Restrict max width */
-	    /*background: linear-gradient(to left, #748ac7, #4C57A7);*/
-	    background: linear-gradient(to right, #616cbb, #748ac7);
-	    padding: 30px;
-	    border-radius: 10px;
-	    font-size: 24px;
-	    box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
-	}
-
-	.settings-menu h2 {
-	    color: #D1D9F1;
-	    margin-top: 0;
-	    font-weight: bold;
-	    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-	}
-
-	.settings-menu ul {
-	    list-style: none;
-	    padding: 0;
-	    margin: 0;
-	}
-
-	.settings-menu li {
-	    margin-bottom: 15px;
-	}
-
-	.settings-menu a {
-	    text-decoration: none;
-	    color: #E2E8F0;
-	    font-size: 20px;
-	    padding: 5px;
-	    transition: color 0.3s, background-color 0.3s;
-	    border-radius: 5px;
-	}
-
-	.settings-menu a:hover {
-	    color: #2C3E99;
-	    background-color: #D1D9F1;
-	}
-
-	/* Team Section */
-	.team-section {
-	    flex: 2;
-	    background: linear-gradient(to right, #616cbb, #748ac7);
-	    padding: 20px;
-	    border-radius: 10px;
-	    box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
-	    color: #ffffff;
-	    overflow-y: auto;
-	    display: grid; /* Use grid to align team members */
-	    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Create responsive grid */
-	    gap: 20px; /* Space between the team members */
-	}
-
-        .team-section h1 {
-            font-size: 52px;
-            margin-bottom: 100px;
-            color: white;
-            font-family: 'Yatra One', cursive;
-        }
-
-	.team-member {
-	    transition: transform 0.3s ease-in-out;
-	    text-decoration: none;
-	    color: inherit;
-	    background: white;
-	    padding: 20px;
-	    border-radius: 10px;
-	    position: relative;
-	    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-	    display: flex;
-	    flex-direction: column;
-	    justify-content: center;
-	    align-items: center;
-	}
-
-        .team-member:hover {
-            transform: scale(1.05);
-        }
-
-        .team-member img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
-        .team-member h3 {
-            color: #4C57A7;
-            font-size: 26px;
-            margin-top: 20px;
-        }
-
-        .team-member p {
-            color: #4C57A7;
-            font-size: 14px;
-        }
-        
-
-	/* Close Button */
-	.close-settings {
-	    background: none;
-	    border: none;
-	    font-size: 18px;
-	    color: #E2E8F0;
-	    cursor: pointer;
-	    margin-bottom: 20px;
-	    border-radius: 5px;
-	    transition: color 0.3s, background-color 0.3s;
-	}
-
-	.close-settings:hover {
-
-	    color: #2C3E99;
-	    background-color: #D1D9F1;
-	}
-
-
-
-
-
-        /* Navigation Bar Styles */
-        .nav-container {
-            margin: 20px 0;
-            padding: 10px 0;
-        }
-	
-	
-        .nav-menu {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            gap: 15px;
-	    flex-wrap: wrap; /* Allows wrapping on smaller screens */
-	    justify-content: center;
-        }
-
-        .nav-link {
-            text-decoration: none;
-            color: #fff;
-            font-size: 18px;
-            padding: 10px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-	
-
-
-        .nav-link:hover, .nav-link.active {
-            background-color: #D1D9F1;
-            color: #2C3E99;
-        }
-
-        
-        
-        
-        
-        
         .container {
             padding: 20px;
             max-width: 1000px;
             margin: auto;
-	    width: 90%; /* Adjusts to the screen size */
+            width: 90%;
             color: #4C57A7;
             border-radius: 10px;
-
+            background: #E2E8F0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .container h2 {
             text-align: center;
             margin-bottom: 20px;
-            color: white;
-        }
-
-        .patient-info {
-            background-color: #E2E8F0;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
+            color: #4C57A7;
         }
 
         .patient-info p {
+            font-size: 18px;
             margin: 5px 0;
-            font-size: 16px;
         }
 
-        .recommendation {
-            background-color: #E2E8F0;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            font-size: 16px;
+        .patient-info p strong {
+            color: #4C57A7;
+        }
+
+        .pie-chart {
+            width: 300px;
+            height: 300px;
+            margin: 30px auto;
         }
 
         .chart-container {
@@ -323,367 +229,124 @@ $current_page = basename($_SERVER['PHP_SELF']);
             color: white;
         }
 
-       /* Footer Styles */
-        .footer {
-            font-size: 14px;
-            text-align: center;
-            margin-top: auto;
-        }
-
-        footer hr {
-            border: 0;
-            border-top: 1px solid white;
-            margin-bottom: 10px;
-        }
-
-        .report-section {
+        /* Weekly Data Section */
+        .weekly-report {
             background-color: #E2E8F0;
             padding: 20px;
             border-radius: 10px;
-            margin-bottom: 30px;
+            margin-top: 30px;
+            font-size: 16px;
+            color: #4C57A7;
         }
 
-        .report-section h3 {
-            margin-top: 0;
-        }
-
-        .report-table {
+        .weekly-report table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 15px;
         }
 
-        .report-table th, .report-table td {
+        .weekly-report th, .weekly-report td {
             padding: 10px;
-            border: 1px solid #4C57A7;
             text-align: center;
+            border: 1px solid #4C57A7;
         }
 
-        .report-table th {
+        .weekly-report th {
             background-color: #3745aa;
             color: white;
         }
-        
-        
-        
-		/* Media Queries */
-	@media (max-width: 768px) {
-	    .header {
-		flex-direction: column;
-		align-items: flex-start;
-	    }
 
-	    .header img {
-		max-width: 80px;
-	    }
-
-	    .settings-overlay {
-		flex-direction: column; /* Stack the settings and about sections */
-		gap: 20px;
-	    }
-	    
-	    .team-section {
-		grid-template-columns: repeat(2, 1fr); /* Two items per row on larger screens */
-	    }
-
-	    .settings-menu, .about-us {
-		max-width: 100%; /* Use full width for smaller screens */
-		flex: none;
-	    }
-
-	    .bar-chart {
-		height: 150px; /* Adjust chart height */
-	    }
-
-	    .nav-link {
-		font-size: 16px;
-		padding: 8px 10px;
-	    }
-	}
-
-        
-        
-        
-                /* Active overlay display */
-    .settings-overlay.active {
-        display: flex; /* Flex layout is only applied when active */
-    }
+        .weekly-report td {
+            background-color: #f4f4f4;
+        }
     </style>
 </head>
 <body>
 
-	<!-- Header -->
-    <div class="header">
-        <img src="images/sleep.png" alt="Sleep Med Logo">
-        <div class="date-time" id="currentDateTime"></div>
-        <div class="logout-settings-container">
-            <button id="logout-btn" class="logout-button">Logout</button>
-            <button id="settings-btn" class="settings-button">⋮</button>
-        </div>
-    </div>
-
-
-    <script>
-        // Update the date and time dynamically
-        function updateDateTime() {
-            const date = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            const formattedDateTime = date.toLocaleString('en-US', options);
-            document.getElementById('currentDateTime').textContent = formattedDateTime;
-        }
-
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
-    </script>
-
-
-
-<div class="settings-overlay" id="settings-overlay">
-    <!-- Settings Menu -->
-    <div class="settings-menu">
-        <button class="close-settings" id="close-settings">Close ✕</button>
-        <h2>Settings</h2>
-        <ul>
-            <li><a href="#">Switch Account</a></li>
-            <li><a href="#">Delete Account</a></li>
-            <li><a href="#">Language</a></li>
-            <li><a href="#">Support</a></li>
-            <li><a href="app-information.php">App Information</a></li>
-        </ul>
-    </div>
-
-   
-    <!-- Team Section -->
-    <div class="team-section">
-        <h1>Our Team</h1>
-
-        <!-- Team Member 1 -->
-        <a href="https://github.com/safrinfaizz" target="_blank" class="team-member">
-            <div>
-                <img src="images/safreena.jpg" alt="Safreena">
-            </div>
-            <h3>Safreena</h3>
-            <p>Front-End Developer</p>
-            <p>"As a health informatics student interested in building websites and working with data, I contributed to the Sleep Monitor project by developing the front-end. For me, front-end development is where creativity and technology meet to solve problems and inspire users."</p>
-        </a>
-
-        <!-- Team Member 2 -->
-        <a href="https://github.com/SenaDok" target="_blank" class="team-member">
-            <div>
-                <img src="images/sena.jpg" alt="Sena">
-            </div>
-            <h3>Sena</h3>
-            <p>Front-End Developer</p>
-            <p>“A healthy body holds a healthy mind and soul, and that's what we should strive to have and share”</p>
-        </a>
-
-        <!-- Team Member 3 -->
-        <a href="https://github.com/AngelinaNSS" target="_blank" class="team-member">
-            <div>
-                <img src="images/angelina.jpg" alt="Angelina">
-            </div>
-            <h3>Angelina</h3>
-            <p>Front-End Developer</p>
-            <p>"I’m a health informatics student with a passion for using tech to improve healthcare. With this Sleep Monitor project, I aim to help people track and improve their sleep, especially for those working late shifts, so they can feel better and perform their best."</p>
-        </a>
-
-        <!-- Team Member 4 -->
-        <a href="https://github.com/kseniiavi" target="_blank" class="team-member">
-            <div>
-                <img src="images/kseniia.jpg" alt="Kseniia">
-            </div>
-            <h3>Kseniia</h3>
-            <p>Back-End Developer</p>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Est quaerat tempora.</p>
-        </a>
-
-        <!-- Team Member 5 -->
-        <a href="https://github.com/Maryem29" target="_blank" class="team-member">
-            <div>
-                <img src="images/maryem.jpg" alt="Maryem">
-            </div>
-            <h3>Maryem</h3>
-            <p>Back-End Developer</p>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Est quaerat tempora.</p>
-        </a>
+<!-- Header -->
+<div class="header">
+    <img src="images/sleep.png" alt="Sleep Med Logo">
+    <div class="date-time" id="currentDateTime"></div>
+    <div class="logout-settings-container">
+        <button id="logout-btn" class="logout-button">Logout</button>
     </div>
 </div>
 
 <script>
-    const settingsBtn = document.getElementById("settings-btn");
-    const settingsOverlay = document.getElementById("settings-overlay");
-    const closeSettings = document.getElementById("close-settings");
+    // Update the date and time dynamically
+    function updateDateTime() {
+        const date = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        const formattedDateTime = date.toLocaleString('en-US', options);
+        document.getElementById('currentDateTime').textContent = formattedDateTime;
+    }
 
-    // Open settings overlay
-    settingsBtn.addEventListener("click", () => {
-        settingsOverlay.classList.add("active");
-    });
-
-    // Close settings overlay
-    closeSettings.addEventListener("click", () => {
-        settingsOverlay.classList.remove("active");
-    });
-
-    // Optional: Close overlay when clicking outside the settings panel
-    settingsOverlay.addEventListener("click", (e) => {
-        if (e.target === settingsOverlay) {
-            settingsOverlay.classList.remove("active");
-        }
-    });
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
 </script>
 
+<!-- Sleep Statistics Section -->
+<div class="container">
+    <h2>Sleep Statistics</h2>
 
-
-    <!-- Navigation -->
-    <div class="nav-container">
-        <ul class="nav-menu">
-            <li><a href="statistics.php" class="nav-link <?= $current_page === 'statistics.php' ? 'active' : ''; ?>">Statistics</a></li>
-            <li><a href="report.php" class="nav-link <?= $current_page === 'report.php' ? 'active' : ''; ?>">Report</a></li>
-            <li><a href="sleep.php" class="nav-link <?= $current_page === 'sleep.php' ? 'active' : ''; ?>">Sleep</a></li>
-            <li><a href="alerts.php" class="nav-link <?= $current_page === 'alerts.php' ? 'active' : ''; ?>">Alerts</a></li>
-            <li><a href="profile.php" class="nav-link <?= $current_page === 'profile.php' ? 'active' : ''; ?>">Profile</a></li>
-        </ul>
-    </div>
-    
-    
-    
-    
-    <!-- Main Content -->
-    <div class="container">
-        <h2>Sleep Statistics</h2>
-
-        <!-- Patient Info Section -->
-        <div class="patient-info">
-            <p><strong>Healthcare Worker:</strong> Sarah Smith</p>
-            <p><strong>Age:</strong> 29</p>
-            <p><strong>Last Sleep Session:</strong> 4 hours, 30 minutes</p>
-            <p><strong>Last Session Date:</strong> January 11, 2025</p>
-        </div>
-
-        <!-- Recommendation Section -->
-        <div class="recommendation">
-            <p><strong>Recommendation:</strong> As a healthcare worker, it’s crucial to prioritize sleep during non-shift hours to ensure optimal performance. Consider taking short naps during breaks if possible and avoid caffeine close to your next shift. Your current sleep duration is insufficient, and adequate rest is key to preventing burnout and maintaining alertness during your shifts.</p>
-        </div>
-
-        <!-- Weekly and Monthly Reports Section -->
-        <div class="report-section">
-            <h3>Weekly and Monthly Reports</h3>
-            <table class="report-table">
-                <thead>
-                    <tr>
-                        <th>Period</th>
-                        <th>Average Sleep Duration</th>
-                        <th>Overnight Shifts</th>
-                        <th>Sleep Quality</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Week 1</td>
-                        <td>5 hours, 15 minutes</td>
-                        <td>2 overnight shifts</td>
-                        <td>Fair</td>
-                    </tr>
-                    <tr>
-                        <td>Week 2</td>
-                        <td>4 hours, 45 minutes</td>
-                        <td>3 overnight shifts</td>
-                        <td>Poor</td>
-                    </tr>
-                    <tr>
-                        <td>Month 1</td>
-                        <td>5 hours, 10 minutes</td>
-                        <td>10 overnight shifts</td>
-                        <td>Fair</td>
-                    </tr>
-                    <tr>
-                        <td>Month 2</td>
-                        <td>5 hours, 0 minutes</td>
-                        <td>8 overnight shifts</td>
-                        <td>Good</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Chart Section -->
-        <div class="chart-container">
-            <h3>Sleep Data Breakdown</h3>
-            <canvas id="sleepChart" width="350" height="175"></canvas>
-        </div>
+    <!-- Patient Info Section -->
+    <div class="patient-info">
+        <p><strong>Healthcare Worker:</strong> <?= $userName . " " . $userSurname ?></p>
+        <p><strong>Age:</strong> <?= $userAge ?></p>
+        
+        <!-- Today's Sleep Duration -->
+        <p><strong>Today's Sleep Duration:</strong> <?= $total_sleep_time ? $total_sleep_time . " hours" : "No data available" ?></p>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <hr>
-        <p>Created by: Kseniia, Maryem, Sena, Saffree, Angelina - Sleep Med </p>
-    </footer>
-    
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Handle logout
-        document.getElementById("logout-btn").addEventListener("click", function () {
-            if (confirm("Are you sure you want to log out?")) {
-                window.location.href = "login.php";
-            }
-        });
-        
-        
-        
-        
-        
-                // This is Random Sleep Data (an example for healthcare worker who didn't sleep well)
-        function generateSleepData() {
-            const deepSleep = Math.floor(Math.random() * 20) + 10; // 10-30%
-            const remSleep = Math.floor(Math.random() * 15) + 5; // 5-20%
-            const lightSleep = 100 - (deepSleep + remSleep); // Remainder for 100%
-            return [deepSleep, remSleep, lightSleep];
-        }
+    <!-- Weekly Report Section -->
+    <div class="weekly-report">
+        <h3>Weekly Report</h3>
+        <table>
+            <tr>
+                <th>Week #</th>
+                <th>Sleep Duration (hrs)</th>
+                <th>Sleep Quality</th>
+                <th>Overnight Shifts</th>
+            </tr>
+            <?php if (!empty($weeklyData)): ?>
+                <?php foreach ($weeklyData as $weekNumber => $data): ?>
+                <tr>
+                    <td><?= $weekNumber ?></td>
+                    <td><?= $data['sleepDuration'] ?: '-' ?></td>
+                    <td><?= $data['sleepQuality'] ?: '-' ?></td>
+                    <td><?= $data['overnightShifts'] ?: '-' ?></td>
+                </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr><td colspan="4">No data available for this week.</td></tr>
+            <?php endif; ?>
+        </table>
+    </div>
 
-        // Chart.js for Sleep Data
-        const sleepData = generateSleepData();
-        const ctx = document.getElementById('sleepChart').getContext('2d');
-        const sleepChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: ['Deep Sleep', 'REM Sleep', 'Light Sleep'],
-                datasets: [{
-                    label: 'Sleep Stages',
-                    data: sleepData,
-                    backgroundColor: ['#4C57A7', '#626AB2', '#A3A8D7']
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                return `${tooltipItem.label}: ${tooltipItem.raw}%`;
-                            }
-                        }
-                    }
-                },
-            }
-        });
+    <!-- Sleep Stages Pie Chart -->
+    <div class="chart-container">
+        <h3>Today's Sleep Stages</h3>
+        <div id="pie-chart" class="pie-chart"></div>
+    </div>
+</div>
 
 
+<script>
+// Pass the processed data to JavaScript
+var chartData = <?php echo json_encode($chart_data); ?>;
 
-
-	window.addEventListener('resize', () => {
-    const bars = document.querySelectorAll('.bar');
-    bars.forEach(bar => {
-        bar.style.height = `${Math.random() * 80 + 20}%`;
-    });
+var ctx = document.getElementById('pieChart').getContext('2d');
+var pieChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: chartData.labels,
+        datasets: [{
+            data: chartData.data,
+            backgroundColor: ['#FFEB3B', '#2196F3', '#9C27B0', '#FF9800'], // Custom colors
+        }]
+    }
 });
+</script>
 
-
-
-
-     </script>
-     
 </body>
 </html>

@@ -7,6 +7,48 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+function processSleepData($userId, $date = null) {
+    // If no date provided, use current date
+    if ($date === null) {
+        $date = date('Y-m-d');
+    }
+    
+    // Escape command arguments
+    $userId = escapeshellarg($userId);
+    $date = escapeshellarg($date);
+    
+    // Execute Python script
+    // Change this line in your PHP code
+	$command = "/opt/lampp/htdocs/Sleep-Monitor/sleep_monitor_env/bin/python extract_data.py {$userId} {$date}";
+    $output = shell_exec($command);
+    
+    // Decode JSON output from Python script
+    $data = json_decode($output, true);
+    
+    if ($data && !isset($data['error'])) {
+        return $data;
+    }
+    
+    return null;
+}
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
+
+$userId = $_SESSION['user_id'];
+
+// Handle date selection
+$selectedDate = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
+
+// Process sleep data
+$sleepData = processSleepData($userId, $selectedDate);
+
+// Store processed data in session for charts
+$_SESSION['sleep_data'] = $sleepData;
+
 // Get the current page name
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
@@ -16,9 +58,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sleep Statistics</title>
+    <title>Sleep Analysis</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
-/* General Styles */
+    
+    
+    
+   /* General Styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -277,10 +323,67 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        .chart-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 30px;
+            padding: 20px;
+            /*background: #f8f9fa;*/
+            border-radius: 12px;
+        }
+        .donut-chart {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .chart-title {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .value-display {
+            position: relative;
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
         
         
         
-                
+        
+        
+        
+        
+        
+        
+        
+        
+        
+                 
         
         /* Footer Styles */
         .footer {
@@ -340,12 +443,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
     </style>
 </head>
-
-
-
 <body>
 
-	<!-- Header -->
+
+
+
+
+
+
+<!-- Header -->
     <div class="header">
         <img src="images/sleep.png" alt="Sleep Med Logo">
         <div class="date-time" id="currentDateTime"></div>
@@ -480,9 +586,165 @@ $current_page = basename($_SERVER['PHP_SELF']);
     
 
 
- 
- 
- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="date-selector">
+        <form method="GET">
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" name="date" value="<?php echo $selectedDate; ?>">
+            <button type="submit">View Analysis</button>
+        </form>
+    </div>
+
+    <div class="chart-container">
+        <div class="donut-chart" id="heartbeatChart"></div>
+        <div class="donut-chart" id="sleepHoursChart"></div>
+        <div class="donut-chart" id="movementChart"></div>
+        <div class="donut-chart" id="qualityChart"></div>
+    </div>
+
+    <script>
+    const sleepData = <?php echo json_encode($sleepData ?? null); ?>;
+    
+    if (sleepData) {
+        const chartConfigs = [
+            {
+                elementId: 'heartbeatChart',
+                value: sleepData.heartbeat,
+                maxValue: 140,
+                label: 'Heart Rate',
+                unit: 'BPM',
+                color: '#FF6384'
+            },
+            {
+                elementId: 'sleepHoursChart',
+                value: sleepData.hours_of_sleep,
+                maxValue: 10,
+                label: 'Hours of Sleep',
+                unit: 'hours',
+                color: '#36A2EB'
+            },
+            {
+                elementId: 'movementChart',
+                value: sleepData.movement,
+                maxValue: 100,
+                label: 'Movement',
+                unit: '%',
+                color: '#FFCE56'
+            },
+            {
+                elementId: 'qualityChart',
+                value: sleepData.sleep_quality,
+                maxValue: 100,
+                label: 'Sleep Quality',
+                unit: '%',
+                color: '#4BC0C0'
+            }
+        ];
+
+        chartConfigs.forEach(config => createDonutChart(config));
+    }
+
+    function createDonutChart({ elementId, value, maxValue, label, unit, color }) {
+        const width = 250;
+        const height = 250;
+        const radius = Math.min(width, height) / 2;
+        const strokeWidth = 15;
+
+        // Clear previous content
+        d3.select(`#${elementId}`).html('');
+
+        const svg = d3.select(`#${elementId}`)
+            .append('svg')
+            .attr('width', width)
+            .attr('height', height)
+            .append('g')
+            .attr('transform', `translate(${width/2},${height/2})`);
+
+        // Add title
+        d3.select(`#${elementId}`)
+            .insert('div', 'svg')
+            .attr('class', 'chart-title')
+            .text(label);
+
+        const percentage = (value / maxValue) * 100;
+
+        // Create background circle
+        svg.append('circle')
+            .attr('r', radius - strokeWidth)
+            .attr('fill', 'none')
+            .attr('stroke', '#f0f0f0')
+            .attr('stroke-width', strokeWidth);
+
+        // Create progress arc
+        const arc = d3.arc()
+            .innerRadius(radius - strokeWidth)
+            .outerRadius(radius)
+            .startAngle(0)
+            .cornerRadius(strokeWidth / 2);
+
+        const path = svg.append('path')
+            .datum({ endAngle: 0 })
+            .style('fill', color)
+            .attr('d', arc);
+
+        // Animate the filling
+        const interpolate = d3.interpolate(
+            { endAngle: 0 },
+            { endAngle: Math.PI * 2 * (percentage / 100) }
+        );
+
+        path.transition()
+            .duration(1500)
+            .attrTween('d', function(d) {
+                return function(t) {
+                    return arc(interpolate(t));
+                };
+            })
+            .ease(d3.easeCircleOut);
+
+        // Add central text
+        const valueText = svg.append('text')
+            .attr('class', 'value-display')
+            .attr('text-anchor', 'middle')
+            .style('font-weight', 'bold');
+
+        // Format the display value
+        const displayValue = unit === '%' ? 
+            `${Math.round(value)}${unit}` : 
+            `${value.toFixed(1)} ${unit}`;
+
+        valueText.append('tspan')
+            .attr('x', 0)
+            .attr('dy', '0em')
+            .text(displayValue);
+    }
+    </script>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
      <!-- Footer -->
     <footer>
@@ -500,6 +762,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
             }
         });
     </script>
+    
+    
     
 </body>
 </html>
