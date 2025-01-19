@@ -4,56 +4,41 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase;
 
-use Kreait\Firebase\DynamicLink\ApiClient;
+use GuzzleHttp\ClientInterface;
+use InvalidArgumentException;
 use Kreait\Firebase\DynamicLink\CreateDynamicLink;
-use Kreait\Firebase\DynamicLink\CreateDynamicLink\FailedToCreateDynamicLink;
 use Kreait\Firebase\DynamicLink\DynamicLinkStatistics;
 use Kreait\Firebase\DynamicLink\GetStatisticsForDynamicLink;
-use Kreait\Firebase\DynamicLink\GetStatisticsForDynamicLink\FailedToGetStatisticsForDynamicLink;
 use Kreait\Firebase\DynamicLink\ShortenLongDynamicLink;
-use Kreait\Firebase\DynamicLink\ShortenLongDynamicLink\FailedToShortenLongDynamicLink;
 use Kreait\Firebase\Value\Url;
-use Psr\Http\Client\ClientExceptionInterface;
-use Stringable;
+use Psr\Http\Message\UriInterface;
 
-use function is_array;
-
-/**
- * @internal
- *
- * @deprecated 7.14.0 Firebase Dynamic Links is deprecated and should not be used in new projects. The service will
- *                    shut down on August 25, 2025. The component will remain in the SDK until then, but as the
- *                    Firebase service is deprecated, this component is also deprecated
- *
- * @see https://firebase.google.com/support/dynamic-links-faq Dynamic Links Deprecation FAQ
- *
- * @phpstan-import-type CreateDynamicLinkShape from CreateDynamicLink
- * @phpstan-import-type ShortenLongDynamicLinkShape from ShortenLongDynamicLink
- */
 final class DynamicLinks implements Contract\DynamicLinks
 {
-    /**
-     * @param non-empty-string|null $defaultDynamicLinksDomain
-     */
-    private function __construct(
-        private readonly ?string $defaultDynamicLinksDomain,
-        private readonly ApiClient $apiClient,
-    ) {
+    private ClientInterface $apiClient;
+    private ?Url $defaultDynamicLinksDomain = null;
+
+    private function __construct(ClientInterface $apiClient)
+    {
+        $this->apiClient = $apiClient;
     }
 
-    public static function withApiClient(ApiClient $apiClient): self
+    public static function withApiClient(ClientInterface $apiClient): self
     {
-        return new self(null, $apiClient);
+        return new self($apiClient);
     }
 
     /**
-     * @param Stringable|non-empty-string $dynamicLinksDomain
+     * @param string|Url|UriInterface|mixed $dynamicLinksDomain
      */
-    public static function withApiClientAndDefaultDomain(ApiClient $apiClient, Stringable|string $dynamicLinksDomain): self
+    public static function withApiClientAndDefaultDomain(ClientInterface $apiClient, $dynamicLinksDomain): self
     {
-        $domainUrl = Url::fromString($dynamicLinksDomain)->value;
+        $domainUrl = Url::fromValue($dynamicLinksDomain);
 
-        return new self($domainUrl, $apiClient);
+        $service = self::withApiClient($apiClient);
+        $service->defaultDynamicLinksDomain = $domainUrl;
+
+        return $service;
     }
 
     public function createUnguessableLink($url): DynamicLink
@@ -80,19 +65,7 @@ final class DynamicLinks implements Contract\DynamicLinks
             $action = $action->withUnguessableSuffix();
         }
 
-        $request = $this->apiClient->createDynamicLinkRequest($action);
-
-        try {
-            $response = $this->apiClient->send($request, ['http_errors' => false]);
-        } catch (ClientExceptionInterface $e) {
-            throw new FailedToCreateDynamicLink('Failed to create dynamic link: '.$e->getMessage(), $e->getCode(), $e);
-        }
-
-        if ($response->getStatusCode() === 200) {
-            return DynamicLink::fromApiResponse($response);
-        }
-
-        throw FailedToCreateDynamicLink::withActionAndResponse($action, $response);
+        return (new CreateDynamicLink\GuzzleApiClientHandler($this->apiClient))->handle($action);
     }
 
     public function shortenLongDynamicLink($longDynamicLinkOrAction, ?string $suffixType = null): DynamicLink
@@ -105,26 +78,10 @@ final class DynamicLinks implements Contract\DynamicLinks
             $action = $action->withUnguessableSuffix();
         }
 
-        $request = $this->apiClient->createShortenLinkRequest($action);
-
-        try {
-            $response = $this->apiClient->send($request, ['http_errors' => false]);
-        } catch (ClientExceptionInterface $e) {
-            throw new FailedToShortenLongDynamicLink('Failed to shorten long dynamic link: '.$e->getMessage(), $e->getCode(), $e);
-        }
-
-        if ($response->getStatusCode() === 200) {
-            return DynamicLink::fromApiResponse($response);
-        }
-
-        throw FailedToShortenLongDynamicLink::withActionAndResponse($action, $response);
+        return (new ShortenLongDynamicLink\GuzzleApiClientHandler($this->apiClient))->handle($action);
     }
 
-    /**
-     * @param Stringable|non-empty-string|GetStatisticsForDynamicLink $dynamicLinkOrAction
-     * @param positive-int|null $durationInDays
-     */
-    public function getStatistics(Stringable|string|GetStatisticsForDynamicLink $dynamicLinkOrAction, ?int $durationInDays = null): DynamicLinkStatistics
+    public function getStatistics($dynamicLinkOrAction, ?int $durationInDays = null): DynamicLinkStatistics
     {
         $action = $this->ensureGetStatisticsAction($dynamicLinkOrAction);
 
@@ -132,27 +89,19 @@ final class DynamicLinks implements Contract\DynamicLinks
             $action = $action->withDurationInDays($durationInDays);
         }
 
-        $request = $this->apiClient->createStatisticsRequest($action);
-
-        try {
-            $response = $this->apiClient->send($request, ['http_errors' => false]);
-        } catch (ClientExceptionInterface $e) {
-            throw new FailedToGetStatisticsForDynamicLink('Failed to get statistics for Dynamic Link: '.$e->getMessage(), $e->getCode(), $e);
-        }
-
-        if ($response->getStatusCode() === 200) {
-            return DynamicLinkStatistics::fromApiResponse($response);
-        }
-
-        throw FailedToGetStatisticsForDynamicLink::withActionAndResponse($action, $response);
+        return (new DynamicLink\GetStatisticsForDynamicLink\GuzzleApiClientHandler($this->apiClient))->handle($action);
     }
 
     /**
-     * @param Stringable|non-empty-string|CreateDynamicLink|CreateDynamicLinkShape $actionOrParametersOrUrl
+     * @param mixed $actionOrParametersOrUrl
      */
-    private function ensureCreateAction(Stringable|string|CreateDynamicLink|array $actionOrParametersOrUrl): CreateDynamicLink
+    private function ensureCreateAction($actionOrParametersOrUrl): CreateDynamicLink
     {
-        if (is_array($actionOrParametersOrUrl)) {
+        if ($this->isStringable($actionOrParametersOrUrl)) {
+            return CreateDynamicLink::forUrl((string) $actionOrParametersOrUrl);
+        }
+
+        if (\is_array($actionOrParametersOrUrl)) {
             return CreateDynamicLink::fromArray($actionOrParametersOrUrl);
         }
 
@@ -160,15 +109,19 @@ final class DynamicLinks implements Contract\DynamicLinks
             return $actionOrParametersOrUrl;
         }
 
-        return CreateDynamicLink::forUrl((string) $actionOrParametersOrUrl);
+        throw new InvalidArgumentException('Unsupported action');
     }
 
     /**
-     * @param Stringable|non-empty-string|ShortenLongDynamicLink|ShortenLongDynamicLinkShape $actionOrParametersOrUrl
+     * @param mixed $actionOrParametersOrUrl
      */
-    private function ensureShortenAction(Stringable|string|ShortenLongDynamicLink|array $actionOrParametersOrUrl): ShortenLongDynamicLink
+    private function ensureShortenAction($actionOrParametersOrUrl): ShortenLongDynamicLink
     {
-        if (is_array($actionOrParametersOrUrl)) {
+        if ($this->isStringable($actionOrParametersOrUrl)) {
+            return ShortenLongDynamicLink::forLongDynamicLink((string) $actionOrParametersOrUrl);
+        }
+
+        if (\is_array($actionOrParametersOrUrl)) {
             return ShortenLongDynamicLink::fromArray($actionOrParametersOrUrl);
         }
 
@@ -176,18 +129,30 @@ final class DynamicLinks implements Contract\DynamicLinks
             return $actionOrParametersOrUrl;
         }
 
-        return ShortenLongDynamicLink::forLongDynamicLink((string) $actionOrParametersOrUrl);
+        throw new InvalidArgumentException('Unsupported action');
     }
 
     /**
-     * @param Stringable|non-empty-string|GetStatisticsForDynamicLink $actionOrUrl
+     * @param mixed $actionOrUrl
      */
-    private function ensureGetStatisticsAction(Stringable|string|GetStatisticsForDynamicLink $actionOrUrl): GetStatisticsForDynamicLink
+    private function ensureGetStatisticsAction($actionOrUrl): GetStatisticsForDynamicLink
     {
+        if ($this->isStringable($actionOrUrl)) {
+            return GetStatisticsForDynamicLink::forLink($actionOrUrl);
+        }
+
         if ($actionOrUrl instanceof GetStatisticsForDynamicLink) {
             return $actionOrUrl;
         }
 
-        return GetStatisticsForDynamicLink::forLink((string) $actionOrUrl);
+        throw new InvalidArgumentException('Unsupported action');
+    }
+
+    /**
+     * @param mixed $value
+     */
+    private function isStringable($value): bool
+    {
+        return \is_string($value) || $value instanceof UriInterface || (\is_object($value) && \method_exists($value, '__toString'));
     }
 }

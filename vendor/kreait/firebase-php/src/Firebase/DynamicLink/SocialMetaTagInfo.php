@@ -6,74 +6,67 @@ namespace Kreait\Firebase\DynamicLink;
 
 use JsonSerializable;
 
-/**
- * @phpstan-type SocialMetaTagInfoShape array{
- *     socialTitle?: non-empty-string,
- *     socialDescription?: non-empty-string,
- *     socialImageLink?: non-empty-string
- * }
- */
 final class SocialMetaTagInfo implements JsonSerializable
 {
-    /**
-     * @param SocialMetaTagInfoShape $data
-     */
-    private function __construct(private readonly array $data)
+    /** @var array<string, mixed> */
+    private array $data = [];
+
+    private function __construct()
     {
     }
 
     /**
-     * @param SocialMetaTagInfoShape $data
+     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
-        return new self($data);
+        $info = new self();
+        $info->data = $data;
+
+        return $info;
     }
 
     public static function new(): self
     {
-        return new self([]);
+        return new self();
     }
 
     /**
      * The title to use when the Dynamic Link is shared in a social post.
-     *
-     * @param non-empty-string $title
      */
     public function withTitle(string $title): self
     {
-        $data = $this->data;
-        $data['socialTitle'] = $title;
+        $info = clone $this;
+        $info->data['socialTitle'] = $title;
 
-        return new self($data);
+        return $info;
     }
 
     /**
      * The description to use when the Dynamic Link is shared in a social post.
-     *
-     * @param non-empty-string $description
      */
     public function withDescription(string $description): self
     {
-        $data = $this->data;
-        $data['socialDescription'] = $description;
+        $info = clone $this;
+        $info->data['socialDescription'] = $description;
 
-        return new self($data);
+        return $info;
     }
 
     /**
      * The URL to an image related to this link.
-     *
-     * @param non-empty-string $imageLink
      */
     public function withImageLink(string $imageLink): self
     {
-        $data = $this->data;
-        $data['socialImageLink'] = $imageLink;
+        $info = clone $this;
+        $info->data['socialImageLink'] = $imageLink;
 
-        return new self($data);
+        return $info;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return $this->data;

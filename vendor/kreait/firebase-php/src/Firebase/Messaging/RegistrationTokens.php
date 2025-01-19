@@ -6,66 +6,56 @@ namespace Kreait\Firebase\Messaging;
 
 use Countable;
 use IteratorAggregate;
-use Kreait\Firebase\Exception\Messaging\InvalidArgument;
+use Kreait\Firebase\Exception\InvalidArgumentException;
 use Traversable;
-
-use function array_map;
-use function count;
-use function is_array;
-use function is_string;
 
 /**
  * @implements IteratorAggregate<RegistrationToken>
  */
 final class RegistrationTokens implements Countable, IteratorAggregate
 {
-    /**
-     * @var list<RegistrationToken>
-     */
-    private readonly array $tokens;
+    /** @var RegistrationToken[] */
+    private array $tokens;
 
-    /**
-     * @internal
-     */
     public function __construct(RegistrationToken ...$tokens)
     {
-        $this->tokens = array_values($tokens);
+        $this->tokens = $tokens;
     }
 
     /**
-     * @param RegistrationTokens|RegistrationToken|array<RegistrationToken|string>|non-empty-string $values
+     * @param RegistrationTokens|RegistrationToken|RegistrationToken[]|string[]|string $values
      *
-     * @throws InvalidArgument
+     * @throws InvalidArgumentException
      */
     public static function fromValue($values): self
     {
-        $tokens = [];
-
         if ($values instanceof self) {
             $tokens = $values->values();
         } elseif ($values instanceof RegistrationToken) {
             $tokens = [$values];
-        } elseif (is_string($values)) {
+        } elseif (\is_string($values)) {
             $tokens = [RegistrationToken::fromValue($values)];
-        } elseif (is_array($values)) {
+        } elseif (\is_array($values)) {
+            $tokens = [];
+
             foreach ($values as $value) {
                 if ($value instanceof RegistrationToken) {
                     $tokens[] = $value;
-                } elseif ($value !== '') {
+                } elseif (\is_string($value)) {
                     $tokens[] = RegistrationToken::fromValue($value);
                 }
             }
-        }
-
-        if (count($tokens) === 0) {
-            throw new InvalidArgument('No registration tokens provided');
+        } else {
+            throw new InvalidArgumentException('Unsupported value(s)');
         }
 
         return new self(...$tokens);
     }
 
     /**
-     * @return Traversable<RegistrationToken>
+     * @codeCoverageIgnore
+     *
+     * @return Traversable<RegistrationToken>|RegistrationToken[]
      */
     public function getIterator(): Traversable
     {
@@ -78,7 +68,7 @@ final class RegistrationTokens implements Countable, IteratorAggregate
     }
 
     /**
-     * @return list<RegistrationToken>
+     * @return array<RegistrationToken>
      */
     public function values(): array
     {
@@ -86,24 +76,20 @@ final class RegistrationTokens implements Countable, IteratorAggregate
     }
 
     /**
-     * @return list<non-empty-string>
+     * @return string[]
      */
     public function asStrings(): array
     {
-        return array_values(
-            array_filter(
-                array_map(strval(...), $this->tokens),
-            ),
-        );
+        return \array_map('strval', $this->tokens);
     }
 
     public function count(): int
     {
-        return count($this->tokens);
+        return \count($this->tokens);
     }
 
     /**
-     * @param RegistrationToken|non-empty-string $token
+     * @param RegistrationToken|string $token
      */
     public function has($token): bool
     {

@@ -9,7 +9,10 @@ use DateTimeInterface;
 
 interface Expirable
 {
-    public function withExpirationTime(DateTimeImmutable $time): self;
+    /**
+     * @return self
+     */
+    public function withExpirationTime(DateTimeImmutable $time);
 
     public function isExpiredAt(DateTimeInterface $now): bool;
 

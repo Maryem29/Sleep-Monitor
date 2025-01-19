@@ -6,7 +6,7 @@ namespace Kreait\Firebase\Exception\Messaging;
 
 use Kreait\Firebase\Exception\HasErrors;
 use Kreait\Firebase\Exception\MessagingException;
-use Kreait\Firebase\Exception\RuntimeException;
+use RuntimeException;
 
 final class AuthenticationError extends RuntimeException implements MessagingException
 {
@@ -15,7 +15,7 @@ final class AuthenticationError extends RuntimeException implements MessagingExc
     /**
      * @internal
      *
-     * @param array<mixed> $errors
+     * @param string[] $errors
      */
     public function withErrors(array $errors): self
     {

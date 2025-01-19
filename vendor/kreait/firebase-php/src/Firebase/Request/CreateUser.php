@@ -31,6 +31,9 @@ final class CreateUser implements Request
         return self::withEditableProperties(new self(), $properties);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return $this->prepareJsonSerialize();

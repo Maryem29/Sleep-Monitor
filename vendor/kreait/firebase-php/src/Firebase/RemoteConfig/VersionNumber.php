@@ -4,50 +4,43 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\RemoteConfig;
 
-use JsonSerializable;
 use Kreait\Firebase\Exception\InvalidArgumentException;
-use Stringable;
 
-use function ctype_digit;
-
-final class VersionNumber implements JsonSerializable, Stringable
+final class VersionNumber implements \JsonSerializable
 {
-    /**
-     * @param non-empty-string $value
-     */
-    private function __construct(private readonly string $value)
-    {
-    }
+    private string $value;
 
-    public function __toString(): string
+    private function __construct(string $value)
     {
-        return $this->value;
+        $this->value = $value;
     }
 
     /**
-     * @param positive-int|non-empty-string $value
+     * @param int|string $value
      */
     public static function fromValue($value): self
     {
         $valueString = (string) $value;
 
-        if (!ctype_digit($valueString)) {
+        if (!\ctype_digit($valueString)) {
             throw new InvalidArgumentException('A version number should only consist of digits');
         }
 
         return new self($valueString);
     }
 
-    /**
-     * @return non-empty-string
-     */
+    public function __toString()
+    {
+        return $this->value;
+    }
+
     public function jsonSerialize(): string
     {
         return $this->value;
     }
 
     /**
-     * @param self|non-empty-string $other
+     * @param self|string $other
      */
     public function equalsTo($other): bool
     {

@@ -11,10 +11,10 @@ use Kreait\Firebase\JWT\Value\Duration;
 final class CreateCustomToken
 {
     public const MINIMUM_TTL = 'PT1S';
-
     public const MAXIMUM_TTL = 'PT1H';
-
     public const DEFAULT_TTL = self::MAXIMUM_TTL;
+
+    private string $uid;
 
     private ?string $tenantId = null;
 
@@ -23,8 +23,9 @@ final class CreateCustomToken
 
     private Duration $ttl;
 
-    private function __construct(private string $uid)
+    private function __construct(string $uid)
     {
+        $this->uid = $uid;
         $this->ttl = Duration::fromDateIntervalSpec(self::DEFAULT_TTL);
     }
 
@@ -49,7 +50,10 @@ final class CreateCustomToken
         return $action;
     }
 
-    public function withCustomClaim(string $name, mixed $value): self
+    /**
+     * @param mixed $value
+     */
+    public function withCustomClaim(string $name, $value): self
     {
         $action = clone $this;
         $action->customClaims[$name] = $value;
@@ -74,12 +78,15 @@ final class CreateCustomToken
     public function withAddedCustomClaims(array $claims): self
     {
         $action = clone $this;
-        $action->customClaims = [...$action->customClaims, ...$claims];
+        $action->customClaims = \array_merge($action->customClaims, $claims);
 
         return $action;
     }
 
-    public function withTimeToLive(Duration|DateInterval|string|int $ttl): self
+    /**
+     * @param Duration|DateInterval|string|int $ttl
+     */
+    public function withTimeToLive($ttl): self
     {
         $ttl = Duration::make($ttl);
 
@@ -89,7 +96,7 @@ final class CreateCustomToken
         if ($ttl->isSmallerThan($minTtl) || $ttl->isLargerThan($maxTtl)) {
             $message = 'The expiration time of a custom token must be between %s and %s, but got %s';
 
-            throw new InvalidArgumentException(sprintf($message, $minTtl, $maxTtl, $ttl));
+            throw new InvalidArgumentException(\sprintf($message, $minTtl, $maxTtl, $ttl));
         }
 
         $action = clone $this;

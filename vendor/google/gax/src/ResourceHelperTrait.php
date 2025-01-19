@@ -32,6 +32,8 @@
 
 namespace Google\ApiCore;
 
+use Google\ApiCore\ValidationException;
+
 /**
  * Provides functionality for loading a resource name template map from a descriptor config,
  * retrieving a PathTemplate, and parsing values using registered templates.

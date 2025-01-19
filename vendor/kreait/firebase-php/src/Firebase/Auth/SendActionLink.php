@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\Auth;
 
-/**
- * @internal
- */
+use Kreait\Firebase\Value\Email;
+
 final class SendActionLink
 {
+    private CreateActionLink $action;
+    private ?string $locale;
     private ?string $idTokenString = null;
 
-    public function __construct(private CreateActionLink $action, private readonly ?string $locale = null)
+    public function __construct(CreateActionLink $action, ?string $locale = null)
     {
+        $this->action = $action;
+        $this->locale = $locale;
     }
 
     public function type(): string
@@ -20,7 +23,7 @@ final class SendActionLink
         return $this->action->type();
     }
 
-    public function email(): string
+    public function email(): Email
     {
         return $this->action->email();
     }
@@ -45,7 +48,7 @@ final class SendActionLink
      *
      * Only to be used when the API endpoint expects the ID Token of the given user.
      *
-     * Currently, this seems only to be the case on VERIFY_EMAIL actions.
+     * Currently seems only to be the case on VERIFY_EMAIL actions.
      *
      * @see https://github.com/firebase/firebase-js-sdk/issues/1958
      */

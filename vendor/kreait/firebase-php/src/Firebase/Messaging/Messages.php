@@ -8,17 +8,13 @@ use Countable;
 use IteratorAggregate;
 use Traversable;
 
-use function count;
-
 /**
  * @implements IteratorAggregate<Message>
  */
 final class Messages implements Countable, IteratorAggregate
 {
-    /**
-     * @var Message[]
-     */
-    private readonly array $messages;
+    /** @var Message[] */
+    private array $messages;
 
     public function __construct(Message ...$messages)
     {
@@ -26,6 +22,8 @@ final class Messages implements Countable, IteratorAggregate
     }
 
     /**
+     * @codeCoverageIgnore
+     *
      * @return Traversable<Message>|Message[]
      */
     public function getIterator(): Traversable
@@ -35,6 +33,6 @@ final class Messages implements Countable, IteratorAggregate
 
     public function count(): int
     {
-        return count($this->messages);
+        return \count($this->messages);
     }
 }

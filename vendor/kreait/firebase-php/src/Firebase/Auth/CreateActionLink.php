@@ -6,27 +6,29 @@ namespace Kreait\Firebase\Auth;
 
 use Kreait\Firebase\Auth\ActionCodeSettings\ValidatedActionCodeSettings;
 use Kreait\Firebase\Value\Email;
-use Stringable;
 
-/**
- * @internal
- */
 final class CreateActionLink
 {
-    private function __construct(
-        private readonly ?string $tenantId,
-        private readonly ?string $locale,
-        private readonly string $type,
-        private readonly string $email,
-        private readonly ActionCodeSettings $settings,
-    ) {
+    private string $type;
+    private Email $email;
+    private ActionCodeSettings $settings;
+    private ?string $tenantId = null;
+    private ?string $locale = null;
+
+    private function __construct(string $type, Email $email, ActionCodeSettings $settings)
+    {
+        $this->type = $type;
+        $this->email = $email;
+        $this->settings = $settings;
     }
 
-    public static function new(string $type, Stringable|string $email, ActionCodeSettings $settings, ?string $tenantId = null, ?string $locale = null): self
+    public static function new(string $type, Email $email, ActionCodeSettings $settings, ?string $tenantId = null, ?string $locale = null): self
     {
-        $email = Email::fromString((string) $email)->value;
+        $instance = new self($type, $email, $settings);
+        $instance->tenantId = $tenantId;
+        $instance->locale = $locale;
 
-        return new self($tenantId, $locale, $type, $email, $settings);
+        return $instance;
     }
 
     public function type(): string
@@ -34,7 +36,7 @@ final class CreateActionLink
         return $this->type;
     }
 
-    public function email(): string
+    public function email(): Email
     {
         return $this->email;
     }

@@ -8,19 +8,18 @@ use Kreait\Firebase\Exception\Messaging\InvalidMessage;
 use Kreait\Firebase\Exception\Messaging\NotFound;
 use Throwable;
 
-use function preg_match;
-
 final class SendReport
 {
-    /**
-     * @var array<array-key, scalar>|null
-     */
+    private MessageTarget $target;
+
+    /** @var array<array-key, scalar>|null */
     private ?array $result = null;
     private ?Message $message = null;
     private ?Throwable $error = null;
 
-    private function __construct(private readonly MessageTarget $target)
+    private function __construct(MessageTarget $target)
     {
+        $this->target = $target;
     }
 
     /**
@@ -63,7 +62,7 @@ final class SendReport
     {
         $errorMessage = $this->error !== null ? $this->error->getMessage() : '';
 
-        return preg_match('/((not.+valid)|invalid).+token/i', $errorMessage) === 1;
+        return $this->messageWasInvalid() && \preg_match('/((not.+valid)|invalid).+token/i', $errorMessage) === 1;
     }
 
     public function messageWasInvalid(): bool

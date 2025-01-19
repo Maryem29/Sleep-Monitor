@@ -35,7 +35,7 @@ use PHPUnit\Framework\TestCase;
  * @experimental
  * @internal
  */
-abstract class SystemTestCase extends TestCase
+class SystemTestCase extends TestCase
 {
     protected static $deletionQueue;
 

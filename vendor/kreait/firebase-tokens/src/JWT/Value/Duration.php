@@ -7,30 +7,28 @@ namespace Kreait\Firebase\JWT\Value;
 use DateInterval;
 use DateTimeImmutable;
 use InvalidArgumentException;
-use Stringable;
 use Throwable;
-
-use function is_int;
 
 /**
  * Adapted duration class from gamez/duration.
  *
  * @see https://github.com/jeromegamez/duration-php
  */
-final class Duration implements Stringable
+final class Duration
 {
     public const NONE = 'PT0S';
 
-    private function __construct(private readonly DateInterval $value)
+    private DateInterval $value;
+
+    private function __construct(DateInterval $value)
     {
+        $this->value = $value;
     }
 
-    public function __toString(): string
-    {
-        return $this->toString();
-    }
-
-    public static function make(self|DateInterval|int|string $value): self
+    /**
+     * @param self|DateInterval|int|string $value
+     */
+    public static function make($value): self
     {
         if ($value instanceof self) {
             return $value;
@@ -40,36 +38,29 @@ final class Duration implements Stringable
             return self::fromDateInterval($value);
         }
 
-        if (is_int($value)) {
+        if (\is_int($value)) {
             return self::inSeconds($value);
         }
 
-        if (mb_strpos($value, 'P') === 0) {
+        if (\mb_strpos($value, 'P') === 0) {
             return self::fromDateIntervalSpec($value);
         }
 
         try {
             $interval = DateInterval::createFromDateString($value);
-        } catch (Throwable) {
-            throw new InvalidArgumentException("Unable to determine a duration from '{$value}'");
-        }
-
-        if ($interval === false) {
+        } catch (Throwable $e) {
             throw new InvalidArgumentException("Unable to determine a duration from '{$value}'");
         }
 
         $duration = self::fromDateInterval($interval);
+
         // If the string doesn't contain a zero, but the result equals to zero
         // the value must be invalid.
-        if (mb_strpos($value, '0') !== false) {
-            return $duration;
+        if (\mb_strpos($value, '0') === false && $duration->equals(self::none())) {
+            throw new InvalidArgumentException("Unable to determine a duration from '{$value}'");
         }
 
-        if (!$duration->equals(self::none())) {
-            return $duration;
-        }
-
-        throw new InvalidArgumentException("Unable to determine a duration from '{$value}'");
+        return $duration;
     }
 
     /**
@@ -91,7 +82,7 @@ final class Duration implements Stringable
     {
         try {
             $interval = new DateInterval($spec);
-        } catch (Throwable) {
+        } catch (Throwable $e) {
             throw new InvalidArgumentException("'{$spec}' is not a valid DateInterval specification");
         }
 
@@ -120,22 +111,34 @@ final class Duration implements Stringable
         return $this->value;
     }
 
-    public function isLargerThan(self|DateInterval|int|string $other): bool
+    /**
+     * @param self|DateInterval|int|string $other
+     */
+    public function isLargerThan($other): bool
     {
         return 1 === $this->compareTo($other);
     }
 
-    public function equals(self|DateInterval|int|string $other): bool
+    /**
+     * @param self|DateInterval|int|string $other
+     */
+    public function equals($other): bool
     {
         return 0 === $this->compareTo($other);
     }
 
-    public function isSmallerThan(self|DateInterval|int|string $other): bool
+    /**
+     * @param self|DateInterval|int|string $other
+     */
+    public function isSmallerThan($other): bool
     {
         return -1 === $this->compareTo($other);
     }
 
-    public function compareTo(self|DateInterval|int|string $other): int
+    /**
+     * @param self|DateInterval|int|string $other
+     */
+    public function compareTo($other): int
     {
         $other = self::make($other);
 
@@ -149,9 +152,14 @@ final class Duration implements Stringable
         return self::toDateIntervalSpec(self::normalizeInterval($this->value));
     }
 
+    public function __toString(): string
+    {
+        return $this->toString();
+    }
+
     private static function now(): DateTimeImmutable
     {
-        return new DateTimeImmutable('@'.time());
+        return new DateTimeImmutable('@'.\time());
     }
 
     private static function normalizeInterval(DateInterval $value): DateInterval
@@ -174,8 +182,8 @@ final class Duration implements Stringable
         $spec .= 0 !== $value->i ? $value->i.'M' : '';
         $spec .= 0 !== $value->s ? $value->s.'S' : '';
 
-        if ('T' === mb_substr($spec, -1)) {
-            $spec = mb_substr($spec, 0, -1);
+        if ('T' === \mb_substr($spec, -1)) {
+            $spec = \mb_substr($spec, 0, -1);
         }
 
         if ('P' === $spec) {

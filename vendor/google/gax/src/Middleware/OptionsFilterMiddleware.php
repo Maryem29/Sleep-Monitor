@@ -33,6 +33,7 @@ namespace Google\ApiCore\Middleware;
 
 use Google\ApiCore\ArrayTrait;
 use Google\ApiCore\Call;
+use GuzzleHttp\Promise\PromiseInterface;
 
 /**
 * Middleware which filters the $options array.

@@ -35,7 +35,6 @@ use Exception;
 use Google\ApiCore\Call;
 use Google\ApiCore\ValidationException;
 use Google\Auth\HttpHandler\HttpHandlerFactory;
-use Psr\Log\LoggerInterface;
 
 /**
  * A trait for shared functionality between transports that support only unary RPCs using simple
@@ -127,12 +126,12 @@ trait HttpUnaryTransportTrait
      * @return callable
      * @throws ValidationException
      */
-    private static function buildHttpHandlerAsync(null|false|LoggerInterface $logger = null)
+    private static function buildHttpHandlerAsync()
     {
         try {
-            return [HttpHandlerFactory::build(logger: $logger), 'async'];
+            return [HttpHandlerFactory::build(), 'async'];
         } catch (Exception $ex) {
-            throw new ValidationException('Failed to build HttpHandler', $ex->getCode(), $ex);
+            throw new ValidationException("Failed to build HttpHandler", $ex->getCode(), $ex);
         }
     }
 

@@ -8,18 +8,23 @@ use JsonSerializable;
 
 /**
  * @see https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#fcmoptions
- *
- * @phpstan-type FcmOptionsShape array{
- *     analytics_label?: string
- * }
  */
 final class FcmOptions implements JsonSerializable
 {
-    /**
-     * @param FcmOptionsShape $data
+    /** @var array{
+     *      analytics_label?: string
+     *  }
      */
-    private function __construct(private array $data)
+    private array $data;
+
+    /**
+     * @param array{
+     *     analytics_label?: string
+     * } $data
+     */
+    private function __construct(array $data)
     {
+        $this->data = $data;
     }
 
     public static function create(): self
@@ -28,7 +33,9 @@ final class FcmOptions implements JsonSerializable
     }
 
     /**
-     * @param FcmOptionsShape $data
+     * @param array{
+     *     analytics_label?: string
+     * } $data
      */
     public static function fromArray(array $data): self
     {
@@ -43,6 +50,9 @@ final class FcmOptions implements JsonSerializable
         return $options;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return $this->data;

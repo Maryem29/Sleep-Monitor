@@ -4,52 +4,58 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\RemoteConfig;
 
-use JsonSerializable;
-
-/**
- * @phpstan-import-type RemoteConfigParameterValueShape from ParameterValue
- *
- * @todo Deprecate/Remove in 8.0
- *
- * @see ParameterValue
- */
-class DefaultValue implements JsonSerializable
+class DefaultValue implements \JsonSerializable
 {
-    private function __construct(private readonly ParameterValue $value)
+    public const IN_APP_DEFAULT_VALUE = true;
+
+    /** @var string|bool */
+    private $value;
+
+    /**
+     * @param string|bool $value
+     */
+    private function __construct($value)
     {
+        $this->value = \is_string($value) ? $value : true;
     }
 
-    public static function useInAppDefault(): self
+    public static function none(): self
     {
-        return new self(ParameterValue::inAppDefault());
+        return new self(self::IN_APP_DEFAULT_VALUE);
     }
 
     public static function with(string $value): self
     {
-        return new self(ParameterValue::withValue($value));
+        return new self($value);
     }
 
     /**
-     * @param RemoteConfigParameterValueShape $data
+     * @return string|bool
+     */
+    public function value()
+    {
+        return $this->value;
+    }
+
+    /**
+     * @param array{
+     *     value: string|bool
+     * }|array{
+     *     useInAppDefault: bool
+     * } $data
      */
     public static function fromArray(array $data): self
     {
-        return new self(ParameterValue::fromArray($data));
+        return new self($data['value'] ?? $data['useInAppDefault'] ?? true);
     }
 
     /**
-     * @return RemoteConfigParameterValueShape
-     */
-    public function toArray(): array
-    {
-        return $this->value->toArray();
-    }
-
-    /**
-     * @return RemoteConfigParameterValueShape
+     * @return array<string, string|bool>
      */
     public function jsonSerialize(): array
     {
-        return $this->toArray();
+        $key = $this->value === true ? 'useInAppDefault' : 'value';
+
+        return [$key => $this->value];
     }
 }

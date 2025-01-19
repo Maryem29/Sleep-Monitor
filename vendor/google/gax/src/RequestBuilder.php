@@ -50,7 +50,7 @@ class RequestBuilder
     use UriTrait;
     use ValidationTrait;
 
-    protected $baseUri;
+    private $baseUri;
     private $restConfig;
 
     /**
@@ -111,7 +111,7 @@ class RequestBuilder
 
                 // Request enum fields will be encoded as numbers rather than strings  (in the response).
                 if ($numericEnums) {
-                    $queryParams['$alt'] = 'json;enum-encoding=int';
+                    $queryParams['$alt'] = "json;enum-encoding=int";
                 }
 
                 $uri = $this->buildUri($pathTemplate, $queryParams);
@@ -132,8 +132,8 @@ class RequestBuilder
         }
 
         throw new ValidationException("Could not map bindings for $path to any Uri template.\n" .
-            'Bindings: ' . print_r($bindings, true) .
-            'UriTemplates: ' . print_r($uriTemplates, true));
+            "Bindings: " . print_r($bindings, true) .
+            "UriTemplates: " . print_r($uriTemplates, true));
     }
 
     /**
@@ -234,7 +234,7 @@ class RequestBuilder
             $value = array_reduce(
                 $metadata['getters'],
                 function (?Message $result = null, $getter = null) {
-                    if ($result && $getter) {
+                    if ($result) {
                         return $result->$getter();
                     }
                 },
@@ -270,7 +270,7 @@ class RequestBuilder
      * @param array $queryParams
      * @return UriInterface
      */
-    protected function buildUri(string $path, array $queryParams)
+    private function buildUri(string $path, array $queryParams)
     {
         $uri = Utils::uriFor(
             sprintf(

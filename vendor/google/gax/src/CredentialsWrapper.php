@@ -34,22 +34,24 @@ namespace Google\ApiCore;
 use DomainException;
 use Exception;
 use Google\Auth\ApplicationDefaultCredentials;
+use Google\Auth\ProjectIdProviderInterface;
 use Google\Auth\Cache\MemoryCacheItemPool;
-use Google\Auth\Credentials\GCECredentials;
 use Google\Auth\Credentials\ServiceAccountCredentials;
 use Google\Auth\CredentialsLoader;
 use Google\Auth\FetchAuthTokenCache;
 use Google\Auth\FetchAuthTokenInterface;
 use Google\Auth\GetQuotaProjectInterface;
 use Google\Auth\GetUniverseDomainInterface;
-use Google\Auth\ProjectIdProviderInterface;
+use Google\Auth\HttpHandler\Guzzle6HttpHandler;
+use Google\Auth\HttpHandler\Guzzle7HttpHandler;
+use Google\Auth\HttpHandler\HttpHandlerFactory;
 use Google\Auth\UpdateMetadataInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * The CredentialsWrapper object provides a wrapper around a FetchAuthTokenInterface.
  */
-class CredentialsWrapper implements HeaderCredentialsInterface, ProjectIdProviderInterface
+class CredentialsWrapper implements ProjectIdProviderInterface
 {
     use ValidationTrait;
 
@@ -79,7 +81,7 @@ class CredentialsWrapper implements HeaderCredentialsInterface, ProjectIdProvide
         string $universeDomain = GetUniverseDomainInterface::DEFAULT_UNIVERSE_DOMAIN
     ) {
         $this->credentialsFetcher = $credentialsFetcher;
-        $this->authHttpHandler = $authHttpHandler;
+        $this->authHttpHandler = $authHttpHandler ?: self::buildHttpHandlerFactory();
         if (empty($universeDomain)) {
             throw new ValidationException('The universe domain cannot be empty');
         }
@@ -139,11 +141,12 @@ class CredentialsWrapper implements HeaderCredentialsInterface, ProjectIdProvide
         ];
 
         $keyFile = $args['keyFile'];
+        $authHttpHandler = $args['authHttpHandler'] ?: self::buildHttpHandlerFactory();
 
         if (is_null($keyFile)) {
             $loader = self::buildApplicationDefaultCredentials(
                 $args['scopes'],
-                $args['authHttpHandler'],
+                $authHttpHandler,
                 $args['authCacheOptions'],
                 $args['authCache'],
                 $args['quotaProject'],
@@ -186,13 +189,13 @@ class CredentialsWrapper implements HeaderCredentialsInterface, ProjectIdProvide
             );
         }
 
-        return new CredentialsWrapper($loader, $args['authHttpHandler'], $universeDomain);
+        return new CredentialsWrapper($loader, $authHttpHandler, $universeDomain);
     }
 
     /**
      * @return string|null The quota project associated with the credentials.
      */
-    public function getQuotaProject(): ?string
+    public function getQuotaProject()
     {
         if ($this->credentialsFetcher instanceof GetQuotaProjectInterface) {
             return $this->credentialsFetcher->getQuotaProject();
@@ -236,7 +239,7 @@ class CredentialsWrapper implements HeaderCredentialsInterface, ProjectIdProvide
      * @param string $audience optional audience for self-signed JWTs.
      * @return callable Callable function that returns an authorization header.
      */
-    public function getAuthorizationHeaderCallback($audience = null): ?callable
+    public function getAuthorizationHeaderCallback($audience = null)
     {
         // NOTE: changes to this function should be treated carefully and tested thoroughly. It will
         // be passed into the gRPC c extension, and changes have the potential to trigger very
@@ -248,7 +251,7 @@ class CredentialsWrapper implements HeaderCredentialsInterface, ProjectIdProvide
 
                 // Call updateMetadata to take advantage of self-signed JWTs
                 if ($this->credentialsFetcher instanceof UpdateMetadataInterface) {
-                    return $this->credentialsFetcher->updateMetadata([], $audience, $this->authHttpHandler);
+                    return $this->credentialsFetcher->updateMetadata([], $audience);
                 }
 
                 // In case a custom fetcher is provided (unlikely) which doesn't
@@ -268,12 +271,10 @@ class CredentialsWrapper implements HeaderCredentialsInterface, ProjectIdProvide
 
     /**
      * Verify that the expected universe domain matches the universe domain from the credentials.
-     *
-     * @throws ValidationException if the universe domain does not match.
      */
-    public function checkUniverseDomain(): void
+    public function checkUniverseDomain()
     {
-        if (false === $this->hasCheckedUniverse && $this->shouldCheckUniverseDomain()) {
+        if (false === $this->hasCheckedUniverse) {
             $credentialsUniverse = $this->credentialsFetcher instanceof GetUniverseDomainInterface
                 ? $this->credentialsFetcher->getUniverseDomain()
                 : GetUniverseDomainInterface::DEFAULT_UNIVERSE_DOMAIN;
@@ -289,21 +290,16 @@ class CredentialsWrapper implements HeaderCredentialsInterface, ProjectIdProvide
     }
 
     /**
-     * Skip universe domain check for Metadata server (e.g. GCE) credentials.
-     *
-     * @return bool
+     * @return Guzzle6HttpHandler|Guzzle7HttpHandler
+     * @throws ValidationException
      */
-    private function shouldCheckUniverseDomain(): bool
+    private static function buildHttpHandlerFactory()
     {
-        $fetcher = $this->credentialsFetcher instanceof FetchAuthTokenCache
-            ? $this->credentialsFetcher->getFetcher()
-            : $this->credentialsFetcher;
-
-        if ($fetcher instanceof GCECredentials) {
-            return false;
+        try {
+            return HttpHandlerFactory::build();
+        } catch (Exception $ex) {
+            throw new ValidationException("Failed to build HttpHandler", $ex->getCode(), $ex);
         }
-
-        return true;
     }
 
     /**
@@ -334,7 +330,7 @@ class CredentialsWrapper implements HeaderCredentialsInterface, ProjectIdProvide
                 $defaultScopes
             );
         } catch (DomainException $ex) {
-            throw new ValidationException('Could not construct ApplicationDefaultCredentials', $ex->getCode(), $ex);
+            throw new ValidationException("Could not construct ApplicationDefaultCredentials", $ex->getCode(), $ex);
         }
     }
 

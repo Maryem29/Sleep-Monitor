@@ -6,9 +6,6 @@ namespace Kreait\Firebase\Database\Query;
 
 use Psr\Http\Message\UriInterface;
 
-/**
- * @internal
- */
 interface Modifier
 {
     /**
@@ -18,6 +15,10 @@ interface Modifier
 
     /**
      * Modifies the given value and returns it.
+     *
+     * @param mixed $value
+     *
+     * @return mixed
      */
-    public function modifyValue(mixed $value): mixed;
+    public function modifyValue($value);
 }

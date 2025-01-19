@@ -4,27 +4,27 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\RemoteConfig;
 
-use JsonSerializable;
-use Stringable;
-
-final class UpdateOrigin implements JsonSerializable, Stringable
+final class UpdateOrigin implements \JsonSerializable
 {
     public const UNSPECIFIED = 'REMOTE_CONFIG_UPDATE_ORIGIN_UNSPECIFIED';
     public const CONSOLE = 'CONSOLE';
     public const REST_API = 'REST_API';
 
-    private function __construct(private readonly string $value)
-    {
-    }
+    private string $value;
 
-    public function __toString(): string
+    private function __construct(string $value)
     {
-        return $this->value;
+        $this->value = $value;
     }
 
     public static function fromValue(string $value): self
     {
         return new self($value);
+    }
+
+    public function __toString(): string
+    {
+        return $this->value;
     }
 
     public function jsonSerialize(): string

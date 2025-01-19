@@ -6,7 +6,6 @@ namespace Kreait\Firebase\Contract;
 
 use Kreait\Firebase\Database\Reference;
 use Kreait\Firebase\Database\RuleSet;
-use Kreait\Firebase\Database\Transaction;
 use Kreait\Firebase\Exception\DatabaseException;
 use Kreait\Firebase\Exception\InvalidArgumentException;
 use Kreait\Firebase\Exception\OutOfRangeException;
@@ -15,14 +14,14 @@ use Psr\Http\Message\UriInterface;
 /**
  * The Firebase Realtime Database.
  *
- * @see https://firebase.google.com/docs/reference/rest/database
+ * @see https://firebase.google.com/docs/reference/js/firebase.database.Database
  */
 interface Database
 {
-    public const SERVER_TIMESTAMP = ['.sv' => 'timestamp'];
-
     /**
      * Returns a Reference to the root or the specified path.
+     *
+     * @see https://firebase.google.com/docs/reference/js/firebase.database.Database#ref
      *
      * @throws InvalidArgumentException
      */
@@ -30,6 +29,8 @@ interface Database
 
     /**
      * Returns a reference to the root or the path specified in url.
+     *
+     * @see https://firebase.google.com/docs/reference/js/firebase.database.Database#refFromURL
      *
      * @param string|UriInterface $uri
      *
@@ -57,7 +58,9 @@ interface Database
     public function updateRules(RuleSet $ruleSet): void;
 
     /**
-     * @param callable(Transaction $transaction):mixed $callable
+     * @param callable(\Kreait\Firebase\Database\Transaction $transaction):mixed $callable
+     *
+     * @return mixed
      */
-    public function runTransaction(callable $callable): mixed;
+    public function runTransaction(callable $callable);
 }

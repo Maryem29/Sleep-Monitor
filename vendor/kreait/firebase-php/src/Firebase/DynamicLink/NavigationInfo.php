@@ -6,31 +6,29 @@ namespace Kreait\Firebase\DynamicLink;
 
 use JsonSerializable;
 
-/**
- * @phpstan-type NavigationInfoShape array{
- *     enableForcedRedirect?: bool
- * }
- */
 final class NavigationInfo implements JsonSerializable
 {
-    /**
-     * @param NavigationInfoShape $data
-     */
-    private function __construct(private readonly array $data)
+    /** @var array<string, mixed> */
+    private array $data = [];
+
+    private function __construct()
     {
     }
 
     /**
-     * @param NavigationInfoShape $data
+     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
-        return new self($data);
+        $info = new self();
+        $info->data = $data;
+
+        return $info;
     }
 
     public static function new(): self
     {
-        return new self([]);
+        return new self();
     }
 
     /**
@@ -44,10 +42,10 @@ final class NavigationInfo implements JsonSerializable
      */
     public function withForcedRedirect(): self
     {
-        $data = $this->data;
-        $data['enableForcedRedirect'] = true;
+        $info = clone $this;
+        $info->data['enableForcedRedirect'] = true;
 
-        return new self($data);
+        return $info;
     }
 
     /**
@@ -55,12 +53,15 @@ final class NavigationInfo implements JsonSerializable
      */
     public function withoutForcedRedirect(): self
     {
-        $data = $this->data;
-        unset($data['enableForcedRedirect']);
+        $info = clone $this;
+        unset($info->data['enableForcedRedirect']);
 
-        return new self($data);
+        return $info;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return $this->data;

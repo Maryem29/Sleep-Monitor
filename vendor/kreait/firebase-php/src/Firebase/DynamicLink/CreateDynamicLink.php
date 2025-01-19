@@ -4,59 +4,39 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\DynamicLink;
 
-use Beste\Json;
 use JsonSerializable;
 use Kreait\Firebase\Value\Url;
-use Stringable;
+use Psr\Http\Message\UriInterface;
 
-/**
- * @phpstan-import-type AnalyticsInfoShape from AnalyticsInfo
- * @phpstan-import-type AndroidInfoShape from AndroidInfo
- * @phpstan-import-type IOSInfoShape from IOSInfo
- * @phpstan-import-type NavigationInfoShape from NavigationInfo
- * @phpstan-import-type SocialMetaTagInfoShape from SocialMetaTagInfo
- *
- * @phpstan-type CreateDynamicLinkShape array{
- *     dynamicLinkInfo: array{
- *         link?: non-empty-string,
- *         domainUriPrefix?: non-empty-string,
- *         analyticsInfo?: AnalyticsInfoShape,
- *         androidInfo?: AndroidInfoShape,
- *         iosInfo?: IOSInfoShape,
- *         navigationInfo?: NavigationInfoShape,
- *         socialMetaTagInfo?: SocialMetaTagInfoShape
- *     },
- *     suffix: array{
- *         option: self::WITH_*
- *     }
- * }
- */
 final class CreateDynamicLink implements JsonSerializable
 {
     public const WITH_UNGUESSABLE_SUFFIX = 'UNGUESSABLE';
     public const WITH_SHORT_SUFFIX = 'SHORT';
 
-    /**
-     * @param CreateDynamicLinkShape $data
-     */
-    private function __construct(private readonly array $data)
+    /** @var array<string, mixed> */
+    private array $data = [
+        'dynamicLinkInfo' => [],
+        'suffix' => ['option' => self::WITH_UNGUESSABLE_SUFFIX],
+    ];
+
+    private function __construct()
     {
     }
 
     /**
-     * @param CreateDynamicLinkShape $data
+     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
-        return new self($data);
+        $action = new self();
+        $action->data = $data;
+
+        return $action;
     }
 
     public static function new(): self
     {
-        return new self([
-            'dynamicLinkInfo' => [],
-            'suffix' => ['option' => self::WITH_UNGUESSABLE_SUFFIX],
-        ]);
+        return new self();
     }
 
     /**
@@ -64,23 +44,30 @@ final class CreateDynamicLink implements JsonSerializable
      * or payload, which initiates app-specific logic (such as crediting the user with a coupon or
      * displaying a welcome screen). This link must be a well-formatted URL, be properly
      * URL-encoded, use either HTTP or HTTPS, and cannot be another Dynamic Link.
+     *
+     * @param string|UriInterface|Url $url
      */
-    public static function forUrl(Stringable|string $url): self
+    public static function forUrl($url): self
     {
-        return new self([
-            'dynamicLinkInfo' => [
-                'link' => Url::fromString($url)->value,
-            ],
-            'suffix' => ['option' => self::WITH_UNGUESSABLE_SUFFIX],
-        ]);
+        $url = Url::fromValue((string) $url);
+
+        $action = new self();
+        $action->data['dynamicLinkInfo']['link'] = (string) $url;
+
+        return $action;
     }
 
-    public function withDynamicLinkDomain(Stringable|string $dynamicLinkDomain): self
+    /**
+     * @param string|Url|UriInterface $dynamicLinkDomain
+     */
+    public function withDynamicLinkDomain($dynamicLinkDomain): self
     {
-        $data = $this->data;
-        $data['dynamicLinkInfo']['domainUriPrefix'] = Url::fromString($dynamicLinkDomain)->value;
+        $dynamicLinkDomain = Url::fromValue((string) $dynamicLinkDomain);
 
-        return new self($data);
+        $action = clone $this;
+        $action->data['dynamicLinkInfo']['domainUriPrefix'] = (string) $dynamicLinkDomain;
+
+        return $action;
     }
 
     public function hasDynamicLinkDomain(): bool
@@ -89,86 +76,89 @@ final class CreateDynamicLink implements JsonSerializable
     }
 
     /**
-     * @param AnalyticsInfo|AnalyticsInfoShape $data
+     * @param AnalyticsInfo|array<string, mixed> $data
      */
-    public function withAnalyticsInfo(AnalyticsInfo|array $data): self
+    public function withAnalyticsInfo($data): self
     {
         $info = $data instanceof AnalyticsInfo ? $data : AnalyticsInfo::fromArray($data);
 
-        $data = $this->data;
-        $data['dynamicLinkInfo']['analyticsInfo'] = Json::decode(Json::encode($info), true);
+        $action = clone $this;
+        $action->data['dynamicLinkInfo']['analyticsInfo'] = $info->jsonSerialize();
 
-        return new self($data);
+        return $action;
     }
 
     /**
-     * @param AndroidInfo|AndroidInfoShape $data
+     * @param AndroidInfo|array<string, string> $data
      */
-    public function withAndroidInfo(AndroidInfo|array $data): self
+    public function withAndroidInfo($data): self
     {
         $info = $data instanceof AndroidInfo ? $data : AndroidInfo::fromArray($data);
 
-        $data = $this->data;
-        $data['dynamicLinkInfo']['androidInfo'] = Json::decode(Json::encode($info), true);
+        $action = clone $this;
+        $action->data['dynamicLinkInfo']['androidInfo'] = $info->jsonSerialize();
 
-        return new self($data);
+        return $action;
     }
 
     /**
-     * @param IOSInfo|IOSInfoShape $data
+     * @param IOSInfo|array<string, string> $data
      */
-    public function withIOSInfo(IOSInfo|array $data): self
+    public function withIOSInfo($data): self
     {
         $info = $data instanceof IOSInfo ? $data : IOSInfo::fromArray($data);
 
-        $data = $this->data;
-        $data['dynamicLinkInfo']['iosInfo'] = Json::decode(Json::encode($info), true);
+        $action = clone $this;
+        $action->data['dynamicLinkInfo']['iosInfo'] = $info->jsonSerialize();
 
-        return new self($data);
+        return $action;
     }
 
     /**
-     * @param NavigationInfo|NavigationInfoShape $data
+     * @param NavigationInfo|array<string, mixed> $data
      */
-    public function withNavigationInfo(NavigationInfo|array $data): self
+    public function withNavigationInfo($data): self
     {
         $info = $data instanceof NavigationInfo ? $data : NavigationInfo::fromArray($data);
 
-        $data = $this->data;
-        $data['dynamicLinkInfo']['navigationInfo'] = Json::decode(Json::encode($info), true);
+        $action = clone $this;
+        $action->data['dynamicLinkInfo']['navigationInfo'] = $info->jsonSerialize();
 
-        return new self($data);
+        return $action;
     }
 
     /**
-     * @param SocialMetaTagInfo|SocialMetaTagInfoShape $data
+     * @param SocialMetaTagInfo|array<string, mixed> $data
      */
-    public function withSocialMetaTagInfo(SocialMetaTagInfo|array $data): self
+    public function withSocialMetaTagInfo($data): self
     {
         $info = $data instanceof SocialMetaTagInfo ? $data : SocialMetaTagInfo::fromArray($data);
 
-        $data = $this->data;
-        $data['dynamicLinkInfo']['socialMetaTagInfo'] = Json::decode(Json::encode($info), true);
+        $action = clone $this;
+        $action->data['dynamicLinkInfo']['socialMetaTagInfo'] = $info->jsonSerialize();
 
-        return new self($data);
+        return $action;
     }
 
     public function withUnguessableSuffix(): self
     {
-        $data = $this->data;
-        $data['suffix']['option'] = self::WITH_UNGUESSABLE_SUFFIX;
+        $action = clone $this;
+        $action->data['suffix']['option'] = self::WITH_UNGUESSABLE_SUFFIX;
 
-        return new self($data);
+        return $action;
     }
 
     public function withShortSuffix(): self
     {
-        $data = $this->data;
-        $data['suffix']['option'] = self::WITH_SHORT_SUFFIX;
+        $action = clone $this;
+        $action->data['suffix']['option'] = self::WITH_SHORT_SUFFIX;
 
-        return new self($data);
+        return $action;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return $this->data;

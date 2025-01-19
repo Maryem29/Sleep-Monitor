@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\Auth;
 
-/**
- * @internal
- */
 final class SignInWithEmailAndPassword implements IsTenantAware, SignIn
 {
-    private ?string $tenantId = null;
+    private string $email;
+    private string $clearTextPassword;
+    private ?TenantId $tenantId = null;
 
-    private function __construct(private readonly string $email, private readonly string $clearTextPassword)
+    private function __construct(string $email, string $clearTextPassword)
     {
+        $this->email = $email;
+        $this->clearTextPassword = $clearTextPassword;
     }
 
     public static function fromValues(string $email, string $clearTextPassword): self
@@ -30,7 +31,7 @@ final class SignInWithEmailAndPassword implements IsTenantAware, SignIn
         return $this->clearTextPassword;
     }
 
-    public function withTenantId(string $tenantId): self
+    public function withTenantId(TenantId $tenantId): self
     {
         $action = clone $this;
         $action->tenantId = $tenantId;
@@ -38,7 +39,7 @@ final class SignInWithEmailAndPassword implements IsTenantAware, SignIn
         return $action;
     }
 
-    public function tenantId(): ?string
+    public function tenantId(): ?TenantId
     {
         return $this->tenantId;
     }

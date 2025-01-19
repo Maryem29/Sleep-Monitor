@@ -4,37 +4,31 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase;
 
-use Beste\Json;
 use Kreait\Firebase\Exception\RemoteConfig\VersionNotFound;
 use Kreait\Firebase\RemoteConfig\ApiClient;
 use Kreait\Firebase\RemoteConfig\FindVersions;
 use Kreait\Firebase\RemoteConfig\Template;
 use Kreait\Firebase\RemoteConfig\Version;
 use Kreait\Firebase\RemoteConfig\VersionNumber;
+use Kreait\Firebase\Util\JSON;
 use Psr\Http\Message\ResponseInterface;
 use Traversable;
 
-use function array_shift;
-use function is_string;
-
-/**
- * @internal
- *
- * @phpstan-import-type RemoteConfigTemplateShape from Template
- */
-final class RemoteConfig implements Contract\RemoteConfig
+class RemoteConfig implements Contract\RemoteConfig
 {
-    public function __construct(private readonly ApiClient $client)
+    private ApiClient $client;
+
+    /**
+     * @internal
+     */
+    public function __construct(ApiClient $client)
     {
+        $this->client = $client;
     }
 
-    public function get(Version|VersionNumber|int|string|null $versionNumber = null): Template
+    public function get(): Template
     {
-        if ($versionNumber !== null) {
-            $versionNumber = $this->ensureVersionNumber($versionNumber);
-        }
-
-        return $this->buildTemplateFromResponse($this->client->getTemplate($versionNumber));
+        return $this->buildTemplateFromResponse($this->client->getTemplate());
     }
 
     public function validate($template): void
@@ -49,20 +43,10 @@ final class RemoteConfig implements Contract\RemoteConfig
             ->getHeader('ETag')
         ;
 
-        $etag = array_shift($etag);
-
-        if (!is_string($etag)) {
-            return '*';
-        }
-
-        if ($etag === '') {
-            return '*';
-        }
-
-        return $etag;
+        return \array_shift($etag) ?: '';
     }
 
-    public function getVersion(VersionNumber|int|string $versionNumber): Version
+    public function getVersion($versionNumber): Version
     {
         $versionNumber = $this->ensureVersionNumber($versionNumber);
 
@@ -75,7 +59,7 @@ final class RemoteConfig implements Contract\RemoteConfig
         throw VersionNotFound::withVersionNumber($versionNumber);
     }
 
-    public function rollbackToVersion(VersionNumber|int|string $versionNumber): Template
+    public function rollbackToVersion($versionNumber): Template
     {
         $versionNumber = $this->ensureVersionNumber($versionNumber);
 
@@ -91,11 +75,10 @@ final class RemoteConfig implements Contract\RemoteConfig
 
         do {
             $response = $this->client->listVersions($query, $pageToken);
-            $result = Json::decode((string) $response->getBody(), true);
+            $result = JSON::decode((string) $response->getBody(), true);
 
             foreach ((array) ($result['versions'] ?? []) as $versionData) {
                 ++$count;
-
                 yield Version::fromArray($versionData);
 
                 if ($count === $limit) {
@@ -108,7 +91,7 @@ final class RemoteConfig implements Contract\RemoteConfig
     }
 
     /**
-     * @param Template|RemoteConfigTemplateShape $value
+     * @param Template|array<string, mixed> $value
      */
     private function ensureTemplate($value): Template
     {
@@ -116,27 +99,19 @@ final class RemoteConfig implements Contract\RemoteConfig
     }
 
     /**
-     * @param VersionNumber|positive-int|non-empty-string $value
+     * @param VersionNumber|int|string $value
      */
-    private function ensureVersionNumber(Version|VersionNumber|int|string $value): VersionNumber
+    private function ensureVersionNumber($value): VersionNumber
     {
-        if ($value instanceof VersionNumber) {
-            return $value;
-        }
-
-        if ($value instanceof Version) {
-            return $value->versionNumber();
-        }
-
-        return VersionNumber::fromValue($value);
+        return $value instanceof VersionNumber ? $value : VersionNumber::fromValue($value);
     }
 
     private function buildTemplateFromResponse(ResponseInterface $response): Template
     {
         $etagHeader = $response->getHeader('ETag');
-        $etag = array_shift($etagHeader) ?: '*';
+        $etag = \array_shift($etagHeader) ?: '*';
 
-        $data = Json::decode((string) $response->getBody(), true);
+        $data = JSON::decode((string) $response->getBody(), true);
 
         return Template::fromArray($data, $etag);
     }

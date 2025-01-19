@@ -6,11 +6,11 @@ namespace Kreait\Firebase\JWT\Contract;
 
 trait KeysTrait
 {
-    /** @var array<non-empty-string, non-empty-string> */
-    private array $values = [];
+    /** @var array<string, string> */
+    private $values = [];
 
     /**
-     * @return array<non-empty-string, non-empty-string>
+     * @return array<string, string>
      */
     public function all(): array
     {

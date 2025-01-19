@@ -4,42 +4,69 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\Value;
 
+use GuzzleHttp\Psr7\Uri;
 use Kreait\Firebase\Exception\InvalidArgumentException;
-use Stringable;
+use Psr\Http\Message\UriInterface;
+use Throwable;
 
-/**
- * @internal
- */
-final class Url
+class Url implements \JsonSerializable
 {
-    /**
-     * @var non-empty-string
-     */
-    public readonly string $value;
+    private UriInterface $value;
 
     /**
-     * @param non-empty-string $value
+     * @internal
      */
-    private function __construct(string $value)
+    public function __construct(UriInterface $value)
     {
-        $startsWithHttp = str_starts_with($value, 'https://') || str_starts_with($value, 'http://');
-        $parsedValue = parse_url($value);
-
-        if (!$startsWithHttp || $parsedValue === false) {
-            throw new InvalidArgumentException('The URL is invalid.');
-        }
-
         $this->value = $value;
     }
 
-    public static function fromString(Stringable|string $value): self
+    /**
+     * @param string|Url|UriInterface|mixed $value
+     *
+     * @throws InvalidArgumentException
+     */
+    public static function fromValue($value): self
     {
-        $value = (string) $value;
-
-        if ($value === '') {
-            throw new InvalidArgumentException('The URL cannot be empty.');
+        if ($value instanceof UriInterface) {
+            return new self($value);
         }
 
-        return new self($value);
+        if ($value instanceof self) {
+            return new self($value->toUri());
+        }
+
+        if (\is_string($value)) {
+            try {
+                return new self(new Uri($value));
+            } catch (Throwable $e) {
+                throw new InvalidArgumentException($e->getMessage());
+            }
+        }
+
+        throw new InvalidArgumentException('Unable to parse given value to an URL');
+    }
+
+    public function toUri(): UriInterface
+    {
+        return $this->value;
+    }
+
+    public function __toString()
+    {
+        return (string) $this->value;
+    }
+
+    public function jsonSerialize(): string
+    {
+        return (string) $this->value;
+    }
+
+    /**
+     * @param self|string $other
+     */
+    public function equalsTo($other): bool
+    {
+        return (string) $this->value === (string) $other;
     }
 }

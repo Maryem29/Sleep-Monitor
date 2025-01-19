@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\Auth;
 
-/**
- * @internal
- */
 final class SignInWithEmailAndOobCode implements IsTenantAware, SignIn
 {
-    private ?string $tenantId = null;
+    private string $email;
+    private string $oobCode;
+    private ?TenantId $tenantId = null;
 
-    private function __construct(private readonly string $email, private readonly string $oobCode)
+    private function __construct(string $email, string $oobCode)
     {
+        $this->email = $email;
+        $this->oobCode = $oobCode;
     }
 
     public static function fromValues(string $email, string $oobCode): self
@@ -20,7 +21,7 @@ final class SignInWithEmailAndOobCode implements IsTenantAware, SignIn
         return new self($email, $oobCode);
     }
 
-    public function withTenantId(string $tenantId): self
+    public function withTenantId(TenantId $tenantId): self
     {
         $action = clone $this;
         $action->tenantId = $tenantId;
@@ -38,7 +39,7 @@ final class SignInWithEmailAndOobCode implements IsTenantAware, SignIn
         return $this->oobCode;
     }
 
-    public function tenantId(): ?string
+    public function tenantId(): ?TenantId
     {
         return $this->tenantId;
     }

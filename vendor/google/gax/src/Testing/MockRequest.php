@@ -33,8 +33,7 @@ class MockRequest extends \Google\Protobuf\Internal\Message
      *     @type int|string $page_size
      * }
      */
-    public function __construct($data = null)
-    {
+    public function __construct($data = NULL) {
         Mocks::initOnce();
         parent::__construct($data);
     }
@@ -55,7 +54,7 @@ class MockRequest extends \Google\Protobuf\Internal\Message
      */
     public function setPageToken($var)
     {
-        GPBUtil::checkString($var, true);
+        GPBUtil::checkString($var, True);
         $this->page_token = $var;
 
         return $this;
@@ -84,3 +83,4 @@ class MockRequest extends \Google\Protobuf\Internal\Message
     }
 
 }
+

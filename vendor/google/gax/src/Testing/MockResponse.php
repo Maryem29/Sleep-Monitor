@@ -47,8 +47,7 @@ class MockResponse extends \Google\Protobuf\Internal\Message
      *     @type array|\Google\Protobuf\Internal\MapField $resources_map
      * }
      */
-    public function __construct($data = null)
-    {
+    public function __construct($data = NULL) {
         \GPBMetadata\ApiCore\Testing\Mocks::initOnce();
         parent::__construct($data);
     }
@@ -69,7 +68,7 @@ class MockResponse extends \Google\Protobuf\Internal\Message
      */
     public function setName($var)
     {
-        GPBUtil::checkString($var, true);
+        GPBUtil::checkString($var, True);
         $this->name = $var;
 
         return $this;
@@ -135,7 +134,7 @@ class MockResponse extends \Google\Protobuf\Internal\Message
      */
     public function setNextPageToken($var)
     {
-        GPBUtil::checkString($var, true);
+        GPBUtil::checkString($var, True);
         $this->next_page_token = $var;
 
         return $this;
@@ -164,3 +163,4 @@ class MockResponse extends \Google\Protobuf\Internal\Message
     }
 
 }
+

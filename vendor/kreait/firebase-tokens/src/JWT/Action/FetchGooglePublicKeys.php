@@ -9,23 +9,28 @@ use Kreait\Firebase\JWT\Value\Duration;
 
 final class FetchGooglePublicKeys
 {
+    /** @deprecated 1.15.0 */
+    public const DEFAULT_URL = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
+
     public const DEFAULT_URLS = [
         'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com',
         'https://www.googleapis.com/oauth2/v1/certs',
-        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/publicKeys',
     ];
 
     public const DEFAULT_FALLBACK_CACHE_DURATION = 'PT1H';
 
-    /** @var array<int, non-empty-string> */
-    private readonly array $urls;
+    /** @var array<int, string> */
+    private $urls;
+
+    private Duration $fallbackCacheDuration;
 
     /**
-     * @param array<array-key, non-empty-string> $urls
+     * @param array<array-key, string> $urls
      */
-    private function __construct(array $urls, private Duration $fallbackCacheDuration)
+    private function __construct(array $urls, Duration $fallbackCacheDuration)
     {
-        $this->urls = array_values($urls);
+        $this->urls = \array_values($urls);
+        $this->fallbackCacheDuration = $fallbackCacheDuration;
     }
 
     public static function fromGoogle(): self
@@ -35,8 +40,6 @@ final class FetchGooglePublicKeys
 
     /**
      * Use this method only if Google has changed the default URL and the library hasn't been updated yet.
-     *
-     * @param non-empty-string $url
      */
     public static function fromUrl(string $url): self
     {
@@ -47,9 +50,9 @@ final class FetchGooglePublicKeys
      * A response from the Google APIs should have a cache control header that determines when the keys expire.
      * If it doesn't have one, fall back to this value.
      *
-     * @param Duration|DateInterval|non-empty-string|int $duration
+     * @param Duration|DateInterval|string|int $duration
      */
-    public function ifKeysDoNotExpireCacheFor(Duration|DateInterval|string|int $duration): self
+    public function ifKeysDoNotExpireCacheFor($duration): self
     {
         $duration = Duration::make($duration);
 
@@ -57,6 +60,14 @@ final class FetchGooglePublicKeys
         $action->fallbackCacheDuration = $duration;
 
         return $action;
+    }
+
+    /**
+     * @deprecated 1.15.0
+     */
+    public function url(): string
+    {
+        return $this->urls[0];
     }
 
     /**

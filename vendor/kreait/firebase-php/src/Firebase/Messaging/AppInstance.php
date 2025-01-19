@@ -12,26 +12,27 @@ use Kreait\Firebase\Util\DT;
  */
 final class AppInstance implements JsonSerializable
 {
+    private RegistrationToken $registrationToken;
+
+    /** @var array<string, mixed> */
+    private array $rawData;
+
+    private TopicSubscriptions $topicSubscriptions;
+
     /**
      * @param array<string, mixed> $rawData
      */
-    private function __construct(
-        private readonly RegistrationToken $registrationToken,
-        private readonly TopicSubscriptions $topicSubscriptions,
-        private readonly array $rawData,
-    ) {
+    private function __construct(RegistrationToken $registrationToken, TopicSubscriptions $topicSubscriptions, array $rawData)
+    {
+        $this->registrationToken = $registrationToken;
+        $this->topicSubscriptions = $topicSubscriptions;
+        $this->rawData = $rawData;
     }
 
     /**
      * @internal
      *
-     * @param array{
-     *     rel?: array{
-     *         topics?: array<non-empty-string, array{
-     *             addDate?: non-empty-string
-     *         }>
-     *     }
-     * } $rawData
+     * @param array<string, mixed> $rawData
      */
     public static function fromRawData(RegistrationToken $registrationToken, array $rawData): self
     {
@@ -57,16 +58,15 @@ final class AppInstance implements JsonSerializable
     }
 
     /**
-     * @param Topic|non-empty-string $topic
+     * @param Topic|string $topic
      */
-    public function isSubscribedToTopic(Topic|string $topic): bool
+    public function isSubscribedToTopic($topic): bool
     {
         $topic = $topic instanceof Topic ? $topic : Topic::fromValue($topic);
 
         return $this->topicSubscriptions
-            ->filter(static fn(TopicSubscription $subscription): bool => $topic->value() === $subscription->topic()->value())
-            ->count() > 0
-        ;
+            ->filter(static fn (TopicSubscription $subscription) => $topic->value() === $subscription->topic()->value())
+            ->count() > 0;
     }
 
     /**
@@ -77,6 +77,9 @@ final class AppInstance implements JsonSerializable
         return $this->rawData;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return $this->rawData;

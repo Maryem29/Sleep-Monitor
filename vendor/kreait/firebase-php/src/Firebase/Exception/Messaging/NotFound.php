@@ -6,19 +6,13 @@ namespace Kreait\Firebase\Exception\Messaging;
 
 use Kreait\Firebase\Exception\HasErrors;
 use Kreait\Firebase\Exception\MessagingException;
-use Kreait\Firebase\Exception\RuntimeException;
+use RuntimeException;
 
 final class NotFound extends RuntimeException implements MessagingException
 {
     use HasErrors;
 
     /**
-     * @var non-empty-string|null
-     */
-    private ?string $token = null;
-
-    /**
-     * @param non-empty-string $token
      * @param array<mixed> $errors
      */
     public static function becauseTokenNotFound(string $token, array $errors = []): self
@@ -45,7 +39,6 @@ final class NotFound extends RuntimeException implements MessagingException
 
         $notFound = new self($message);
         $notFound->errors = $errors;
-        $notFound->token = $token;
 
         return $notFound;
     }
@@ -53,7 +46,7 @@ final class NotFound extends RuntimeException implements MessagingException
     /**
      * @internal
      *
-     * @param array<mixed> $errors
+     * @param string[] $errors
      */
     public function withErrors(array $errors): self
     {
@@ -61,10 +54,5 @@ final class NotFound extends RuntimeException implements MessagingException
         $new->errors = $errors;
 
         return $new;
-    }
-
-    public function token(): ?string
-    {
-        return $this->token;
     }
 }

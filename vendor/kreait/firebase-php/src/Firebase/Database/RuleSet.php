@@ -6,21 +6,17 @@ namespace Kreait\Firebase\Database;
 
 use JsonSerializable;
 
-use function array_key_exists;
-
 class RuleSet implements JsonSerializable
 {
-    /**
-     * @var array<string, array<mixed>>
-     */
-    private readonly array $rules;
+    /** @var array<string, array<mixed>> */
+    private array $rules;
 
     /**
      * @param array<string, array<mixed>> $rules
      */
     private function __construct(array $rules)
     {
-        if (!array_key_exists('rules', $rules)) {
+        if (!\array_key_exists('rules', $rules)) {
             $rules = ['rules' => $rules];
         }
 
@@ -96,6 +92,9 @@ class RuleSet implements JsonSerializable
         return $this->rules;
     }
 
+    /**
+     * @return array<string, array<mixed>>
+     */
     public function jsonSerialize(): array
     {
         return $this->rules;

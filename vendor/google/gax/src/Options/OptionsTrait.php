@@ -32,8 +32,8 @@
 
 namespace Google\ApiCore\Options;
 
-use BadMethodCallException;
 use Google\ApiCore\ValidationException;
+use BadMethodCallException;
 
 /**
  * Trait implemented by any class representing an associative array of PHP options.

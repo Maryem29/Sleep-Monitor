@@ -17,24 +17,19 @@ use Traversable;
  * The Firebase Remote Config.
  *
  * @see https://firebase.google.com/docs/remote-config/use-config-rest
- * @see https://firebase.google.com/docs/reference/remote-config/rest
- *
- * @phpstan-import-type RemoteConfigTemplateShape from Template
- * @phpstan-import-type FindVersionsShape from FindVersions
+ * @see https://firebase.google.com/docs/remote-config/rest-reference
  */
 interface RemoteConfig
 {
     /**
-     * @param Version|VersionNumber|positive-int|non-empty-string $versionNumber
-     *
      * @throws RemoteConfigException if something went wrong
      */
-    public function get(Version|VersionNumber|int|string|null $versionNumber = null): Template;
+    public function get(): Template;
 
     /**
      * Validates the given template without publishing it.
      *
-     * @param Template|RemoteConfigTemplateShape $template
+     * @param Template|array<string, mixed> $template
      *
      * @throws ValidationFailed if the validation failed
      * @throws RemoteConfigException
@@ -42,40 +37,40 @@ interface RemoteConfig
     public function validate($template): void;
 
     /**
-     * @param Template|RemoteConfigTemplateShape $template
+     * @param Template|array<string, mixed> $template
      *
      * @throws RemoteConfigException
      *
-     * @return non-empty-string The etag value of the published template that can be compared to in later calls
+     * @return string The etag value of the published template that can be compared to in later calls
      */
     public function publish($template): string;
 
     /**
      * Returns a version with the given number.
      *
-     * @param VersionNumber|positive-int|non-empty-string $versionNumber
+     * @param VersionNumber|int|string $versionNumber
      *
      * @throws VersionNotFound
      * @throws RemoteConfigException if something went wrong
      */
-    public function getVersion(VersionNumber|int|string $versionNumber): Version;
+    public function getVersion($versionNumber): Version;
 
     /**
      * Returns a version with the given number.
      *
-     * @param VersionNumber|positive-int|non-empty-string $versionNumber
+     * @param VersionNumber|int|string $versionNumber
      *
      * @throws VersionNotFound
      * @throws RemoteConfigException if something went wrong
      */
-    public function rollbackToVersion(VersionNumber|int|string $versionNumber): Template;
+    public function rollbackToVersion($versionNumber): Template;
 
     /**
-     * @param FindVersions|FindVersionsShape|null $query
+     * @param FindVersions|array<string, mixed>|null $query
      *
      * @throws RemoteConfigException if something went wrong
      *
-     * @return Traversable<Version>
+     * @return Traversable<Version>|Version[]
      */
     public function listVersions($query = null): Traversable;
 }

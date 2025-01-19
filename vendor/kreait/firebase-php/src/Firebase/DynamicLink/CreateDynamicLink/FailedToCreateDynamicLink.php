@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\DynamicLink\CreateDynamicLink;
 
-use Beste\Json;
+use InvalidArgumentException;
 use Kreait\Firebase\DynamicLink\CreateDynamicLink;
-use Kreait\Firebase\Exception\RuntimeException;
+use Kreait\Firebase\Exception\FirebaseException;
+use Kreait\Firebase\Util\JSON;
 use Psr\Http\Message\ResponseInterface;
-use UnexpectedValueException;
+use RuntimeException;
 
-final class FailedToCreateDynamicLink extends RuntimeException
+final class FailedToCreateDynamicLink extends RuntimeException implements FirebaseException
 {
     private ?CreateDynamicLink $action = null;
     private ?ResponseInterface $response = null;
@@ -20,8 +21,8 @@ final class FailedToCreateDynamicLink extends RuntimeException
         $fallbackMessage = 'Failed to create dynamic link';
 
         try {
-            $message = Json::decode((string) $response->getBody(), true)['error']['message'] ?? $fallbackMessage;
-        } catch (UnexpectedValueException) {
+            $message = JSON::decode((string) $response->getBody(), true)['error']['message'] ?? $fallbackMessage;
+        } catch (InvalidArgumentException $e) {
             $message = $fallbackMessage;
         }
 

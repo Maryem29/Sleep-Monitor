@@ -7,7 +7,7 @@ namespace Kreait\Firebase\JWT\Contract;
 interface Keys
 {
     /**
-     * @return array<non-empty-string, non-empty-string>
+     * @return array<string, string>
      */
     public function all(): array;
 }

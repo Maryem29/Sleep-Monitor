@@ -17,9 +17,81 @@
 
 namespace Google\Cloud\Core\Report;
 
+use Google\Cloud\Core\Compute\Metadata;
+
 /**
- * @deprecated Use \Google\Cloud\Core\Report\CloudRunServiceMetadataProvider instead
+ * A MetadataProvider for Cloud Run.
  */
-class CloudRunMetadataProvider extends CloudRunServiceMetadataProvider
+class CloudRunMetadataProvider implements MetadataProviderInterface
 {
+    /**
+     * @var Metadata
+     */
+    private $metadata;
+
+    /**
+     * @var string
+     */
+    private $serviceId;
+
+    /**
+     * @var string
+     */
+    private $revisionId;
+
+    public function __construct(array $env)
+    {
+        $this->serviceId = isset($env['K_SERVICE'])
+            ? $env['K_SERVICE']
+            : 'unknown-service';
+        $this->revisionId = isset($env['K_REVISION'])
+            ? $env['K_REVISION']
+            : 'unknown-revision';
+        $this->metadata = new Metadata();
+    }
+
+    /**
+     * not implemented
+     * @TODO
+     */
+    public function monitoredResource()
+    {
+        return [];
+    }
+
+    /**
+     * not implemented
+     * @TODO
+     */
+    public function projectId()
+    {
+        return $this->metadata->getProjectId();
+    }
+
+    /**
+     * Return the service id.
+     * @return string
+     */
+    public function serviceId()
+    {
+        return $this->serviceId;
+    }
+
+    /**
+     * Return the version id.
+     * @return string
+     */
+    public function versionId()
+    {
+        return $this->revisionId;
+    }
+
+    /**
+     * not implemented
+     * @TODO
+     */
+    public function labels()
+    {
+        return [];
+    }
 }

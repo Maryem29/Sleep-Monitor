@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace Kreait\Firebase\Exception;
 
 /**
- * @internal
+ * @codeCoverageIgnore
  */
 trait HasErrors
 {
-    /**
-     * @var array<mixed>
-     */
+    /** @var array<mixed> */
     protected array $errors = [];
 
     /**

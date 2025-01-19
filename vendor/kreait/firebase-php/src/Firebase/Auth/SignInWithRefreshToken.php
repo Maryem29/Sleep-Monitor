@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\Auth;
 
-/**
- * @internal
- */
 final class SignInWithRefreshToken implements IsTenantAware, SignIn
 {
-    private ?string $tenantId = null;
+    private string $refreshToken;
+    private ?TenantId $tenantId = null;
 
-    private function __construct(private readonly string $refreshToken)
+    private function __construct(string $refreshToken)
     {
+        $this->refreshToken = $refreshToken;
     }
 
     public static function fromValue(string $refreshToken): self
@@ -20,7 +19,7 @@ final class SignInWithRefreshToken implements IsTenantAware, SignIn
         return new self($refreshToken);
     }
 
-    public function withTenantId(string $tenantId): self
+    public function withTenantId(TenantId $tenantId): self
     {
         $action = clone $this;
         $action->tenantId = $tenantId;
@@ -33,7 +32,7 @@ final class SignInWithRefreshToken implements IsTenantAware, SignIn
         return $this->refreshToken;
     }
 
-    public function tenantId(): ?string
+    public function tenantId(): ?TenantId
     {
         return $this->tenantId;
     }

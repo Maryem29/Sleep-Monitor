@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\Auth;
 
-/**
- * @internal
- */
 final class SignInAnonymously implements SignIn
 {
-    private ?string $tenantId = null;
+    private ?TenantId $tenantId = null;
 
     private function __construct()
     {
@@ -20,7 +17,7 @@ final class SignInAnonymously implements SignIn
         return new self();
     }
 
-    public function withTenantId(string $tenantId): self
+    public function withTenantId(TenantId $tenantId): self
     {
         $action = clone $this;
         $action->tenantId = $tenantId;
@@ -28,7 +25,7 @@ final class SignInAnonymously implements SignIn
         return $action;
     }
 
-    public function tenantId(): ?string
+    public function tenantId(): ?TenantId
     {
         return $this->tenantId;
     }

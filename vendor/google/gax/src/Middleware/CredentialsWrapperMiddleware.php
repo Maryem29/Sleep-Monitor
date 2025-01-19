@@ -33,7 +33,7 @@ namespace Google\ApiCore\Middleware;
 
 use Google\ApiCore\Call;
 use Google\ApiCore\CredentialsWrapper;
-use Google\ApiCore\HeaderCredentialsInterface;
+use GuzzleHttp\Promise\PromiseInterface;
 
 /**
 * Middleware which adds a CredentialsWrapper object to the call options.
@@ -42,13 +42,11 @@ class CredentialsWrapperMiddleware implements MiddlewareInterface
 {
     /** @var callable */
     private $nextHandler;
-
-    /** @var HeaderCredentialsInterface */
-    private HeaderCredentialsInterface  $credentialsWrapper;
+    private CredentialsWrapper $credentialsWrapper;
 
     public function __construct(
         callable $nextHandler,
-        HeaderCredentialsInterface $credentialsWrapper
+        CredentialsWrapper $credentialsWrapper
     ) {
         $this->nextHandler = $nextHandler;
         $this->credentialsWrapper = $credentialsWrapper;

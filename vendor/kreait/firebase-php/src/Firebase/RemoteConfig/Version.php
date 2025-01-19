@@ -4,41 +4,40 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\RemoteConfig;
 
-use DateTimeImmutable;
 use Kreait\Firebase\Util\DT;
 
-use function array_key_exists;
-
-/**
- * @phpstan-import-type RemoteConfigUserShape from User
- *
- * @phpstan-type RemoteConfigVersionShape array{
- *    versionNumber: non-empty-string,
- *    updateTime: non-empty-string,
- *    updateUser: RemoteConfigUserShape,
- *    description?: string|null,
- *    updateOrigin: non-empty-string,
- *    updateType: non-empty-string,
- *    rollbackSource?: non-empty-string
- * }
- */
 final class Version
 {
+    private VersionNumber $versionNumber;
+    private User $user;
+    private \DateTimeImmutable $updatedAt;
+    private string $description;
+    private UpdateOrigin $updateOrigin;
+    private UpdateType $updateType;
+    private ?VersionNumber $rollbackSource;
+
     private function __construct(
-        private readonly VersionNumber $versionNumber,
-        private readonly User $user,
-        private readonly string $description,
-        private readonly DateTimeImmutable $updatedAt,
-        private readonly UpdateOrigin $updateOrigin,
-        private readonly UpdateType $updateType,
-        private readonly ?VersionNumber $rollbackSource,
+        VersionNumber $versionNumber,
+        User $user,
+        string $description,
+        \DateTimeImmutable $updatedAt,
+        UpdateOrigin $updateOrigin,
+        UpdateType $updateType,
+        ?VersionNumber $rollbackSource
     ) {
+        $this->versionNumber = $versionNumber;
+        $this->user = $user;
+        $this->description = $description;
+        $this->updatedAt = $updatedAt;
+        $this->updateOrigin = $updateOrigin;
+        $this->updateType = $updateType;
+        $this->rollbackSource = $rollbackSource;
     }
 
     /**
      * @internal
      *
-     * @param RemoteConfigVersionShape $data
+     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
@@ -46,10 +45,16 @@ final class Version
         $user = User::fromArray($data['updateUser']);
         $updatedAt = DT::toUTCDateTimeImmutable($data['updateTime']);
         $description = $data['description'] ?? '';
-        $updateOrigin = UpdateOrigin::fromValue($data['updateOrigin']);
-        $updateType = UpdateType::fromValue($data['updateType']);
 
-        $rollbackSource = array_key_exists('rollbackSource', $data)
+        $updateOrigin = ($data['updateOrigin'] ?? null)
+            ? UpdateOrigin::fromValue($data['updateOrigin'])
+            : UpdateOrigin::fromValue(UpdateOrigin::UNSPECIFIED);
+
+        $updateType = ($data['updateType'] ?? null)
+            ? UpdateType::fromValue($data['updateType'])
+            : UpdateType::fromValue(UpdateType::UNSPECIFIED);
+
+        $rollbackSource = ($data['rollbackSource'] ?? null)
             ? VersionNumber::fromValue($data['rollbackSource'])
             : null;
 
@@ -60,7 +65,7 @@ final class Version
             $updatedAt,
             $updateOrigin,
             $updateType,
-            $rollbackSource,
+            $rollbackSource
         );
     }
 
@@ -74,7 +79,7 @@ final class Version
         return $this->user;
     }
 
-    public function updatedAt(): DateTimeImmutable
+    public function updatedAt(): \DateTimeImmutable
     {
         return $this->updatedAt;
     }

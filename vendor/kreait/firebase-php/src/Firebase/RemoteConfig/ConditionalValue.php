@@ -4,88 +4,54 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\RemoteConfig;
 
-use JsonSerializable;
-
-use function is_array;
-use function is_string;
-
-/**
- * @phpstan-import-type RemoteConfigParameterValueShape from ParameterValue
- */
-class ConditionalValue implements JsonSerializable
+class ConditionalValue implements \JsonSerializable
 {
+    private string $conditionName;
+
+    private string $value;
+
     /**
      * @internal
-     *
-     * @param non-empty-string $conditionName
      */
-    public function __construct(private readonly string $conditionName, private readonly ParameterValue $value)
+    public function __construct(string $conditionName, string $value)
     {
+        $this->conditionName = $conditionName;
+        $this->value = $value;
     }
 
-    /**
-     * @return non-empty-string
-     */
     public function conditionName(): string
     {
         return $this->conditionName;
     }
 
     /**
-     * @param non-empty-string|Condition $condition
+     * @param string|Condition $condition
      */
     public static function basedOn($condition): self
     {
         $name = $condition instanceof Condition ? $condition->name() : $condition;
 
-        return new self($name, ParameterValue::withValue(''));
+        return new self($name, '');
     }
 
-    /**
-     * @return RemoteConfigParameterValueShape|non-empty-string
-     */
-    public function value()
+    public function value(): string
     {
-        $data = $this->value->toArray();
-
-        $valueString = $data['value'] ?? null;
-
-        if (is_string($valueString) && $valueString !== '') {
-            return $valueString;
-        }
-
-        return $data;
+        return $this->value;
     }
 
-    /**
-     * @param ParameterValue|RemoteConfigParameterValueShape|string $value
-     */
-    public function withValue($value): self
+    public function withValue(string $value): self
     {
-        if (is_string($value)) {
-            return new self($this->conditionName, ParameterValue::withValue($value));
-        }
+        $conditionalValue = clone $this;
+        $conditionalValue->value = $value;
 
-        if (is_array($value)) {
-            return new self($this->conditionName, ParameterValue::fromArray($value));
-        }
-
-        return new self($this->conditionName, $value);
+        return $conditionalValue;
     }
 
     /**
-     * @return RemoteConfigParameterValueShape
-     */
-    public function toArray(): array
-    {
-        return $this->value->toArray();
-    }
-
-    /**
-     * @return RemoteConfigParameterValueShape
+     * @return array<string, string>
      */
     public function jsonSerialize(): array
     {
-        return $this->toArray();
+        return ['value' => $this->value];
     }
 }

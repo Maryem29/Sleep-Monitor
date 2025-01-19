@@ -7,47 +7,51 @@ namespace Kreait\Firebase\Auth;
 use DateTimeImmutable;
 use Kreait\Firebase\Util\DT;
 
-use function array_key_exists;
-
-/**
- * @phpstan-type UserMetadataResponseShape array{
- *     createdAt: non-empty-string,
- *     lastLoginAt?: non-empty-string,
- *     passwordUpdatedAt?: non-empty-string,
- *     lastRefreshAt?: non-empty-string
- * }
- */
-final class UserMetaData
+class UserMetaData implements \JsonSerializable
 {
-    public function __construct(
-        public readonly DateTimeImmutable $createdAt,
-        public readonly ?DateTimeImmutable $lastLoginAt,
-        public readonly ?DateTimeImmutable $passwordUpdatedAt,
-        public readonly ?DateTimeImmutable $lastRefreshAt,
-    ) {
-    }
+    public ?DateTimeImmutable $createdAt = null;
+    public ?DateTimeImmutable $lastLoginAt = null;
+    public ?DateTimeImmutable $passwordUpdatedAt = null;
 
     /**
-     * @internal
-     *
-     * @param UserMetadataResponseShape $data
+     * The time at which the user was last active (ID token refreshed), or null
+     * if the user was never active.
+     */
+    public ?DateTimeImmutable $lastRefreshAt = null;
+
+    /**
+     * @param array<string, mixed> $data
      */
     public static function fromResponseData(array $data): self
     {
-        $createdAt = DT::toUTCDateTimeImmutable($data['createdAt']);
+        $metadata = new self();
+        $metadata->createdAt = DT::toUTCDateTimeImmutable($data['createdAt']);
 
-        $lastLoginAt = array_key_exists('lastLoginAt', $data)
-            ? DT::toUTCDateTimeImmutable($data['lastLoginAt'])
-            : null;
+        if ($data['lastLoginAt'] ?? null) {
+            $metadata->lastLoginAt = DT::toUTCDateTimeImmutable($data['lastLoginAt']);
+        }
 
-        $passwordUpdatedAt = array_key_exists('passwordUpdatedAt', $data)
-            ? DT::toUTCDateTimeImmutable($data['passwordUpdatedAt'])
-            : null;
+        if ($data['passwordUpdatedAt'] ?? null) {
+            $metadata->passwordUpdatedAt = DT::toUTCDateTimeImmutable($data['passwordUpdatedAt']);
+        }
 
-        $lastRefreshAt = array_key_exists('lastRefreshAt', $data)
-            ? DT::toUTCDateTimeImmutable($data['lastRefreshAt'])
-            : null;
+        if ($data['lastRefreshAt'] ?? null) {
+            $metadata->lastRefreshAt = DT::toUTCDateTimeImmutable($data['lastRefreshAt']);
+        }
 
-        return new self($createdAt, $lastLoginAt, $passwordUpdatedAt, $lastRefreshAt);
+        return $metadata;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function jsonSerialize(): array
+    {
+        $data = \get_object_vars($this);
+
+        $data['createdAt'] = $this->createdAt !== null ? $this->createdAt->format(DATE_ATOM) : null;
+        $data['lastLoginAt'] = $this->lastLoginAt !== null ? $this->lastLoginAt->format(DATE_ATOM) : null;
+
+        return $data;
     }
 }

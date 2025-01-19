@@ -4,41 +4,37 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\RemoteConfig;
 
-use Beste\Json;
 use GuzzleHttp\ClientInterface;
 use Kreait\Firebase\Exception\RemoteConfigApiExceptionConverter;
 use Kreait\Firebase\Exception\RemoteConfigException;
+use Kreait\Firebase\Util\JSON;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\UriInterface;
 use Throwable;
-
-use function array_filter;
 
 /**
  * @internal
  */
 class ApiClient
 {
-    private readonly RemoteConfigApiExceptionConverter $errorHandler;
-    private readonly string $baseUri;
+    private ClientInterface $client;
+    private RemoteConfigApiExceptionConverter $errorHandler;
 
-    public function __construct(string $projectId, private readonly ClientInterface $client)
+    /**
+     * @internal
+     */
+    public function __construct(ClientInterface $client)
     {
-        $this->baseUri = "https://firebaseremoteconfig.googleapis.com/v1/projects/{$projectId}/remoteConfig";
+        $this->client = $client;
         $this->errorHandler = new RemoteConfigApiExceptionConverter();
     }
 
     /**
-     * @see https://firebase.google.com/docs/reference/remote-config/rest/v1/projects/getRemoteConfig
-     *
      * @throws RemoteConfigException
      */
-    public function getTemplate(VersionNumber|int|string|null $versionNumber = null): ResponseInterface
+    public function getTemplate(): ResponseInterface
     {
-        return $this->requestApi('GET', 'remoteConfig', [
-            'query' => array_filter([
-                'version_number' => (string) $versionNumber,
-            ]),
-        ]);
+        return $this->requestApi('GET', 'remoteConfig');
     }
 
     /**
@@ -54,7 +50,7 @@ class ApiClient
             'query' => [
                 'validate_only' => 'true',
             ],
-            'body' => Json::encode($template),
+            'body' => JSON::encode($template),
         ]);
     }
 
@@ -68,7 +64,7 @@ class ApiClient
                 'Content-Type' => 'application/json; UTF-8',
                 'If-Match' => $template->etag(),
             ],
-            'body' => Json::encode($template),
+            'body' => JSON::encode($template),
         ]);
     }
 
@@ -79,20 +75,20 @@ class ApiClient
      */
     public function listVersions(FindVersions $query, ?string $nextPageToken = null): ResponseInterface
     {
-        $uri = $this->baseUri.':listVersions';
+        $uri = \rtrim((string) $this->client->getConfig('base_uri'), '/').':listVersions';
 
         $since = $query->since();
         $until = $query->until();
         $lastVersionNumber = $query->lastVersionNumber();
         $pageSize = $query->pageSize();
 
-        $since = $since?->format('Y-m-d\TH:i:s.v\Z');
-        $until = $until?->format('Y-m-d\TH:i:s.v\Z');
+        $since = $since !== null ? $since->format('Y-m-d\TH:i:s.v\Z') : null;
+        $until = $until !== null ? $until->format('Y-m-d\TH:i:s.v\Z') : null;
         $lastVersionNumber = $lastVersionNumber !== null ? (string) $lastVersionNumber : null;
         $pageSize = $pageSize ? (string) $pageSize : null;
 
         return $this->requestApi('GET', $uri, [
-            'query' => array_filter([
+            'query' => \array_filter([
                 'startTime' => $since,
                 'endTime' => $until,
                 'endVersionNumber' => $lastVersionNumber,
@@ -107,7 +103,7 @@ class ApiClient
      */
     public function rollbackToVersion(VersionNumber $versionNumber): ResponseInterface
     {
-        $uri = $this->baseUri.':rollback';
+        $uri = \rtrim((string) $this->client->getConfig('base_uri'), '/').':rollback';
 
         return $this->requestApi('POST', $uri, [
             'json' => [
@@ -117,13 +113,12 @@ class ApiClient
     }
 
     /**
-     * @param non-empty-string $method
-     * @param non-empty-string $uri
+     * @param string|UriInterface $uri
      * @param array<string, mixed>|null $options
      *
      * @throws RemoteConfigException
      */
-    private function requestApi(string $method, string $uri, ?array $options = null): ResponseInterface
+    private function requestApi(string $method, $uri, ?array $options = null): ResponseInterface
     {
         $options ??= [];
         $options['decode_content'] = 'gzip';

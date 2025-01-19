@@ -7,9 +7,6 @@ namespace Kreait\Firebase\JWT\Keys;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Contract\KeysTrait;
 
-/**
- * @internal
- */
 final class StaticKeys implements Keys
 {
     use KeysTrait;
@@ -24,7 +21,7 @@ final class StaticKeys implements Keys
     }
 
     /**
-     * @param array<non-empty-string, non-empty-string> $values
+     * @param array<string, string> $values
      */
     public static function withValues(array $values): self
     {
