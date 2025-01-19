@@ -514,8 +514,8 @@
             <button class="close-settings" id="close-settings">Close ✕</button>
             <h2>Settings</h2>
             <ul>
-            <li><a href="#">Switch Account</a></li>
-            <li><a href="#">Delete Account</a></li>
+            <li><a href="profile.php">Profile</a></li>
+            <li><a href="delete-account.php">Delete Account</a></li>
             <li><a href="#">Language</a></li>
             <li><a href="support.html">Support</a></li>
             <li><a href="app-information.php">App Information</a></li>
