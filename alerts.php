@@ -23,17 +23,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <!-- Your firebase config script -->
     <script src="firebase-config.js"></script>
 
-    <!-- Rest of your head content and styles remain the same -->
-    
-    <!-- Add this script to handle Firebase Authentication state -->
-    <script>
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (!user) {
-                // User is not logged in, redirect to login page
-                window.location.href = 'login.php';
-            }
-        });
-    </script>
     <style>
         /* General Styles */
         body {
@@ -440,151 +429,23 @@ $current_page = basename($_SERVER['PHP_SELF']);
         });
 
         // Load existing alert settings when page loads
-        async function loadAlertSettings() {
-            const user = firebase.auth().currentUser;
-            if (user) {
-                try {
-                    const doc = await db.collection('alert_settings').doc(user.uid).get();
-                    if (doc.exists) {
-                        const data = doc.data();
-                        Object.keys(data).forEach(alertType => {
-                            const settings = data[alertType];
-                            const checkbox = document.querySelector(`input[data-target="${alertType}-settings"]`);
-                            const settingsPanel = document.getElementById(`${alertType}-settings`);
-                            
-                            if (checkbox && settings.enabled) {
-                                checkbox.checked = true;
-                                settingsPanel.classList.add('active');
-                            }
-                            
-                            if (settingsPanel) {
-                                const timeInput = settingsPanel.querySelector('input[type="time"]');
-                                const soundCheckbox = settingsPanel.querySelector('input[type="checkbox"][name$="sound"]');
-                                const repeatSelect = settingsPanel.querySelector('select');
-                                
-                                if (timeInput) timeInput.value = settings.time;
-                                if (soundCheckbox) soundCheckbox.checked = settings.sound;
-                                if (repeatSelect && settings.repeat) repeatSelect.value = settings.repeat;
-                            }
-                        });
-                    }
-                } catch (error) {
-                    console.error("Error loading settings:", error);
-                }
-            }
-        }
+        window.onload = function () {
+            // Set up the toggle buttons to toggle alert settings
+            const toggles = document.querySelectorAll(".alert-toggle input");
 
-        // Call loadAlertSettings when page loads
-        document.addEventListener('DOMContentLoaded', loadAlertSettings);
-
-        // Toggle alert settings visibility (remains the same)
-        document.querySelectorAll('.alert-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const targetId = this.dataset.target;
-                const settingsPanel = document.getElementById(targetId);
-                if (this.checked) {
-                    settingsPanel.classList.add('active');
-                } else {
-                    settingsPanel.classList.remove('active');
-                }
-            });
-        });
-
-        // Handle save settings with Firebase
-        document.querySelectorAll('.save-btn').forEach(button => {
-            button.addEventListener('click', async function() {
-                const user = firebase.auth().currentUser;
-                if (!user) {
-                    alert('Please log in to save settings');
-                    return;
-                }
-
-                const settingsContainer = this.closest('.alert-settings');
-                const alertType = settingsContainer.id.split('-')[0];
-                const time = settingsContainer.querySelector('input[type="time"]').value;
-                const sound = settingsContainer.querySelector('input[type="checkbox"][name$="sound"]').checked;
-                const repeat = settingsContainer.querySelector('select') ? 
-                    settingsContainer.querySelector('select').value : null;
-
-                try {
-                    // Get reference to user's alert settings document
-                    const settingsRef = db.collection('alert_settings').doc(user.uid);
-
-                    // Update settings for specific alert type
-                    await settingsRef.set({
-                        [alertType]: {
-                            enabled: true,
-                            time: time,
-                            sound: sound,
-                            repeat: repeat,
-                            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                        }
-                    }, { merge: true });
-
-                    // Schedule notification if browser notifications are enabled
-                    if (Notification.permission === "granted") {
-                        scheduleNotification(alertType, time, repeat);
-                    }
-
-                    alert('Settings saved successfully!');
-                } catch (error) {
-                    console.error('Error saving settings:', error);
-                    alert('Error saving settings. Please try again.');
-                }
-            });
-        });
-
-        // Function to schedule notifications
-        function scheduleNotification(type, time, repeat) {
-            const [hours, minutes] = time.split(':');
-            let notificationTitle, notificationBody, notificationIcon;
-
-            switch(type) {
-                case 'water':
-                    notificationTitle = '💧 Water Reminder';
-                    notificationBody = 'Time to hydrate! Keep your body healthy.';
-                    break;
-                case 'sleep':
-                    notificationTitle = '🌙 Sleep Time';
-                    notificationBody = 'Time to prepare for bed. Get a good night\'s rest!';
-                    break;
-                case 'nap':
-                    notificationTitle = '😴 Nap Time';
-                    notificationBody = 'Time for your scheduled nap. Rest well!';
-                    break;
-            }
-
-            // Schedule initial notification
-            const now = new Date();
-            let scheduledTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 
-                parseInt(hours), parseInt(minutes));
-
-            if (scheduledTime < now) {
-                scheduledTime.setDate(scheduledTime.getDate() + 1);
-            }
-
-            setTimeout(() => {
-                new Notification(notificationTitle, {
-                    body: notificationBody,
-                    icon: 'images/sleep.png' // Make sure this path is correct
+            toggles.forEach(toggle => {
+                toggle.addEventListener("change", function () {
+                    const targetId = this.getAttribute('data-target');
+                    const settingsPanel = document.getElementById(targetId);
+                    settingsPanel.classList.toggle("active", this.checked);
                 });
 
-                // If repeat is enabled, schedule repeated notifications
-                if (repeat) {
-                    setInterval(() => {
-                        new Notification(notificationTitle, {
-                            body: notificationBody,
-                            icon: 'images/sleep.png'
-                        });
-                    }, repeat * 60 * 60 * 1000); // Convert hours to milliseconds
-                }
-            }, scheduledTime.getTime() - now.getTime());
-        }
-
-        // Request notification permission
-        if ('Notification' in window) {
-            Notification.requestPermission();
-        }
+                // Initialize toggles based on existing alert state (this can be fetched from a database if required)
+                const targetId = toggle.getAttribute('data-target');
+                const settingsPanel = document.getElementById(targetId);
+                settingsPanel.classList.toggle("active", toggle.checked);
+            });
+        };
     </script>
 </body>
 </html>

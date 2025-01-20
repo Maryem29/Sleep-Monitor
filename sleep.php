@@ -12,25 +12,21 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+
+// Get the user ID
 $userId = $_SESSION['user_id'];
-$hasRun = isset($_SESSION["data_generated_{$userId}"]); 
-
-if (!$hasRun) {
-    // Run the Python script to generate fake data
-    $pythonScript = escapeshellcmd("python3 import_fake_h5.py fake_heartbeat_data_{$userId}.h5");
-    $output = $output = shell_exec($pythonScript);
 
 
-    if ($output){
-       $_SESSION["data_generated_{$userId}"] = true;
-       echo nl2br("Python Script Output:\n$output");
-       // Display a success message
-        echo "Your data is ready to be analyzed.";
-    }
+// $pythonPath = shell_exec("where python");
+// $pythonPath = trim($pythonPath); // Remove extra spaces or newlines
+// if (!$pythonPath) {
+//     die("Error: Python is not installed or not added to the PATH.");
+// }
 
-    // Mark the script as run for this user
-     echo "Error: Failed to generate data. Please try again.";
-     echo "Error: Failed to execute Python script.";
+$pythonScript = escapeshellcmd("python3 read_h5.py 'user_id'");
+$output = shell_exec($pythonScript . " 2>&1"); // Capture output and errors
+if ($output) {
+    echo "<pre>$output</pre>";
 }
 
 $current_page = basename($_SERVER['PHP_SELF']);
@@ -42,6 +38,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sleep Statistics</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
     <style>
         /* General Styles */
         body {
@@ -507,6 +504,118 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 
 
+
+
+
+<!-- Date picker -->
+    <input type="date" id="datePicker" onchange="updateData()">
+    
+    <div id="pieCharts">
+        <div id="heartRateChart"></div>
+        <div id="sleepDurationChart"></div>
+        <div id="movementChart"></div>
+        <div id="sleepQualityChart"></div>
+    </div>
+
+    <script>
+        function updateData() {
+            const selectedDate = document.getElementById('datePicker').value;
+            fetchDataAndAnalyze(selectedDate);
+        }
+
+        async function fetchDataAndAnalyze(selectedDate) {
+            // Fetch data for selected date (from Firebase or backend)
+            const response = await fetch(`/get_data_for_date.php?date=${selectedDate}`);
+            const data = await response.json();
+
+            // Process the data for heart rate, movement, etc.
+            const heartRateData = processData(data);
+            
+            // Render pie charts
+            renderPieChart("heartRateChart", "Average Heart Rate", heartRateData.averageHeartRate);
+            renderPieChart("sleepDurationChart", "Sleep Duration", heartRateData.sleepDuration);
+            renderPieChart("movementChart", "Movement", heartRateData.movement);
+            renderPieChart("sleepQualityChart", "Sleep Quality", heartRateData.sleepQuality);
+        }
+
+        function processData(data) {
+            let heartRateSum = 0;
+            let sleepDuration = 0;
+            let movement = 0;
+            let lowHeartRateCount = 0;
+            let highHeartRateCount = 0;
+
+            data.forEach(entry => {
+                const heartRate = entry.heart_rate;
+                heartRateSum += heartRate;
+
+                // Simple rules based on heart rate (you can adjust these based on your actual data)
+                if (heartRate < 60) {
+                    sleepDuration++;
+                    lowHeartRateCount++;
+                } else if (heartRate > 100) {
+                    movement++;
+                    highHeartRateCount++;
+                }
+            });
+
+            // Calculate averages
+            const averageHeartRate = heartRateSum / data.length;
+
+            // Sleep quality analysis (basic)
+            let sleepQuality = "Good";
+            if (highHeartRateCount > lowHeartRateCount) {
+                sleepQuality = "Poor";
+            } else if (lowHeartRateCount < data.length / 2) {
+                sleepQuality = "Moderate";
+            }
+
+            return {
+                averageHeartRate,
+                sleepDuration,
+                movement,
+                sleepQuality
+            };
+        }
+
+        function renderPieChart(id, label, value) {
+            const width = 200;
+            const height = 200;
+            const radius = Math.min(width, height) / 2;
+
+            const color = d3.scaleOrdinal()
+                .domain([label, "Rest"])
+                .range(["#2ca02c", "#ff7f0e"]);
+
+            const data = [
+                { label: label, value: value },
+                { label: "Rest", value: 100 - value }
+            ];
+
+            const svg = d3.select(`#${id}`).append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+            const pie = d3.pie().value(d => d.value);
+            const arc = d3.arc().innerRadius(0).outerRadius(radius);
+
+            const arcs = svg.selectAll("arc")
+                .data(pie(data))
+                .enter().append("g")
+                .attr("class", "arc");
+
+            arcs.append("path")
+                .attr("d", arc)
+                .attr("fill", d => color(d.data.label));
+
+            arcs.append("text")
+                .attr("transform", d => `translate(${arc.centroid(d)})`)
+                .attr("dy", ".35em")
+                .text(d => `${d.data.label}: ${d.data.value}%`);
+        }
+    </script>
 
 
 
