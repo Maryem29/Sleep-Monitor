@@ -10,9 +10,6 @@ RUN apt-get update && apt-get install -y \
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Copy the Firebase configuration file (update this path if needed)
-COPY sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json /var/www/html/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json
-
 # Install Composer (for dependency management)
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

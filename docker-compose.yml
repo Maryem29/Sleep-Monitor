@@ -7,7 +7,8 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - .:/var/www/html 
+      - .:/var/www/html
+      - ${FIREBASE_ADMIN_SDK_JSON}:/var/www/html/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json  # Mount the secret
     environment:
       GOOGLE_APPLICATION_CREDENTIALS: /var/www/html/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json  # Firebase credentials path
     command: ["apache2-foreground"]

@@ -139,5 +139,14 @@ function get_sleep_data_by_date($userId, $date) {
         echo "Error retrieving sleep data: " . $e->getMessage() . "\n";
         exit;
     }
+    function getDataForDate($userId, $selectedDate) {
+        // Reference to the user's heartbeat data
+        $userRef = $database->getReference('users/'.$userId.'/heartbeat_data');
+    
+        // Query for data corresponding to the selected date
+        $data = $userRef->orderByChild('date')->equalTo($selectedDate)->getValue();
+    
+        return $data;
+    }
 }
 ?>
