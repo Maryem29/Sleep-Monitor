@@ -10,7 +10,8 @@ services:
       - .:/var/www/html
       - ${FIREBASE_ADMIN_SDK_JSON}:/var/www/html/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json 
     watch:
-      - .
+      - . # Watch all files in the current directory
+      - "**/*.php" # (Optional) Watch only PHP files
     environment:
       GOOGLE_APPLICATION_CREDENTIALS: /var/www/html/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json  # Firebase credentials path
     command: ["apache2-foreground"]
