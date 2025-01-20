@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   web:
     build:
@@ -8,15 +7,7 @@ services:
       - "8080:80"
     volumes:
       - .:/var/www/html
-      - ${FIREBASE_ADMIN_SDK_JSON}:/var/www/html/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json 
-    watch:
-      - .  
-    x-file-watch:
-      extensions:
-        - .php
-        - .html
-        - .css
-        - .js
+      - ${FIREBASE_ADMIN_SDK_JSON}:/var/www/html/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json
     environment:
-      GOOGLE_APPLICATION_CREDENTIALS: /var/www/html/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json  # Firebase credentials path
+      GOOGLE_APPLICATION_CREDENTIALS: /var/www/html/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json
     command: ["apache2-foreground"]
