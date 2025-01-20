@@ -37,12 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (password_verify($password, $user['password'])) {
                     $_SESSION['user_id'] = $userId; // Store user ID in session
                     $_SESSION['username'] = $user['username']; // Store username in session
-                    $message = "Login successful.";
-                    $message_class = "success";
+                    $_SESSION['success_message'] = "Login successful."; // Add a success message to the session
                     
                     // Redirect to sleep.php after successful login
                     header("Location: sleep.php");
-                    exit(); // Make sure to stop the script after the redirect
+                    exit(); // Stop the script after the redirect
                 } else {
                     $message = "Invalid credentials.";
                     $message_class = "error";
@@ -56,8 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 }
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
