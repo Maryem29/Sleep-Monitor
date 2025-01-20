@@ -539,9 +539,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <h2>Settings</h2>
         <ul>
             <li><a href="#">Switch Account</a></li>
-            <li><a href="#">Delete Account</a></li>
+            <li><a href="delete-account.php">Delete Account</a></li>
             <li><a href="#">Language</a></li>
-            <li><a href="#">Support</a></li>
+            <li><a href="support.php">Support</a></li>
             <li><a href="app-information.php">App Information</a></li>
         </ul>
     </div>
