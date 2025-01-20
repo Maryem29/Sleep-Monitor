@@ -24,7 +24,7 @@ function initialize_firebase() {
 
 function register_user($userId, $userData) {
     $firebase = initialize_firebase();
-    $database = $firebase->createDatabase(); // Fixed method call
+    $database = $firebase->createDatabase();
 
     try {
         $database->getReference('users/' . $userId)->set($userData);
@@ -39,7 +39,7 @@ function register_user($userId, $userData) {
 
 function update_user_profile($userId, $profileData) {
     $firebase = initialize_firebase();
-    $database = $firebase->createDatabase(); // Fixed method call
+    $database = $firebase->createDatabase();
 
     try {
         $database->getReference('users/' . $userId)->update($profileData);
@@ -54,7 +54,7 @@ function update_user_profile($userId, $profileData) {
 
 function upload_sleep_data($userId, $sleepData) {
     $firebase = initialize_firebase();
-    $database = $firebase->createDatabase(); // Fixed method call
+    $database = $firebase->createDatabase();
 
     try {
         $database->getReference('users/' . $userId . '/sleepData')->push($sleepData);
@@ -67,31 +67,13 @@ function upload_sleep_data($userId, $sleepData) {
     }
 }
 
-function get_all_users_data() {
-    $firebase = initialize_firebase();
-    $database = $firebase->createDatabase(); // Fixed method call
-
-    try {
-        $snapshot = $database->getReference('users')->getSnapshot();
-        $usersData = $snapshot->getValue();
-        return $usersData;
-    } catch (FirebaseException $e) {
-        echo "Firebase SDK error: " . $e->getMessage() . "\n";
-        exit;
-    } catch (Exception $e) {
-        echo "Error retrieving all users data: " . $e->getMessage() . "\n";
-        exit;
-    }
-}
-
 function get_user_data($userId) {
     $firebase = initialize_firebase();
-    $database = $firebase->createDatabase(); // Fixed method call
+    $database = $firebase->createDatabase();
 
     try {
         $userSnapshot = $database->getReference('users/' . $userId)->getSnapshot();
-        $userData = $userSnapshot->getValue();
-        return $userData;
+        return $userSnapshot->getValue();
     } catch (FirebaseException $e) {
         echo "Firebase SDK error: " . $e->getMessage() . "\n";
         exit;
@@ -101,52 +83,118 @@ function get_user_data($userId) {
     }
 }
 
+function get_all_users_data() {
+    $firebase = initialize_firebase();
+    $database = $firebase->createDatabase();
+
+    try {
+        $snapshot = $database->getReference('users')->getSnapshot();
+        return $snapshot->getValue();
+    } catch (FirebaseException $e) {
+        echo "Firebase SDK error: " . $e->getMessage() . "\n";
+        exit;
+    } catch (Exception $e) {
+        echo "Error retrieving all users data: " . $e->getMessage() . "\n";
+        exit;
+    }
+}
+
 function get_sleep_data($userId) {
     $firebase = initialize_firebase();
-    $database = $firebase->createDatabase(); // Fixed method call
+    $database = $firebase->createDatabase();
+
+    try {
+        $snapshot = $database->getReference('users/' . $userId . '/sleepData')->getSnapshot();
+        return $snapshot->getValue();
+    } catch (FirebaseException $e) {
+        echo "Firebase SDK error: " . $e->getMessage() . "\n";
+        exit;
+    } catch (Exception $e) {
+        echo "Error retrieving sleep data: " . $e->getMessage() . "\n";
+        exit;
+    }
+}
+
+function get_sleep_data_by_date($userId, $date) {
+    $firebase = initialize_firebase();
+    $database = $firebase->createDatabase();
+
+    try {
+        $snapshot = $database->getReference('users/' . $userId . '/sleepData')
+            ->orderByChild('date')
+            ->equalTo($date)
+            ->getSnapshot();
+
+        return $snapshot->getValue();
+    } catch (FirebaseException $e) {
+        echo "Firebase SDK error: " . $e->getMessage() . "\n";
+        exit;
+    } catch (Exception $e) {
+        echo "Error retrieving sleep data: " . $e->getMessage() . "\n";
+        exit;
+    }
+}
+
+function get_user_sleep_statistics($userId) {
+    $firebase = initialize_firebase();
+    $database = $firebase->createDatabase();
 
     try {
         $snapshot = $database->getReference('users/' . $userId . '/sleepData')->getSnapshot();
         $sleepData = $snapshot->getValue();
-        return $sleepData;
+
+        if (!$sleepData) {
+            return [
+                'avgSleepDuration' => 'No data available',
+                'sleepEfficiency' => 'No data available',
+                'deepSleep' => 'No data available',
+                'sleepTrends' => [],
+                'recommendations' => ['Try to sleep 7+ hours regularly for better health.']
+            ];
+        }
+
+        $totalSleepDuration = 0;
+        $totalEfficiency = 0;
+        $totalDeepSleep = 0;
+        $count = 0;
+        $sleepTrends = [];
+        $recommendations = [];
+
+        foreach ($sleepData as $date => $data) {
+            if (isset($data['sleepDuration'], $data['efficiency'], $data['deepSleep'])) {
+                $totalSleepDuration += $data['sleepDuration'];
+                $totalEfficiency += $data['efficiency'];
+                $totalDeepSleep += $data['deepSleep'];
+                $sleepTrends[$date] = $data['sleepDuration'];
+                $count++;
+            }
+        }
+
+        $avgSleepDuration = $count > 0 ? round($totalSleepDuration / $count, 2) : 0;
+        $avgEfficiency = $count > 0 ? round($totalEfficiency / $count, 2) : 0;
+        $avgDeepSleep = $count > 0 ? round($totalDeepSleep / $count, 2) : 0;
+
+        if ($avgSleepDuration < 7) {
+            $recommendations[] = "Try to increase your sleep duration to 7+ hours.";
+        }
+        if ($avgEfficiency < 80) {
+            $recommendations[] = "Consider improving your sleep quality for better efficiency.";
+        }
+
+        return [
+            'avgSleepDuration' => "$avgSleepDuration hours",
+            'sleepEfficiency' => "$avgEfficiency%",
+            'deepSleep' => "$avgDeepSleep hours",
+            'sleepTrends' => $sleepTrends,
+            'recommendations' => $recommendations,
+        ];
     } catch (FirebaseException $e) {
-        echo "Firebase SDK error: " . $e->getMessage() . "\n";
-        exit;
+        return [
+            'error' => 'Firebase error: ' . $e->getMessage()
+        ];
     } catch (Exception $e) {
-        echo "Error retrieving sleep data: " . $e->getMessage() . "\n";
-        exit;
+        return [
+            'error' => 'Error retrieving sleep statistics: ' . $e->getMessage()
+        ];
     }
 }
-
-// Add function to get sleep data by date
-function get_sleep_data_by_date($userId, $date) {
-    $firebase = initialize_firebase();
-    $database = $firebase->createDatabase(); // Fixed method call
-
-    try {
-        // Access the sleep data for the user and filter by the specific date
-        $snapshot = $database->getReference('users/' . $userId . '/sleepData')
-            ->orderByChild('date')  // Assuming you have a 'date' field in your data
-            ->equalTo($date)  // Filter by the provided date
-            ->getSnapshot();
-
-        $sleepData = $snapshot->getValue();
-        return $sleepData;
-    } catch (FirebaseException $e) {
-        echo "Firebase SDK error: " . $e->getMessage() . "\n";
-        exit;
-    } catch (Exception $e) {
-        echo "Error retrieving sleep data: " . $e->getMessage() . "\n";
-        exit;
-    }
-    function getDataForDate($userId, $selectedDate) {
-        // Reference to the user's heartbeat data
-        $userRef = $database->getReference('users/'.$userId.'/heartbeat_data');
-    
-        // Query for data corresponding to the selected date
-        $data = $userRef->orderByChild('date')->equalTo($selectedDate)->getValue();
-    
-        return $data;
-    }
-}
-?>
