@@ -1,0 +1,13 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      FIREBASE_ADMIN_SDK_JSON: $FIREBASE_ADMIN_SDK_JSON
+      GOOGLE_APPLICATION_CREDENTIALS: /var/www/html/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json
+    command: ["/bin/sh", "-c", "echo \"$FIREBASE_ADMIN_SDK_JSON\" > /var/www/html/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json && apache2-foreground"]

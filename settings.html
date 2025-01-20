@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings Page</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Reference existing CSS -->
+    <style>
+        /* Inline styles specific to the settings page */
+
+        .home-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #4C57A7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .home-button:hover {
+            background-color: #3b4796;
+        }
+        .container {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 1000px;
+            padding: 20px;
+        }
+
+        .left-box {
+            width: 45%;
+            background: #f8f8f8;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .left-box h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            color: #4C57A7;
+        }
+
+        .settings-option {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #4C57A7;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .settings-option:hover {
+            background-color: #3b4796;
+        }
+
+        .right-box {
+            width: 45%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .logo {
+            width: 100%; /* Half the width of the white box */
+            height: 100%;
+
+        }
+
+        .logout {
+            padding: 10px 20px;
+            background-color: #4C57A7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            align-self: flex-end;
+            margin-top: auto; /* Pushes the button to the bottom */
+        }
+
+        .logout:hover {
+            background-color: #3b4796;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Left Box -->
+        <div class="left-box">
+            <h2>Settings</h2>
+            <div class="settings-option" id="switchAccount">Switch Account</div>
+            <div class="settings-option" id="deleteAccount">Delete Account</div>
+            <div class="settings-option" onclick="location.href='support.html'">Support</div>
+            <div class="settings-option" onclick="location.href='app_info.html'">App Information</div>
+            <div class="settings-option" onclick="location.href='about-us.html'">About Us</div>
+        </div>
+
+        <!-- Right Box -->
+        <div style="position: fixed; top: 20px; right: 20px; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000;">
+        <div id="menu" style="cursor: pointer; color: #4C57A7; font-size: 24px; text-align: center; line-height: 1;">&#8942;</div>
+        <div id="dropdown" style="display: none; position: absolute; top: 40px; right: 0; background: white; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <a href="main.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none; border-bottom: 1px solid #ddd;">Home</a>
+
+            <a href="login.html" style="display: block; color: #4C57A7; padding: 10px; text-decoration: none;">Logout</a>
+        </div>
+    </div>
+        <div class="right-box">
+            <img src="../../images/sleep.png" alt="Logo" class="logo">
+
+        </div>
+    </div>
+
+    <script>
+
+        document.getElementById('menu').addEventListener('click', function () {
+            const dropdown = document.getElementById('dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('dropdown');
+            const menu = document.getElementById('menu');
+            if (!menu.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // Switch Account Functionality
+        document.getElementById('switchAccount').addEventListener('click', function () {
+            sessionStorage.clear(); // Example of clearing session storage (optional)
+            window.location.href = 'login.html'; // Redirect to the login page
+        });
+
+        // Delete Account Functionality
+        document.getElementById('deleteAccount').addEventListener('click', function () {
+            const confirmation = confirm("Are you sure you want to delete your account? This action cannot be undone.");
+            if (confirmation) {
+                fetch('https://your-backend-api.com/delete-account', {
+                    method: 'POST', // Adjust to DELETE if needed
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer your-auth-token' // Replace with the actual token
+                    },
+                    body: JSON.stringify({
+                        userId: 'user123' // Replace with dynamic user ID
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Your account has been deleted. Redirecting to login...");
+                        window.location.href = 'login.html';
+                    } else {
+                        alert("Error: Unable to delete account. Please try again.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error deleting account:", error);
+                    alert("An error occurred. Please try again later.");
+                });
+            } else {
+                alert("Account deletion canceled.");
+            }
+        });
+
+        // Logout Functionality
+        document.getElementById('logoutButton').addEventListener('click', function () {
+            // Clear session/local storage
+            sessionStorage.clear();
+            localStorage.clear(); // If local storage is used
+
+            // Redirect to login page
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>
+
