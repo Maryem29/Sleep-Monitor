@@ -4,7 +4,7 @@ session_start(); // Start the session
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once 'firebase.php'; // Include your 
+include 'firebase.php'; // Include your 
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -23,11 +23,46 @@ $userId = $_SESSION['user_id'];
 //     die("Error: Python is not installed or not added to the PATH.");
 // }
 
-$pythonScript = escapeshellcmd("python3 read_h5.py 'user_id'");
+$pythonScript = escapeshellcmd("python read_h5.py $userId");
 $output = shell_exec($pythonScript . " 2>&1"); // Capture output and errors
 if ($output) {
     echo "<pre>$output</pre>";
 }
+
+
+// Check if a date was provided
+if (isset($_GET['date'])) {
+    $selectedDate = $_GET['date'];
+
+    // Fetch the data for the selected date
+    $data = getDataForDate($userId, $selectedDate);
+
+    if (!$data) {
+        echo json_encode(["error" => "No data found for the selected date"]);
+        exit();
+    }
+
+    // Process the data (e.g., heart rate)
+    $totalHeartRate = 0;
+    $dataCount = 0;
+
+    foreach ($data as $entry) {
+        if (isset($entry['heart_rate'])) {
+            $totalHeartRate += $entry['heart_rate'];
+            $dataCount++;
+        }
+    }
+
+    if ($dataCount > 0) {
+        $averageHeartRate = $totalHeartRate / $dataCount;
+        echo json_encode(["averageHeartRate" => $averageHeartRate]);
+    } else {
+        echo json_encode(["error" => "No heart rate data available"]);
+    }
+} else {
+    echo json_encode(["error" => "Please select a date."]);
+}
+
 
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
@@ -507,14 +542,47 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 
 
+
+
+
+
+<script>
+function updateData() {
+    const selectedDate = document.getElementById('datePicker').value;
+    if (selectedDate) {
+        fetchDataAndAnalyze(selectedDate);
+    } else {
+        alert("Please select a date.");
+    }
+}
+
+async function fetchDataAndAnalyze(selectedDate) {
+    const response = await fetch(`/get_data_for_date.php?date=${selectedDate}`);
+    const data = await response.json();
+
+    if (data.error) {
+        alert(data.error);
+        return;
+    }
+
+    const heartRateData = processData(data);
+    renderPieChart("heartRateChart", "Average Heart Rate", heartRateData.averageHeartRate);
+}
+
+
+
+
+</script>
+
+
+
+
+
 <!-- Date picker -->
     <input type="date" id="datePicker" onchange="updateData()">
     
     <div id="pieCharts">
         <div id="heartRateChart"></div>
-        <div id="sleepDurationChart"></div>
-        <div id="movementChart"></div>
-        <div id="sleepQualityChart"></div>
     </div>
 
     <script>
@@ -528,14 +596,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
             const response = await fetch(`/get_data_for_date.php?date=${selectedDate}`);
             const data = await response.json();
 
-            // Process the data for heart rate, movement, etc.
+                // Check if data is returned
+            console.log(data); // Add this line to check if data is being returned correctly
+                    // Process the data for heart rate, movement, etc.
             const heartRateData = processData(data);
             
             // Render pie charts
             renderPieChart("heartRateChart", "Average Heart Rate", heartRateData.averageHeartRate);
-            renderPieChart("sleepDurationChart", "Sleep Duration", heartRateData.sleepDuration);
-            renderPieChart("movementChart", "Movement", heartRateData.movement);
-            renderPieChart("sleepQualityChart", "Sleep Quality", heartRateData.sleepQuality);
         }
 
         function processData(data) {
