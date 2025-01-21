@@ -13,7 +13,7 @@ function initialize_firebase() {
         $factory = (new Factory)
             ->withServiceAccount(__DIR__ . '/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json')
             ->withDatabaseUri('https://sleep-monitor-3e4c3-default-rtdb.europe-west1.firebasedatabase.app/');
-        return $factory->createDatabase();
+        return $factory->createDatabase(); // Correct method
     } catch (FirebaseException $e) {
         die("Firebase SDK error: " . $e->getMessage());
     }
@@ -44,9 +44,9 @@ function get_sleep_data_by_week($userId, $week) {
         die("Error: " . $e->getMessage());
     }
 }
+
 function register_user($userId, $userData) {
-    $firebase = initialize_firebase();
-    $database = $firebase->createDatabase(); // Fixed method call
+    $database = initialize_firebase();
 
     try {
         $database->getReference('users/' . $userId)->set($userData);
@@ -60,8 +60,7 @@ function register_user($userId, $userData) {
 }
 
 function update_user_profile($userId, $profileData) {
-    $firebase = initialize_firebase();
-    $database = $firebase->createDatabase(); // Fixed method call
+    $database = initialize_firebase();
 
     try {
         $database->getReference('users/' . $userId)->update($profileData);
@@ -75,8 +74,7 @@ function update_user_profile($userId, $profileData) {
 }
 
 function upload_sleep_data($userId, $sleepData) {
-    $firebase = initialize_firebase();
-    $database = $firebase->createDatabase(); // Fixed method call
+    $database = initialize_firebase();
 
     try {
         $database->getReference('users/' . $userId . '/sleepData')->push($sleepData);
@@ -90,8 +88,7 @@ function upload_sleep_data($userId, $sleepData) {
 }
 
 function get_all_users_data() {
-    $firebase = initialize_firebase();
-    $database = $firebase->createDatabase(); // Fixed method call
+    $database = initialize_firebase();
 
     try {
         $snapshot = $database->getReference('users')->getSnapshot();
@@ -107,8 +104,7 @@ function get_all_users_data() {
 }
 
 function get_user_data($userId) {
-    $firebase = initialize_firebase();
-    $database = $firebase->createDatabase(); // Fixed method call
+    $database = initialize_firebase();
 
     try {
         $userSnapshot = $database->getReference('users/' . $userId)->getSnapshot();
@@ -124,8 +120,7 @@ function get_user_data($userId) {
 }
 
 function get_sleep_data($userId) {
-    $firebase = initialize_firebase();
-    $database = $firebase->createDatabase(); // Fixed method call
+    $database = initialize_firebase();
 
     try {
         $snapshot = $database->getReference('users/' . $userId . '/sleepData')->getSnapshot();
@@ -140,16 +135,13 @@ function get_sleep_data($userId) {
     }
 }
 
-// Add function to get sleep data by date
 function get_sleep_data_by_date($userId, $date) {
-    $firebase = initialize_firebase();
-    $database = $firebase->createDatabase(); // Fixed method call
+    $database = initialize_firebase();
 
     try {
-        // Access the sleep data for the user and filter by the specific date
         $snapshot = $database->getReference('users/' . $userId . '/sleepData')
-            ->orderByChild('date')  // Assuming you have a 'date' field in your data
-            ->equalTo($date)  // Filter by the provided date
+            ->orderByChild('date')
+            ->equalTo($date)
             ->getSnapshot();
 
         $sleepData = $snapshot->getValue();
@@ -161,14 +153,154 @@ function get_sleep_data_by_date($userId, $date) {
         echo "Error retrieving sleep data: " . $e->getMessage() . "\n";
         exit;
     }
-    function getDataForDate($userId, $selectedDate) {
-        // Reference to the user's heartbeat data
-        $userRef = $database->getReference('users/'.$userId.'/heartbeat_data');
-    
-        // Query for data corresponding to the selected date
-        $data = $userRef->orderByChild('date')->equalTo($selectedDate)->getValue();
-    
-        return $data;
+}
+function get_sleep_quality_data($userId) {
+    $firebase = initialize_firebase();
+    $database = $firebase; // No need for `createDatabase()` as it’s already returned in `initialize_firebase`
+
+    try {
+        // Reference to the sleep quality data in Firebase
+        $sleepQualityRef = $database->getReference("users/$userId/sleep_quality");
+
+        // Fetch the data
+        $data = $sleepQualityRef->getValue();
+
+        // Return the data or an empty array if no data exists
+        return $data ?? [];
+    } catch (FirebaseException $e) {
+        die("Firebase SDK error: " . $e->getMessage());
+    } catch (Exception $e) {
+        die("Error retrieving sleep quality data: " . $e->getMessage());
     }
 }
+function calculate_sleep_quality_from_heartbeat($userId) {
+    $database = initialize_firebase();
+    $heartbeatRef = $database->getReference("users/$userId/heartbeat_data");
+
+    try {
+        $data = $heartbeatRef->getValue();
+        $sleepQuality = [];
+
+        // Loop through each date in heartbeat_data
+        foreach ($data as $date => $values) {
+            if (isset($values['night']) && is_array($values['night'])) {
+                $nightData = $values['night'];
+                $averageHeartRate = array_sum($nightData) / count($nightData);
+
+                // Determine sleep quality
+                if ($averageHeartRate < 60) {
+                    $quality = 100; // Good sleep
+                } elseif ($averageHeartRate <= 75) {
+                    $quality = 70; // Normal sleep
+                } else {
+                    $quality = 30; // Bad sleep
+                }
+
+                // Add to sleep quality data
+                $sleepQuality[$date] = $quality;
+            }
+        }
+
+        return $sleepQuality;
+    } catch (FirebaseException $e) {
+        die("Firebase error: " . $e->getMessage());
+    } catch (Exception $e) {
+        die("Error: " . $e->getMessage());
+    }
+}
+function calculate_sleep_quality_last_month($userId) {
+    $firebase = initialize_firebase();
+    $database = $firebase->getReference("users/$userId/heartbeat_data");
+
+    try {
+        $date = new DateTime();
+        $date->modify('-1 month'); // Get the date one month ago
+        $startDate = $date->format('Y-m-d');
+
+        $today = new DateTime();
+        $endDate = $today->format('Y-m-d');
+
+        // Retrieve data for the last month
+        $data = $database->orderByKey()
+            ->startAt($startDate)
+            ->endAt($endDate)
+            ->getValue();
+
+        $processedData = [];
+        foreach ($data as $day => $values) {
+            $dayAverage = !empty($values['night']) ? array_sum($values['night']) / count($values['night']) : 0;
+            $sleepQuality = 100 - min(100, max(0, $dayAverage - 60)); // Example quality calculation
+            $processedData[$day] = $sleepQuality;
+        }
+
+        return $processedData;
+    } catch (FirebaseException $e) {
+        die("Firebase error: " . $e->getMessage());
+    } catch (Exception $e) {
+        die("Error: " . $e->getMessage());
+    }
+}
+
+function calculate_weekly_averages($monthlyData) {
+    $weeklyAverages = [];
+    $currentWeek = 1;
+    $weeklyData = [];
+
+    foreach ($monthlyData as $date => $quality) {
+        $dayOfWeek = (new DateTime($date))->format('N'); // 1 (Monday) to 7 (Sunday)
+
+        // Group data by week
+        $weeklyData[$currentWeek][] = $quality;
+
+        // If it's Sunday, move to the next week
+        if ($dayOfWeek == 7) {
+            $weeklyAverages[$currentWeek] = $weeklyData[$currentWeek];
+            $currentWeek++;
+        }
+    }
+
+    // Ensure the last week is added
+    if (!empty($weeklyData[$currentWeek])) {
+        $weeklyAverages[$currentWeek] = $weeklyData[$currentWeek];
+    }
+
+    return $weeklyAverages;
+}
+function get_sleep_data_by_month($userId, $month) {
+    $database = initialize_firebase();
+    $heartbeatRef = $database->getReference("users/$userId/heartbeat_data");
+
+    try {
+        // Determine the start and end dates of the selected month
+        $startDate = new DateTime("$month-01");
+        $endDate = clone $startDate;
+        $endDate->modify('last day of this month');
+
+        $data = $heartbeatRef->orderByKey()
+            ->startAt($startDate->format('Y-m-d'))
+            ->endAt($endDate->format('Y-m-d'))
+            ->getValue();
+
+        return $data ?? [];
+    } catch (FirebaseException $e) {
+        die("Firebase error: " . $e->getMessage());
+    } catch (Exception $e) {
+        die("Error: " . $e->getMessage());
+    }
+}
+function get_all_sleep_data($userId) {
+    $firebase = initialize_firebase();
+    $database = $firebase->getReference("users/$userId/heartbeat_data");
+
+    try {
+        // Retrieve all sleep data for the user
+        $data = $database->getValue();
+        return $data ?? [];
+    } catch (FirebaseException $e) {
+        die("Firebase SDK error: " . $e->getMessage());
+    } catch (Exception $e) {
+        die("Error retrieving all sleep data: " . $e->getMessage());
+    }
+}
+
 ?>

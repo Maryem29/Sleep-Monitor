@@ -212,6 +212,3 @@ if ($sleepData) {
 
 </body>
 </html>
-
-
-
