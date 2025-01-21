@@ -3,35 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>README - Sleep Monitor Web Application</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-            color: #333;
-        }
-        h1, h2, h3 {
-            color: #2c3e50;
-        }
-        ul {
-            margin: 10px 0;
-            padding-left: 20px;
-        }
-        li {
-            margin-bottom: 5px;
-        }
-        code {
-            background-color: #f4f4f4;
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
-        .technologies {
-            background-color: #ecf0f1;
-            padding: 10px;
-            border-left: 5px solid #3498db;
-        }
-    </style>
 </head>
 <body>
     <h1>Sleep Monitor Web Application</h1>
