@@ -1,49 +1,22 @@
 <?php
-session_start(); // Start the session
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once 'firebase.php';
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // Redirect to login page if not logged in
-    exit();
+
+if (!isset($_SESSION['user_id']) || !isset($_GET['date'])) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Invalid request']);
+    exit;
 }
 
-function processSleepData($userId, $date = null) {
-    // If no date provided, use current date
-    if ($date === null) {
-        $date = date('Y-m-d');
-    }
+$userId = $_SESSION['user_id'];
+$date = $_GET['date'];
 
-    // Escape command arguments
-    $userId = escapeshellarg($userId);
-    $date = escapeshellarg($date);
-
-    // Execute Python script
-    // Change this line in your PHP code
-    $command = escapeshellcmd("python3 extract_data.py $userId $date");
-    $output = shell_exec($command);
-
-    // Decode JSON output from Python script
-    $data = json_decode($output, true);
-
-    if ($data && !isset($data['error'])) {
-        return $data;
-    }
-
-    return null;
-}
-
-// Handle date selection
-$selectedDate = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
-
-// Process sleep data
-$sleepData = processSleepData($_SESSION['user_id'], $selectedDate);
-
-// Store processed data in session for charts
-$_SESSION['sleep_data'] = $sleepData;
-
-if (!$sleepData) {
-    error_log("Failed to process sleep data for user {$_SESSION['user_id']} on date {$selectedDate}");
-}
+$result = calculate_average_heartbeat($userId, $date);
+header('Content-Type: application/json');
+echo json_encode($result);
 
 // Get the current page name
 $current_page = basename($_SERVER['PHP_SELF']);
@@ -591,146 +564,75 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 
 
+<div id="chart"></div>
 
 
 
-
-
-
-
-
-    <div class="date-selector">
-        <form method="GET">
-            <label for="date">Select Date:</label>
-            <input type="date" id="date" name="date" value="<?php echo $selectedDate; ?>">
-            <button type="submit">View Analysis</button>
-        </form>
-    </div>
-
-    <div class="chart-container">
-        <div class="donut-chart" id="heartbeatChart"></div>
-        <div class="donut-chart" id="sleepHoursChart"></div>
-        <div class="donut-chart" id="movementChart"></div>
-        <div class="donut-chart" id="qualityChart"></div>
-    </div>
-
-    <script>
-   const sleepData = <?php echo json_encode($sleepData ?? null); ?>;
-
-if (sleepData) {
-    const chartConfigs = [
-        {
-            elementId: 'heartbeatChart',
-            value: sleepData.heartbeat,
-            maxValue: 140,  // Adjust this according to the maximum value you expect for heartbeat
-            label: 'Heart Rate',
-            unit: 'BPM',
-            color: '#FF6384'
-        },
-        {
-            elementId: 'sleepHoursChart',
-            value: sleepData.hours_of_sleep,
-            maxValue: 10,  // Adjust this based on max expected sleep hours
-            label: 'Hours of Sleep',
-            unit: 'hours',
-            color: '#36A2EB'
-        },
-        {
-            elementId: 'movementChart',
-            value: sleepData.movement,
-            maxValue: 100,  // Assuming movement percentage
-            label: 'Movement',
-            unit: '%',
-            color: '#FFCE56'
-        },
-        {
-            elementId: 'qualityChart',
-            value: sleepData.sleep_quality,
-            maxValue: 100,  // Assuming sleep quality is out of 100
-            label: 'Sleep Quality',
-            unit: '%',
-            color: '#4BC0C0'
+<script>
+    const fetchHeartbeatData = async (date) => {
+        try {
+            const response = await fetch(`get_heartbeat_data.php?date=${date}`);
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching data:", error);
         }
-    ];
+    };
 
-    chartConfigs.forEach(config => createDonutChart(config));
-}
+    const renderPieChart = async (date) => {
+        const data = await fetchHeartbeatData(date);
 
-function createDonutChart({ elementId, value, maxValue, label, unit, color }) {
-    const width = 250;
-    const height = 250;
-    const radius = Math.min(width, height) / 2;
-    const strokeWidth = 15;
+        if (data.average_heartbeat === 0) {
+            alert("No heartbeat data found for the selected date.");
+            return;
+        }
 
-    // Clear previous content
-    d3.select(`#${elementId}`).html('');
+        const pieData = [
+            { label: "Average Heartbeat", value: data.average_heartbeat },
+            { label: "Remaining", value: 100 - data.average_heartbeat },
+        ];
 
-    const svg = d3.select(`#${elementId}`)
-        .append('svg')
-        .attr('width', width)
-        .attr('height', height)
-        .append('g')
-        .attr('transform', `translate(${width / 2}, ${height / 2})`);
+        const width = 300;
+        const height = 300;
+        const radius = Math.min(width, height) / 2;
 
-    // Add title
-    d3.select(`#${elementId}`)
-        .insert('div', 'svg')
-        .attr('class', 'chart-title')
-        .text(label);
+        const svg = d3.select("#chart")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-    const percentage = (value / maxValue) * 100;
+        const color = d3.scaleOrdinal()
+            .domain(pieData.map(d => d.label))
+            .range(["#4CAF50", "#FF5722"]);
 
-    // Create background circle
-    svg.append('circle')
-        .attr('r', radius - strokeWidth)
-        .attr('fill', 'none')
-        .attr('stroke', '#f0f0f0')
-        .attr('stroke-width', strokeWidth);
+        const pie = d3.pie()
+            .value(d => d.value);
 
-    // Create progress arc
-    const arc = d3.arc()
-        .innerRadius(radius - strokeWidth)
-        .outerRadius(radius)
-        .startAngle(0)
-        .cornerRadius(5); // Adds rounded corners
+        const arc = d3.arc()
+            .innerRadius(0)
+            .outerRadius(radius);
 
-    // Create the chart arc (progress)
-    const arcData = d3.pie()
-        .value(d => d.value)
-        .startAngle(-Math.PI / 2) // Start at the top
-        .endAngle(Math.PI / 2)  // End at the top
+        svg.selectAll("path")
+            .data(pie(pieData))
+            .join("path")
+            .attr("d", arc)
+            .attr("fill", d => color(d.data.label));
 
-    const arcPath = svg.append('g')
-        .selectAll('path')
-        .data(arcData([{ value: percentage }]))
-        .enter()
-        .append('path')
-        .attr('d', arc)
-        .attr('fill', color);
+        svg.selectAll("text")
+            .data(pie(pieData))
+            .join("text")
+            .text(d => `${d.data.label}: ${d.data.value.toFixed(2)}%`)
+            .attr("transform", d => `translate(${arc.centroid(d)})`)
+            .attr("text-anchor", "middle")
+            .style("font-size", "12px");
+    };
 
-    // Add percentage text
-    svg.append('text')
-        .attr('x', 0)
-        .attr('y', 0)
-        .attr('dy', '0.35em')
-        .attr('text-anchor', 'middle')
-        .style('font-size', '1.2em')
-        .text(`${percentage.toFixed(0)}%`);
-
-    // Optional: Add the unit below the percentage text
-    svg.append('text')
-        .attr('x', 0)
-        .attr('y', 30)
-        .attr('dy', '0.35em')
-        .attr('text-anchor', 'middle')
-        .style('font-size', '1em')
-        .text(unit);
-}
-
-    </script>
-
-
-
+    // Example usage
+    const selectedDate = "2025-01-20"; // Replace with the selected date from the calendar
+    renderPieChart(selectedDate);
+</script>
 
 
 

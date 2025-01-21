@@ -65,6 +65,7 @@ def read_and_import_h5_data_to_firebase(user_id):
                             timestamp_dt = datetime.strptime(timestamp_str, '%Y-%m-%d %H:%M:%S')  # Adjust format as needed
 
                         date_str = timestamp_dt.strftime('%Y-%m-%d')
+                        hour = timestamp_dt.hour  # Extract the hour from the timestamp
                     except Exception as e:
                         print(f"Error parsing timestamp {timestamp_str}: {e}")
                         continue  # Skip this entry if parsing fails
@@ -72,28 +73,27 @@ def read_and_import_h5_data_to_firebase(user_id):
                     # Create a reference for the specific date in Firebase
                     date_ref = user_ref.child(date_str)
 
-                    # If the date already exists, append the heart rate, otherwise create the list
-                    if date_str in existing_dates:
-                        # Get existing heart rates for the day
-                        existing_heart_rates = date_ref.get()
+                    # Determine if the heart rate belongs to day or night based on the hour
+                    if 6 <= hour < 18:  # Daytime: 6 AM to 6 PM
+                        period = 'day'
+                    else:  # Nighttime: 6 PM to 6 AM
+                        period = 'night'
 
-                        # If it's a dictionary (which Firebase may return), convert it to a list of values
-                        if isinstance(existing_heart_rates, dict):
-                            existing_heart_rates = list(existing_heart_rates.values())
-                        
-                        if existing_heart_rates is None:
-                            existing_heart_rates = []
+                    # Create a reference for the appropriate period (day or night)
+                    period_ref = date_ref.child(period)
 
-                        # Append the new heart rate to the list
-                        existing_heart_rates.append(float(heart_rate[i]))  # Append the new heart rate
+                    # Initialize the heart rate list if it doesn't exist
+                    existing_heart_rates = period_ref.get()
 
-                        # Save the updated list of heart rates for the date
-                        date_ref.set(existing_heart_rates)
-                        print(f"Appended heart rate {heart_rate[i]} to date {date_str}.")
-                    else:
-                        # If the date doesn't exist, create a new list with the current heart rate
-                        date_ref.set([float(heart_rate[i])])  # Initialize with the first heart rate
-                        print(f"Uploaded heart rate {heart_rate[i]} for date {date_str}.")
+                    if existing_heart_rates is None:
+                        existing_heart_rates = []  # Initialize as an empty list if no data exists
+
+                    # Append the new heart rate to the list
+                    existing_heart_rates.append(float(heart_rate[i]))
+
+                    # Save the updated list of heart rates for the period (day or night)
+                    period_ref.set(existing_heart_rates)
+                    print(f"Uploaded heart rate {heart_rate[i]} to {period} for date {date_str}.")
             else:
                 print(f"Error: Missing required datasets in {file_name}")  # Indented correctly under 'if' block
 

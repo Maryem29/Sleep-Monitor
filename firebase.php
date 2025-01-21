@@ -19,6 +19,31 @@ function initialize_firebase() {
     }
 }
 
+
+// function calculate_average_heartbeat($userId, $date) {
+//     $database = initialize_firebase();
+//     $heartbeatRef = $database->getReference("users/$userId/heartbeat_data");
+
+//     try {
+//         $data = $heartbeatRef->getChild($date)->getValue();
+
+//         if ($data && isset($data['night']) && is_array($data['night'])) {
+//             $nightData = $data['night'];
+//             $averageHeartbeat = array_sum($nightData) / count($nightData);
+//             return ['date' => $date, 'average_heartbeat' => $averageHeartbeat];
+//         } else {
+//             return ['date' => $date, 'average_heartbeat' => 0];
+//         }
+//     } catch (FirebaseException $e) {
+//         die("Firebase error: " . $e->getMessage());
+//     } catch (Exception $e) {
+//         die("Error: " . $e->getMessage());
+//     }
+// }
+
+
+
+
 function get_sleep_data_by_week($userId, $week) {
     $database = initialize_firebase();
     $heartbeatRef = $database->getReference("users/$userId/heartbeat_data");

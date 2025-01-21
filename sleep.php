@@ -1,69 +1,45 @@
 <?php
-session_start(); // Start the session
-
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-include 'firebase.php'; // Include your 
-
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // Redirect to login page if not logged in
-    exit();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
+require_once 'firebase.php';
 
-// Get the user ID
-$userId = $_SESSION['user_id'];
+function fetch_average_heartbeat($userId, $date) {
+    $database = initialize_firebase();
+    $heartbeatRef = $database->getReference("users/$userId/heartbeat_data");
 
+    try {
+        $data = $heartbeatRef->getChild($date)->getValue();
 
-// $pythonPath = shell_exec("where python");
-// $pythonPath = trim($pythonPath); // Remove extra spaces or newlines
-// if (!$pythonPath) {
-//     die("Error: Python is not installed or not added to the PATH.");
-// }
-
-$pythonScript = escapeshellcmd("python read_h5.py $userId");
-$output = shell_exec($pythonScript . " 2>&1"); // Capture output and errors
-if ($output) {
-    echo "<pre>$output</pre>";
-}
-
-
-// Check if a date was provided
-if (isset($_GET['date'])) {
-    $selectedDate = $_GET['date'];
-
-    // Fetch the data for the selected date
-    $data = getDataForDate($userId, $selectedDate);
-
-    if (!$data) {
-        echo json_encode(["error" => "No data found for the selected date"]);
-        exit();
-    }
-
-    // Process the data (e.g., heart rate)
-    $totalHeartRate = 0;
-    $dataCount = 0;
-
-    foreach ($data as $entry) {
-        if (isset($entry['heart_rate'])) {
-            $totalHeartRate += $entry['heart_rate'];
-            $dataCount++;
+        if ($data && isset($data['night']) && is_array($data['night'])) {
+            $nightData = $data['night'];
+            $averageHeartbeat = array_sum($nightData) / count($nightData);
+            return ['date' => $date, 'average_heartbeat' => $averageHeartbeat];
+        } else {
+            return ['date' => $date, 'average_heartbeat' => 0];
         }
+    } catch (Exception $e) {
+        return ['error' => $e->getMessage()];
     }
-
-    if ($dataCount > 0) {
-        $averageHeartRate = $totalHeartRate / $dataCount;
-        echo json_encode(["averageHeartRate" => $averageHeartRate]);
-    } else {
-        echo json_encode(["error" => "No heart rate data available"]);
-    }
-} else {
-    echo json_encode(["error" => "Please select a date."]);
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['date'])) {
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
+        echo json_encode(['error' => 'User not logged in']);
+        exit;
+    }
 
+    $userId = $_SESSION['user_id'];
+    $date = $_GET['date'];
+    $result = fetch_average_heartbeat($userId, $date);
+    header('Content-Type: application/json');
+    echo json_encode($result);
+    exit;
+}
+
+// Get the current page name
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 
@@ -72,10 +48,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sleep Statistics</title>
-    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <title>Average Heartbeat Analysis</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
-        /* General Styles */
+/* General Styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -133,7 +109,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             background-color: #E2E8F0;
         }
 
-
     /* Button Styling */
     .settings-button {
         background: none;
@@ -160,6 +135,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
     
     
+    
+
         /* Fullscreen overlay */
     .settings-overlay {
         position: fixed;
@@ -175,7 +152,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         color: white;
     }
 
- /* Settings Menu (Left Section) */
+    /* Settings Menu (Left Section) */
     .settings-menu {
         flex: 1; /* Left section takes 30% */
         max-width: 20%; /* Optional: Restrict max width */
@@ -217,9 +194,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         color: #2C3E99;
         background-color: #D1D9F1;
     }
-    
-    
-    
+
     /* Team Section */
     .team-section {
         flex: 2;
@@ -278,8 +253,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             font-size: 14px;
         }
         
-        
-        
 
     /* Close Button */
     .close-settings {
@@ -329,6 +302,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
             transition: background-color 0.3s, color 0.3s;
         }
     
+
+
         .nav-link:hover, .nav-link.active {
             background-color: #D1D9F1;
             color: #2C3E99;
@@ -338,65 +313,150 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 
 
-       /* Footer Styles */
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+            color: #4C57A7;
+                }
+        .container {
+            width: 80%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 25px;
+            background-color: #ffffff; /* Matches your website's background color */
+            border-radius: 12px; /* Rounded corners to match your website's design */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow to give depth */
+        }
+
+        .input-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .input-container label {
+            font-size: 18px;
+            color: #6c4dbf; /* Consistent text color */
+            margin-right: 10px;
+        }
+
+        .input-container input[type="date"], .input-container button {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin: 0 10px;
+        }
+
+        .input-container input[type="date"] {
+            background-color: #f9f9f9;
+        }
+
+        .input-container button {
+            background-color: #4C57A7; /* Matches the header button */
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .input-container button:hover {
+            background-color: #4C57A7; /* Darker hover effect */
+        }
+
+        #chart {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #ff6b81; /* Error message color */
+        }
+
+
+
+
+
+           /* Footer Styles */
         .footer {
             font-size: 14px;
             text-align: center;
             margin-top: auto;
         }
 
-        footer hr {
+        .footer hr {
             border: 0;
             border-top: 1px solid white;
             margin-bottom: 10px;
         }
+
+        .footer p {
+            text-align: center;
+        }
         
         
-        
-        @media (max-width: 768px) {
-    .header {
+                /* Media Queries */
+    @media (max-width: 768px) {
+        .header {
         flex-direction: column;
         align-items: flex-start;
-    }
+        }
 
-    .header img {
+        .header img {
         max-width: 80px;
-    }
+        }
 
-    .settings-overlay {
+        .settings-overlay {
         flex-direction: column; /* Stack the settings and about sections */
         gap: 20px;
-    }
-    
-    .team-section {
+        }
+        
+        .team-section {
         grid-template-columns: repeat(2, 1fr); /* Two items per row on larger screens */
-    }
+        }
 
-    .settings-menu, .about-us {
+        .settings-menu, .about-us {
         max-width: 100%; /* Use full width for smaller screens */
         flex: none;
-    }
+        }
 
-    .bar-chart {
+        .bar-chart {
         height: 150px; /* Adjust chart height */
-    }
+        }
 
-    .nav-link {
+        .nav-link {
         font-size: 16px;
         padding: 8px 10px;
+        }
     }
-}
+        .container {
+                padding: 20px;
+        }
 
+        .info-item {
+            align-items: flex;
+        }
+
+        .info-item label {
+            text-align: flex;
+           
+        }
         
         
-        /* Active overlay display */
+        
+                /* Active overlay display */
     .settings-overlay.active {
         display: flex; /* Flex layout is only applied when active */
     }
-        
     </style>
 </head>
 <body>
+
+
+
     <!-- Header -->
     <div class="header">
         <img src="images/sleep.png" alt="Sleep Med Logo">
@@ -408,7 +468,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     </div>
 
 
-    <script>
+   <script>
         // Update the date and time dynamically
         function updateDateTime() {
             const date = new Date();
@@ -429,17 +489,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <button class="close-settings" id="close-settings">Close ✕</button>
         <h2>Settings</h2>
         <ul>
-            <li><a href="#">Switch Account</a></li>
-            <li><a href="#">Delete Account</a></li>
-            <li><a href="#">Language</a></li>
-            <li><a href="#">Support</a></li>
+            <li><a href="delete-account.php">Delete Account</a></li>
+            <li><a href="support.php">Support</a></li>
             <li><a href="app-information.php">App Information</a></li>
         </ul>
     </div>
-    
-    
-    
-    
+
+   
     <!-- Team Section -->
     <div class="team-section">
         <h1>Our Team</h1>
@@ -494,9 +550,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Est quaerat tempora.</p>
         </a>
     </div>
-    
-    
-
 </div>
 
 <script>
@@ -534,153 +587,145 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <li><a href="profile.php" class="nav-link <?= $current_page === 'profile.php' ? 'active' : ''; ?>">Profile</a></li>
         </ul>
     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-<script>
-function updateData() {
-    const selectedDate = document.getElementById('datePicker').value;
-    if (selectedDate) {
-        fetchDataAndAnalyze(selectedDate);
-    } else {
-        alert("Please select a date.");
-    }
-}
-
-async function fetchDataAndAnalyze(selectedDate) {
-    const response = await fetch(`/get_data_for_date.php?date=${selectedDate}`);
-    const data = await response.json();
-
-    if (data.error) {
-        alert(data.error);
-        return;
-    }
-
-    const heartRateData = processData(data);
-    renderPieChart("heartRateChart", "Average Heart Rate", heartRateData.averageHeartRate);
-}
-
-
-
-
-</script>
-
-
-
-
-
-<!-- Date picker -->
-    <input type="date" id="datePicker" onchange="updateData()">
     
-    <div id="pieCharts">
-        <div id="heartRateChart"></div>
+
+
+
+
+
+
+
+
+
+
+
+    <div class="container">
+        <h1>Average Heartbeat Analysis</h1>
+        <div class="input-container" id="input-container">
+            <label for="date">Select a Date:</label>
+            <input type="date" id="date" />
+            <button id="analyze-btn">Analyze</button>
+        </div>
+        <div id="chart"></div>
+        <div id="message"></div>
     </div>
 
     <script>
-        function updateData() {
-            const selectedDate = document.getElementById('datePicker').value;
-            fetchDataAndAnalyze(selectedDate);
-        }
+        // Create form elements dynamically with D3.js
+        const inputContainer = d3.select("#input-container");
+        inputContainer.select("label")
+            .style("font-size", "18px")
+            .style("color", "#4C57A7");
 
-        async function fetchDataAndAnalyze(selectedDate) {
-            // Fetch data for selected date (from Firebase or backend)
-            const response = await fetch(`/get_data_for_date.php?date=${selectedDate}`);
-            const data = await response.json();
+        d3.select("#date")
+            .style("padding", "12px")
+            .style("font-size", "16px")
+            .style("border-radius", "8px")
+            .style("border", "1px solid #ddd")
+            .style("background-color", "#f9f9f9");
 
-                // Check if data is returned
-            console.log(data); // Add this line to check if data is being returned correctly
-                    // Process the data for heart rate, movement, etc.
-            const heartRateData = processData(data);
-            
-            // Render pie charts
-            renderPieChart("heartRateChart", "Average Heart Rate", heartRateData.averageHeartRate);
-        }
+        d3.select("#analyze-btn")
+            .style("padding", "12px 18px")
+            .style("font-size", "16px")
+            .style("border-radius", "8px")
+            .style("border", "none")
+            .style("background-color", "#4C57A7")
+            .style("color", "white")
+            .style("cursor", "pointer")
+            .on("mouseover", function() { d3.select(this).style("background-color", "#4C57A7"); })
+            .on("mouseout", function() { d3.select(this).style("background-color", "#4C57A7"); })
+            .on("click", fetchAndRender);
 
-        function processData(data) {
-            let heartRateSum = 0;
-            let sleepDuration = 0;
-            let movement = 0;
-            let lowHeartRateCount = 0;
-            let highHeartRateCount = 0;
-
-            data.forEach(entry => {
-                const heartRate = entry.heart_rate;
-                heartRateSum += heartRate;
-
-                // Simple rules based on heart rate (you can adjust these based on your actual data)
-                if (heartRate < 60) {
-                    sleepDuration++;
-                    lowHeartRateCount++;
-                } else if (heartRate > 100) {
-                    movement++;
-                    highHeartRateCount++;
-                }
-            });
-
-            // Calculate averages
-            const averageHeartRate = heartRateSum / data.length;
-
-            // Sleep quality analysis (basic)
-            let sleepQuality = "Good";
-            if (highHeartRateCount > lowHeartRateCount) {
-                sleepQuality = "Poor";
-            } else if (lowHeartRateCount < data.length / 2) {
-                sleepQuality = "Moderate";
+        async function fetchAndRender() {
+            const dateInput = d3.select('#date').node().value;
+            if (!dateInput) {
+                alert("Please select a date.");
+                return;
             }
 
-            return {
-                averageHeartRate,
-                sleepDuration,
-                movement,
-                sleepQuality
-            };
+            try {
+                const response = await fetch(`?date=${dateInput}`);
+                const data = await response.json();
+
+                // Clear previous chart and messages
+                d3.select('#chart').html('');
+                d3.select('#message').html('');
+
+                if (data.error) {
+                    d3.select('#message').text("Error: " + data.error).style("color", "#4C57A7");
+                    return;
+                }
+
+                if (data.average_heartbeat === 0) {
+                    d3.select('#message').text("No heartbeat data found for the selected date.").style("color", "#4C57A7");
+                    return;
+                }
+
+                renderDonutChart(data.average_heartbeat);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                d3.select('#message').text("An error occurred while fetching the data.").style("color", "#4C57A7");
+            }
         }
 
-        function renderPieChart(id, label, value) {
-            const width = 200;
-            const height = 200;
-            const radius = Math.min(width, height) / 2;
-
-            const color = d3.scaleOrdinal()
-                .domain([label, "Rest"])
-                .range(["#2ca02c", "#ff7f0e"]);
-
-            const data = [
-                { label: label, value: value },
-                { label: "Rest", value: 100 - value }
+        function renderDonutChart(averageHeartbeat) {
+            const maxHeartbeat = 140;
+            const chartData = [
+                { label: "Heartbeat", value: averageHeartbeat },
+                { label: "Remaining", value: maxHeartbeat - averageHeartbeat },
             ];
 
-            const svg = d3.select(`#${id}`).append("svg")
+            const width = 300;
+            const height = 300;
+            const radius = Math.min(width, height) / 2;
+            const innerRadius = radius / 2;
+
+            const svg = d3.select("#chart")
+                .append("svg")
                 .attr("width", width)
                 .attr("height", height)
                 .append("g")
                 .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-            const pie = d3.pie().value(d => d.value);
-            const arc = d3.arc().innerRadius(0).outerRadius(radius);
+            const color = d3.scaleOrdinal()
+                .domain(chartData.map(d => d.label))
+                .range(["#4C57A7", "#e3e0f9"]);
 
-            const arcs = svg.selectAll("arc")
-                .data(pie(data))
-                .enter().append("g")
-                .attr("class", "arc");
+            const pie = d3.pie()
+                .value(d => d.value);
 
-            arcs.append("path")
+            const arc = d3.arc()
+                .innerRadius(innerRadius) // Creates the donut effect
+                .outerRadius(radius);
+
+            // Create the arc paths for the chart with transition effect for overflow
+            const path = svg.selectAll("path")
+                .data(pie(chartData))
+                .join("path")
                 .attr("d", arc)
-                .attr("fill", d => color(d.data.label));
+                .attr("fill", d => color(d.data.label))
+                .each(function(d) { this._current = d; })  // store the initial angle for transition
 
-            arcs.append("text")
-                .attr("transform", d => `translate(${arc.centroid(d)})`)
-                .attr("dy", ".35em")
-                .text(d => `${d.data.label}: ${d.data.value}%`);
+            // Animate the donut overflow effect
+            path.transition()
+                .duration(1000)
+                .attrTween("d", arcTween);
+
+            // Add label in the center of the donut chart
+            svg.append("text")
+                .attr("class", "chart-label")
+                .text(`${averageHeartbeat.toFixed(1)} bpm / ${maxHeartbeat} bpm`)
+                .attr("text-anchor", "middle")
+                .attr("dy", "0.35em")
+                .style("font-size", "22px")
+                .style("font-weight", "bold");
+
+            // Arc tween function for smooth transition
+            function arcTween(a) {
+                var i = d3.interpolate(this._current, a);
+                this._current = i(0);
+                return function(t) { return arc(i(t)); };
+            }
         }
     </script>
 
@@ -694,13 +739,18 @@ async function fetchDataAndAnalyze(selectedDate) {
 
 
 
-
-   <!-- Footer -->
+  
+       
+     <!-- Footer -->
     <footer>
         <hr>
         <p>Created by: Kseniia, Maryem, Sena, Saffree, Angelina - Sleep Med </p>
-    </footer>
 
+                <p>&copy; 2025 Sleep Med. All rights reserved.</p>
+    </footer>
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Handle logout
         document.getElementById("logout-btn").addEventListener("click", function () {
@@ -708,11 +758,8 @@ async function fetchDataAndAnalyze(selectedDate) {
                 window.location.href = "login.php";
             }
         });
-
-        
-              
-        
-        
     </script>
+    
+    
 </body>
 </html>

@@ -41,6 +41,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     
                     // Redirect to sleep.php after successful login
                     header("Location: sleep.php");
+                    
+                    $pythonScript = escapeshellcmd("python read_h5.py $userId");
+                    $output = shell_exec($pythonScript . " 2>&1"); // Capture output and errors
+                    if ($output) {
+                        echo "<pre>$output</pre>";
+                    }
                     exit(); // Stop the script after the redirect
                 } else {
                     $message = "Invalid credentials.";
