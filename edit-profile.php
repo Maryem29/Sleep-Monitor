@@ -419,6 +419,21 @@ $current_page = basename($_SERVER['PHP_SELF']);
             color: #d9d9d9;
         }
 
+        .input-item select{
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: #4C57A7;
+            color: white;
+
+        }
+
+        .input-item select::placeholder {
+            color: #d9d9d9;
+        }
+
         /* Save Button */
         .save-button {
             background: #4C57A7;
@@ -447,10 +462,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
             margin-top: auto;
         }
 
-        footer hr {
+        .footer hr {
             border: 0;
             border-top: 1px solid white;
             margin-bottom: 10px;
+        }
+
+        .footer p {
+            text-align: center;
         }
         
         
@@ -675,8 +694,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
 	<div class="input-item">
 	    <label for="gender">Gender</label>
 	    <select name="gender" id="gender" required>
-		<option value="Male" <?php echo isset($user_data['gender']) && $user_data['gender'] === 'Male' ? 'selected' : ''; ?>>Male</option>
 		<option value="Female" <?php echo isset($user_data['gender']) && $user_data['gender'] === 'Female' ? 'selected' : ''; ?>>Female</option>
+		<option value="Male" <?php echo isset($user_data['gender']) && $user_data['gender'] === 'Male' ? 'selected' : ''; ?>>Male</option>
 		<option value="Other" <?php echo isset($user_data['gender']) && $user_data['gender'] === 'Other' ? 'selected' : ''; ?>>Other</option>
 	    </select>
 	</div>
@@ -696,7 +715,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <footer>
         <hr>
         <p>Created by: Kseniia, Maryem, Sena, Saffree, Angelina - Sleep Med </p>
-        <hr>
+        
         <p>&copy; 2025 Sleep Med. All rights reserved.</p>
     </footer>
     

@@ -432,19 +432,23 @@ $current_page = basename($_SERVER['PHP_SELF']);
         
         
         
-     
-        /* Footer Styles */
+           /* Footer Styles */
         .footer {
             font-size: 14px;
             text-align: center;
             margin-top: auto;
         }
 
-        footer hr {
+        .footer hr {
             border: 0;
             border-top: 1px solid white;
             margin-bottom: 10px;
         }
+
+        .footer p {
+            text-align: center;
+        }
+        
         
         
         		/* Media Queries */
@@ -538,9 +542,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <button class="close-settings" id="close-settings">Close ✕</button>
         <h2>Settings</h2>
         <ul>
-            <li><a href="#">Switch Account</a></li>
             <li><a href="delete-account.php">Delete Account</a></li>
-            <li><a href="#">Language</a></li>
             <li><a href="support.php">Support</a></li>
             <li><a href="app-information.php">App Information</a></li>
         </ul>
@@ -694,6 +696,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <footer>
         <hr>
         <p>Created by: Kseniia, Maryem, Sena, Saffree, Angelina - Sleep Med </p>
+        <p>&copy; 2025 Sleep Med. All rights reserved.</p>
     </footer>
     
     

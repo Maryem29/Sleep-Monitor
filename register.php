@@ -1,6 +1,6 @@
 <?php
-include 'firebase.php';
 session_start(); // Start session to store the success message
+include 'firebase.php';
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -84,6 +84,61 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+/* Input Fields */
+.register-fields {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.register-fields label {
+    display: block;
+    font-size: 14px;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.register-fields input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: white;
+    color: #333;
+    display: block;
+}
+
+.register-fields input::placeholder {
+    color: #666;
+}
+
+/* Sign In Button */
+.register-button {
+    width: auto;
+    padding: 10px 20px;
+    margin: 20px auto;
+    background-color: white;
+    color: #4C57A7;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    display: block;
+}
+
+.register-button:hover {
+    background-color: #E2E8F0;
+
+}
+.login-text{
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+    </style>
     <title>Register</title>
     <link rel="stylesheet" href="styles.css">
 </head>
