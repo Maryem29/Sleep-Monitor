@@ -8,6 +8,18 @@ require 'vendor/autoload.php';
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Exception\FirebaseException;
 
+$jsonContent = file_get_contents(_DIR__ . '/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json');
+if ($jsonContent === false) {
+    die('Error reading JSON file.');
+}
+
+$decoded = json_decode($jsonContent, true);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    die('JSON parse error: ' . json_last_error_msg());
+} else {
+    echo 'JSON parsed successfully!';
+}
+
 function initialize_firebase() {
     try {
         $factory = (new Factory)
