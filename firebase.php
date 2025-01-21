@@ -8,6 +8,12 @@ require 'vendor/autoload.php';
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Exception\FirebaseException;
 
+putenv("PYTHONIOENCODING=utf-8");
+putenv("LANG=en_US.UTF-8");
+putenv("LC_ALL=en_US.UTF-8");
+
+$pythonScript = escapeshellcmd("$pythonPath $pythonScriptPath $userId");
+$output = shell_exec($pythonScript . " 2>&1");
 
 $jsonContent = file_get_contents(__DIR__ . '/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json');
 if ($jsonContent === false) {
