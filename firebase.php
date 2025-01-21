@@ -8,29 +8,6 @@ require 'vendor/autoload.php';
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Exception\FirebaseException;
 
-putenv("PYTHONIOENCODING=utf-8");
-putenv("LANG=en_US.UTF-8");
-putenv("LC_ALL=en_US.UTF-8");
-
-// Define paths and variables
-$pythonPath = trim(shell_exec("which python3"));
-$pythonScriptPath = __DIR__ . '/read_h5.py';
-$userId = "example_user_id"; // Replace this with the logic to get the current user's ID
-
-// Validate Python environment and script path
-if (!$pythonPath || !file_exists($pythonScriptPath)) {
-    handle_error("Python environment or script path is invalid.", 500);
-}
-
-// Execute the Python script
-$command = escapeshellcmd($pythonPath) . ' ' . escapeshellarg($pythonScriptPath) . ' ' . escapeshellarg($userId);
-$output = shell_exec($command . " 2>&1");
-if ($output) {
-    error_log("Python script output: $output");
-} else {
-    error_log("Python script did not return any output.");
-}
-
 $jsonContent = file_get_contents(__DIR__ . '/sleep-monitor-3e4c3-firebase-adminsdk-wbxh8-5a53c375bb.json');
 if ($jsonContent === false) {
     die('Error reading JSON file.');
