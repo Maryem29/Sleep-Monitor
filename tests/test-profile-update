@@ -1,0 +1,16 @@
+<?php
+
+use PHPUnit\Framework\TestCase;
+
+class SleepMonitorTests extends TestCase
+
+{
+    public function testProfileUpdate()
+    {
+        $response = $this->post('/profile.php', [
+            'user_id' => 1,
+            'username' => 'updateduser',
+        ]);
+        $this->assertTrue($response['success']);
+    }
+}
